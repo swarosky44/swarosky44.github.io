@@ -1,0 +1,753 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="设计模式,JavaScript," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="说出来可能不信，我以前写的文章全都搞丢了 😭。 hexo 生成的项目没有好好保存，电脑 recovery 之后就丢失了之前项目以及 post 的 md 文件 … 现在的 blog 好空啊 … 趁空闲写一篇设计模式 - 策略模式的文章充充数吧">
+<meta name="keywords" content="设计模式,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="策略模式">
+<meta property="og:url" content="http://swarosky44.github.io/2017/04/12/策略模式/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="说出来可能不信，我以前写的文章全都搞丢了 😭。 hexo 生成的项目没有好好保存，电脑 recovery 之后就丢失了之前项目以及 post 的 md 文件 … 现在的 blog 好空啊 … 趁空闲写一篇设计模式 - 策略模式的文章充充数吧">
+<meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/strategy-uml.png">
+<meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/strategy-time.png">
+<meta property="og:updated_time" content="2017-04-12T01:38:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="策略模式">
+<meta name="twitter:description" content="说出来可能不信，我以前写的文章全都搞丢了 😭。 hexo 生成的项目没有好好保存，电脑 recovery 之后就丢失了之前项目以及 post 的 md 文件 … 现在的 blog 好空啊 … 趁空闲写一篇设计模式 - 策略模式的文章充充数吧">
+<meta name="twitter:image" content="http://oe3rjg2g6.bkt.clouddn.com/strategy-uml.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/04/12/策略模式/"/>
+
+
+
+
+
+  <title> 策略模式 | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/04/12/策略模式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                策略模式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T09:38:00+08:00">
+                2017-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>说出来可能不信，我以前写的文章全都搞丢了 😭。 hexo 生成的项目没有好好保存，电脑 recovery 之后就丢失了之前项目以及 post 的 md 文件 …</p>
+<p>现在的 blog 好空啊 … 趁空闲写一篇设计模式 - 策略模式的文章充充数吧</p>
+<a id="more"></a>
+<h2 id="模式动机"><a href="#模式动机" class="headerlink" title="模式动机"></a>模式动机</h2><p>为了达到一个目的，我们可以有多种方法去实现，选择什么样的策略或者策略组合可以根据环境或者条件让使用者去自由选择。</p>
+<p>eg:</p>
+<p>表单验证</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">validate</span> (<span class="params">value, type</span>) </span>&#123;</div><div class="line">  <span class="keyword">switch</span> (type)&#123;</div><div class="line">    <span class="keyword">case</span> <span class="string">'username'</span>:</div><div class="line">      <span class="keyword">if</span> (!value) &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'用户名不能为空'</span>)</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (value.length &lt; <span class="number">6</span>) &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'用户名的长度不能小于 6 位'</span>)</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">`用户名 - <span class="subst">$&#123;value&#125;</span>`</span>)</div><div class="line">        <span class="keyword">break</span></div><div class="line">      &#125;</div><div class="line">    <span class="keyword">case</span> <span class="string">'pwd'</span>:</div><div class="line">      <span class="keyword">if</span> (!value) &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'密码不能为空'</span>)</div><div class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (value.length !== <span class="number">4</span> || value.length !== <span class="number">6</span>) &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'密码长度必须为 4 位 或者 6 位'</span>)</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">`密码 - <span class="subst">$&#123;value&#125;</span>`</span>)</div><div class="line">        <span class="keyword">break</span></div><div class="line">      &#125;</div><div class="line">    <span class="keyword">default</span>:</div><div class="line">      <span class="built_in">console</span>.error(<span class="string">'无对应类型验证'</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 用户名验证</span></div><div class="line"><span class="keyword">var</span> username = <span class="built_in">document</span>.querySelector(<span class="string">'#username'</span>).value</div><div class="line">validate(username, <span class="string">'username'</span>)</div><div class="line"><span class="comment">// 密码验证</span></div><div class="line"><span class="keyword">var</span> pwd = <span class="built_in">document</span>.querySelector(<span class="string">'#password'</span>).value</div><div class="line">validate(pwd, <span class="string">'pwd'</span>)</div></pre></td></tr></table></figure>
+<p>对于上例中，调用者的出发点是获得一个 <code>Input</code> 输入框输入值，系统给用户输出的是输入值的回馈，在这个过程中有许多方法可以用于验证用户输入的值。而这些方法在不经过设计的情况下，就是一大段一大段的 <code>if...else</code> 混杂着业务逻辑充斥着我们的代码，于是策略模式正是基于这样的场景下诞生的。</p>
+<h2 id="模式定义"><a href="#模式定义" class="headerlink" title="模式定义"></a>模式定义</h2><p>定义一系列算法，将每一个算法包装起来，并让它们可以互相替换。</p>
+<p>属于行为型模式。</p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>关于策略模式的 UML 图和时序图，可以参考下面两图，来自于 <a href="https://design-patterns.readthedocs.io/zh_CN/latest/index.html" target="_blank" rel="external">Graphic Design Patterns</a> :</p>
+<p><img src="http://oe3rjg2g6.bkt.clouddn.com/strategy-uml.png" alt=""></p>
+<p>从 UML 图我们可以看到我们需要构建的的类结构</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 策略抽象类</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Strategy</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;&#125;</div><div class="line">  excute () &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 策略 A</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConcreteStrategyA</span> <span class="keyword">extends</span> <span class="title">Strategy</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line">  excute () &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 策略 B</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConcreteStrategyB</span> <span class="keyword">extends</span> <span class="title">Strategy</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line">  excute () &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 执行类</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Context</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">this</span>.strategies = []</div><div class="line">  &#125;</div><div class="line">  excute () &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> strategy <span class="keyword">of</span> strategies) &#123;</div><div class="line">      strategy.excute()</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  setStrategy (strategy) &#123;</div><div class="line">    <span class="keyword">if</span> (strategy <span class="keyword">instanceof</span> Strategy) &#123;</div><div class="line">      <span class="keyword">this</span>.strategies.push(strategy)</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="built_in">console</span>.error(<span class="string">'非策略对象！'</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是传统的面向对象范式下构造出来的类结构，其实在 JS 中我们没必要如此麻烦的 …</p>
+<p><img src="http://oe3rjg2g6.bkt.clouddn.com/strategy-time.png" alt=""></p>
+<p>从时序图我们可以得到具体执行的代码结构</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> context = <span class="keyword">new</span> Context()</div><div class="line">  <span class="keyword">var</span> strategyA = <span class="keyword">new</span> ConcreteStrategyA()</div><div class="line">  <span class="keyword">var</span> strategyB = <span class="keyword">new</span> ConcreteStrategyB()</div><div class="line">  context.setStrategy(strategyA)</div><div class="line">  context.excute()</div><div class="line">  context.setStrategy(strategyB)</div><div class="line">  context.excute()</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从最初用 <code>swtich...case</code> 加上 <code>if...else</code> 实现的代码，到现在经过策略模式设计后的代码我们可以清晰看到差别有以下几点：</p>
+<ul>
+<li>对于使用者而言，使用哪种策略他是非常清晰的，但是他并不需要真的了解策略的具体实现。因此我们解耦了策略的调用 &amp; 策略的实现两个过程。</li>
+<li>对于新增策略，使用者不需要去改动执行过程的代码，只需要新增一个自己想要的策略类即可。</li>
+<li>对于策略组合的使用也更加灵活，可以一个一个策略去验证，也可以组合好一组策略然后再去执行。</li>
+</ul>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>以表单验证为案例，实现策略模式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * [表单策略组]</div><div class="line"> * @type &#123;Object&#125;</div><div class="line"> */</div><div class="line"><span class="keyword">let</span> formStrategies = &#123;</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [空值判断]</div><div class="line">   * @param  &#123;[Any]&#125;     val [校验值]</div><div class="line">   * @param  &#123;[String]&#125;  msg [错误信息]</div><div class="line">   */</div><div class="line">  isEmpty: <span class="function">(<span class="params">val, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (!val) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [特定值判断，严格判断]</div><div class="line">   * @param  &#123;[String]&#125;    val           [校验值]</div><div class="line">   * @param  &#123;[String]&#125;    assignedVal   [对比值]</div><div class="line">   * @param  &#123;[String]&#125;    msg           [错误信息]</div><div class="line">   */</div><div class="line">  eqAssignedVal: <span class="function">(<span class="params">val, assignedVal, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (val !== assignedVal) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [最小值判断，限 Number]</div><div class="line">   * @param  &#123;[String]&#125;    val  [校验值]</div><div class="line">   * @param  &#123;[String]&#125;    min  [对比值]</div><div class="line">   * @param  &#123;[String]&#125;    msg  [错误信息]</div><div class="line">   */</div><div class="line">  ltMinVal: <span class="function">(<span class="params">val, min, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">let</span> parseVal = <span class="built_in">parseFloat</span>(val)</div><div class="line">    <span class="keyword">let</span> parseMin = <span class="built_in">parseFloat</span>(min)</div><div class="line">    <span class="keyword">if</span> (<span class="built_in">isNaN</span>(parseVal) || <span class="built_in">isNaN</span>(parseMin) || parseVal &lt; parseMin) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [最大值判断，限 Number]</div><div class="line">   * @param  &#123;[String]&#125;   val   [校验值]</div><div class="line">   * @param  &#123;[String]&#125;   max   [对比值]</div><div class="line">   * @param  &#123;[String]&#125;   msg   [错误信息]</div><div class="line">   */</div><div class="line">  gtMaxVal: <span class="function">(<span class="params">val, max, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">let</span> parseVal = <span class="built_in">parseFloat</span>(val)</div><div class="line">    <span class="keyword">let</span> parseMax = <span class="built_in">parseFloat</span>(max)</div><div class="line">    <span class="keyword">if</span> (<span class="built_in">isNaN</span>(parseVal) || <span class="built_in">isNaN</span>(parseMax) || parseVal &gt; parseMax) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [手机号格式判断]</div><div class="line">   * @param  &#123;[String]&#125;   val   [校验值]</div><div class="line">   * @param  &#123;[String]&#125;   msg   [错误信息]</div><div class="line">   */</div><div class="line">  isMobile: <span class="function">(<span class="params">val, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (!(<span class="regexp">/^1[34578]\d&#123;9&#125;$/</span>.test(val))) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [验证码格式校验]</div><div class="line">   * @param  &#123;[String]&#125; val [校验值]</div><div class="line">   * @param  &#123;[String]&#125; msg [错误信息]</div><div class="line">   */</div><div class="line">  isSms: <span class="function">(<span class="params">val, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (!<span class="regexp">/^\d&#123;6&#125;$/</span>.test(val)) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [验证值是否为整百数据格式]</div><div class="line">   * @param  &#123;[String]&#125; val [校验值]</div><div class="line">   * @param  &#123;[String]&#125; msg [错误信息]</div><div class="line">   */</div><div class="line">  isHundredInterge: <span class="function">(<span class="params">val, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (!<span class="regexp">/^\w+00$/</span>.test(val)) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [验证值是否是整数]</div><div class="line">   * @param  &#123;[Number]&#125; val [校验值]</div><div class="line">   * @param  &#123;[String]&#125; msg [错误信息]</div><div class="line">   */</div><div class="line">  isInterge: <span class="function">(<span class="params">val, msg</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (val % <span class="number">1</span> !== <span class="number">0</span>) &#123;</div><div class="line">      <span class="keyword">return</span> msg</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 表单策略组执行类</div><div class="line"> */</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FormValidate</span> </span>&#123;</div><div class="line">  <span class="comment">/*</span></div><div class="line">   * cache 验证规则缓存</div><div class="line">   */</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">this</span>.cache = []</div><div class="line">  &#125;</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [添加验证规则]</div><div class="line">   * @param &#123;[String]&#125;   val     [校验值]</div><div class="line">   * @param &#123;[Array]&#125;   rules    [验证规则，策略组中必须存在该规则]</div><div class="line">   */</div><div class="line">  add (val, rules) &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> rule <span class="keyword">of</span> rules) &#123;</div><div class="line">      <span class="keyword">let</span> strategyAry = rule.strategy.split(<span class="string">':'</span>)</div><div class="line">      <span class="keyword">let</span> msg = rule.msg</div><div class="line">      <span class="keyword">this</span>.cache.push(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="keyword">let</span> strategy = strategyAry.shift()</div><div class="line">        strategyAry.unshift(val)</div><div class="line">        strategyAry.push(msg)</div><div class="line">        <span class="keyword">return</span> formStrategies[strategy].apply(<span class="keyword">this</span>, strategyAry)</div><div class="line">      &#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * [验证规则延迟执行]</div><div class="line">   */</div><div class="line">  start () &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> validateFunc <span class="keyword">of</span> <span class="keyword">this</span>.cache) &#123;</div><div class="line">      <span class="keyword">let</span> msg = validateFunc()</div><div class="line">      <span class="keyword">if</span> (msg) &#123;</div><div class="line">        <span class="keyword">return</span> msg</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> FormValidate</div><div class="line"></div><div class="line"><span class="comment">// 具体调用实现</span></div><div class="line"><span class="keyword">let</span> fv = <span class="keyword">new</span> FormValidate()</div><div class="line"><span class="keyword">let</span> username = <span class="built_in">document</span>.querySelector(<span class="string">'#username'</span>).value</div><div class="line"><span class="keyword">let</span> pwd = <span class="built_in">document</span>.querySelector(<span class="string">'#password'</span>).value</div><div class="line">fv.add(username, [&#123;</div><div class="line">  <span class="attr">strategy</span>: <span class="string">'isEmpty'</span>,</div><div class="line">  <span class="attr">msg</span>: <span class="string">'手机号不能为空'</span></div><div class="line">&#125;, &#123;</div><div class="line">  <span class="attr">strategy</span>: <span class="string">'isMobile'</span>,</div><div class="line">  <span class="attr">msg</span>: <span class="string">'手机号格式不正确'</span></div><div class="line">&#125;])</div><div class="line"></div><div class="line">fv.add(password, [&#123;</div><div class="line">  <span class="attr">strategy</span>: <span class="string">'ltMinVal:6'</span>,</div><div class="line">  <span class="attr">msg</span>: <span class="string">'密码长度不能少于 6 位'</span></div><div class="line">&#125;, &#123;</div><div class="line">  <span class="attr">strategy</span>: <span class="string">'gtMaxVal:20'</span>,</div><div class="line">  <span class="attr">msg</span>: <span class="string">'密码长度不能多于 20 位'</span></div><div class="line">&#125;])</div><div class="line"></div><div class="line"><span class="keyword">let</span> msg = fv.start()</div><div class="line"><span class="keyword">if</span> (msg) &#123;</div><div class="line">  <span class="built_in">console</span>.error(msg)</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上是我现在在公司项目对整站做的一个表单策略验证的封装。</p>
+<hr>
+<blockquote>
+<p><a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/strategy.html" target="_blank" rel="external">图解策略模式</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/12/数据结构 - Array/" rel="next" title="数据结构 - Array">
+                <i class="fa fa-chevron-left"></i> 数据结构 - Array
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/10/CSS Secrets a week (2)/" rel="prev" title="CSS Secrets a week">
+                CSS Secrets a week <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模式动机"><span class="nav-number">1.</span> <span class="nav-text">模式动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模式定义"><span class="nav-number">2.</span> <span class="nav-text">模式定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体实现"><span class="nav-number">3.</span> <span class="nav-text">具体实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#案例"><span class="nav-number">4.</span> <span class="nav-text">案例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,数据结构," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="blog 空空的感觉超级难受 … 多写点多开点坑 数据结构 &amp;amp; 算法作为软件程序的两个基本要素，学好的重要性不言而喻了吧，除非你甘心做一辈子的切图仔 🙃">
+<meta name="keywords" content="JavaScript,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构 - Array">
+<meta property="og:url" content="http://swarosky44.github.io/2017/04/12/数据结构 - Array/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="blog 空空的感觉超级难受 … 多写点多开点坑 数据结构 &amp;amp; 算法作为软件程序的两个基本要素，学好的重要性不言而喻了吧，除非你甘心做一辈子的切图仔 🙃">
+<meta property="og:updated_time" content="2017-04-12T01:38:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构 - Array">
+<meta name="twitter:description" content="blog 空空的感觉超级难受 … 多写点多开点坑 数据结构 &amp;amp; 算法作为软件程序的两个基本要素，学好的重要性不言而喻了吧，除非你甘心做一辈子的切图仔 🙃">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/04/12/数据结构 - Array/"/>
+
+
+
+
+
+  <title> 数据结构 - Array | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/04/12/数据结构 - Array/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据结构 - Array
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-12T09:38:00+08:00">
+                2017-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>blog 空空的感觉超级难受 … 多写点多开点坑</p>
+<p>数据结构 &amp; 算法作为软件程序的两个基本要素，学好的重要性不言而喻了吧，除非你甘心做一辈子的切图仔 🙃</p>
+<a id="more"></a>
+<p>Array 是现代编程语言中最常用的数据结构之一，也是 ECMAScript 已经为我们定义好了的内置的一种数据结构。在原型范式编程语言的万物皆对象的理念下，Array 也是对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typeof</span> <span class="built_in">Array</span> <span class="comment">// 'object'</span></div></pre></td></tr></table></figure>
+<p>在很多语言中 Array 在内存空间上是连续性的表现，因此在创建 Array 的时候需要预先分配一片内存空间，Array 的大小（长度）也就无法动态改变，在 Array 内存储的数据如果超出预先分配的内存空间大小，通常会报数据溢出异常。</p>
+<p>但是在 ECMAScript 中，Array 的大小是动态的，类似的在 Java 等现代语言中也提供了 ArrayList 等动态数组的数据结构。</p>
+<h2 id="创建-Array"><a href="#创建-Array" class="headerlink" title="创建 Array"></a>创建 Array</h2><p>在 ECMAScript 创建一个 Array 有许多途径：</p>
+<h4 id="字面量声明"><a href="#字面量声明" class="headerlink" title="字面量声明"></a>字面量声明</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> a = []</div><div class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line"><span class="keyword">var</span> a = [,,,] <span class="comment">// [undefined * 3]</span></div></pre></td></tr></table></figure>
+<p>通常声明 Array 或者 Object 都推荐使用字面量声明的形式，但是在 JavaScript高级程序设计 中明确指出，并不推荐字面量声明是因为</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="number">2</span>,] <span class="comment">// =&gt; 一个可能包含 2 个或者 3个的数组</span></div></pre></td></tr></table></figure>
+<p>在 Chrome 下这样声明出来的对象 a 是一个包含两个数据的数组，而在 IE8 及之前版本中会被声明成一个包含三个数据的数组。至于要不要推荐字面量声明，就只能看个人想法了 … （反正我是习惯用字面量声明）</p>
+<h4 id="Array-构造函数"><a href="#Array-构造函数" class="headerlink" title="Array 构造函数"></a>Array 构造函数</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">Array</span>() <span class="comment">// []</span></div><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>) <span class="comment">// [1, 2, 3]</span></div><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">4</span>) <span class="comment">// [undefined * 4]</span></div><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">-1</span>) <span class="comment">// Uncaught RangeError: Invalid array length</span></div></pre></td></tr></table></figure>
+<p>在 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array" target="_blank" rel="external">MDN</a> 中描述构造函数声明 Array 的语法为</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> <span class="built_in">Array</span>(element0, element1, element2...)</div><div class="line"><span class="keyword">new</span> <span class="built_in">Array</span>(arrayLength)</div></pre></td></tr></table></figure>
+<p>elementN - 数组元素集</p>
+<p>arrayLength - 数组长度</p>
+<p>这里语法上只有当参数有且仅有一个，并且为 Number 型数值时才会识别为 arrayLength 。</p>
+<h2 id="Array-属性"><a href="#Array-属性" class="headerlink" title="Array 属性"></a>Array 属性</h2><h4 id="Object-的属性与方法"><a href="#Object-的属性与方法" class="headerlink" title="Object 的属性与方法"></a>Object 的属性与方法</h4><p>由于之前提及的，在原型范式下，所有数据都是对象，Array 所构造的对象的原型链终点也是 Object ，所以 Array 也具有了几种通用的方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line">a.toString() <span class="comment">// '1,2,3'</span></div><div class="line">a.toLocaleString() <span class="comment">// '1,2,3'</span></div><div class="line">a.valueOf() <span class="comment">// [1, 2, 3]</span></div><div class="line">a.hasOwnProperty(<span class="string">'length'</span>) <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<h4 id="length-属性"><a href="#length-属性" class="headerlink" title="length 属性"></a>length 属性</h4><p>用于表示 Array 长度的属性，但是在真正含义上 length 也无法定义一个 Array 中数据的个数。</p>
+<p>因为 length 属性的原属性 - writable 是可读写的，因此我们可以人为的修改一个 Array 的长度 -</p>
+<p>当我们将 length 属性值变小时，Array 会截断。</p>
+<p>当我们将 length 属性值变大时，Array 只会填充 undefined 到新增索引位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var a = [1, 2, 3]</div><div class="line">a.length = 10</div><div class="line">a // [1, 2, 3, undefined * 7]</div><div class="line">a[8] = 8</div><div class="line">a // [1, 2, 3, undefined * 5, 8, undefined * 1]</div></pre></td></tr></table></figure>
+<p>因此我们给上面这样类似形态的数据结构单独取名为稀疏数组，相反，在一个 Array 中如果每个索引下都是有意义的值，那么我们一般称为稠密数组。</p>
+<h4 id="Array-prototype"><a href="#Array-prototype" class="headerlink" title="Array.prototype"></a>Array.prototype</h4><p>这是每个 array 的构造函数的原型，我们构造的每个数组对象都是克隆的这个对象，值得一提，有趣的是</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Array</span>.isArray(<span class="built_in">Array</span>.prototype) <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<h2 id="Array-方法"><a href="#Array-方法" class="headerlink" title="Array 方法"></a>Array 方法</h2><h3 id="修改自身的方法"><a href="#修改自身的方法" class="headerlink" title="修改自身的方法"></a>修改自身的方法</h3><p>这一类的方法都会修改源数据，所以在使用这些方法然后再赋值的话需要特别注意。</p>
+<h4 id="Array-prototype-copyWithin"><a href="#Array-prototype-copyWithin" class="headerlink" title="Array.prototype.copyWithin"></a>Array.prototype.copyWithin</h4><p>浅复制数组中一部分到同一数组的另一部分, 返回修改之后的源数组。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">arr.copyWithin(target, start, end)</div><div class="line"><span class="keyword">var</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line">arr.copyWithin(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>) <span class="comment">// [2, 2, 3]</span></div><div class="line">arr.copyWithin(<span class="number">1</span>) <span class="comment">// [1, 1, 2]</span></div></pre></td></tr></table></figure>
+<p>target - 修改位置的起始索引，如果 <code>target &gt; arr.length</code> 则函数不会执行。target 为负数时，从数组末尾开始计数；</p>
+<p>start - 复制位置的起始索引，start 为负数时，从数组末尾开始计数；</p>
+<p>end - 复制位置的截止索引，end 为负数时，从数组末尾开始计算；</p>
+<h4 id="Array-prototype-fill"><a href="#Array-prototype-fill" class="headerlink" title="Array.prototype.fill"></a>Array.prototype.fill</h4><p>将数组内所有元素从开始索引到结束索引之间填充一个静态值，返回修改后的数组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.fill(value, start, end)</div><div class="line"><span class="keyword">var</span> numbers = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</div><div class="line">numbers.fill(<span class="number">1</span>) <span class="comment">// [1, 1, 1]</span></div></pre></td></tr></table></figure>
+<p>value - 用于填充数组的值；</p>
+<p>start - 开始索引，为负数时，从数组末尾开始计数；</p>
+<p>end - 结束索引，为负数时，从数组末尾开始计算；</p>
+<h4 id="Array-prototype-pop"><a href="#Array-prototype-pop" class="headerlink" title="Array.prototype.pop"></a>Array.prototype.pop</h4><p>删除数组最后一位，返回数组移除的元素，如果数组为空则返回 undefined</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">arr.pop()</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-push"><a href="#Array-prototype-push" class="headerlink" title="Array.prototype.push"></a>Array.prototype.push</h4><p>在数组末尾添加一位或多位元素，返回新的数组的长度</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arr.push(<span class="number">1</span>)</div><div class="line">arr.push(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-reverse"><a href="#Array-prototype-reverse" class="headerlink" title="Array.prototype.reverse"></a>Array.prototype.reverse</h4><p>逆序排序数组中的元素，返回修改后的数组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">arr.reverse()</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-shift"><a href="#Array-prototype-shift" class="headerlink" title="Array.prototype.shift"></a>Array.prototype.shift</h4><p>从数组中删除第一个元素，返回删除的元素</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">arr.shift()</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-sort"><a href="#Array-prototype-sort" class="headerlink" title="Array.prototype.sort"></a>Array.prototype.sort</h4><p>在适当的位置对数组进行排序，返回排好序后的数组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.sort(<span class="function">(<span class="params">pre, cur</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>默认排序是将每个元素转化成字符串，按照 Unicode 码点进行排序。如果期望只是 Number 型数值的排序，会造成一些错误，9 的 Unicode 码点要大于 81 的 Unicode 码点。</p>
+<p>所以最好是指定一下排序方法。</p>
+<p>pre - cur &lt; 0 则 pre 排在 cur 之前</p>
+<p>pre - cur == 0 则 pre 和 cur 的先后关系很难保证确定（不同浏览器结果不一定一致）</p>
+<p>pre - cur &gt; 0 则 cur 排在 pre 之前</p>
+<h4 id="Array-prototype-splice"><a href="#Array-prototype-splice" class="headerlink" title="Array.prototype.splice"></a>Array.prototype.splice</h4><p>删除数组中元素，返回删除后元素</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">arr.splice(start, delecount, ...itemN)</div><div class="line"><span class="keyword">var</span> a = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</div><div class="line">a.splice(<span class="number">0</span>, <span class="number">2</span>, <span class="string">'a'</span>, <span class="string">'b'</span>) <span class="comment">// [1, 2]</span></div><div class="line">a <span class="comment">// ['a', 'b', 3, 4]</span></div></pre></td></tr></table></figure>
+<p>start - 移除元素的起始索引位置，负值从数组末尾开始计数，值超过数组长度函数不执行；</p>
+<p>delecount - 从起始位置开始需要删除的元素个数；</p>
+<p>…itemN - 在删除元素位置填充的新元素</p>
+<h4 id="Array-prototype-unshift"><a href="#Array-prototype-unshift" class="headerlink" title="Array.prototype.unshift"></a>Array.prototype.unshift</h4><p>将一个或多个新元素添加到数组的开头位置，返回修改后数组的长度</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arr.unshift(<span class="string">'a'</span>)</div><div class="line">arr.unshift(<span class="string">'a'</span>, <span class="string">'b'</span>)</div></pre></td></tr></table></figure>
+<h3 id="不修改自身的方法"><a href="#不修改自身的方法" class="headerlink" title="不修改自身的方法"></a>不修改自身的方法</h3><p>这一类方法不会修改源数组，创建一个新的数组作为返回值</p>
+<h4 id="Array-prototype-concat"><a href="#Array-prototype-concat" class="headerlink" title="Array.prototype.concat"></a>Array.prototype.concat</h4><p>合并拼接两个或多个数组，返回合并后的新数组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arr.concat(arr1)</div><div class="line">arr.cocnat(arr1, ...arrN)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-includes"><a href="#Array-prototype-includes" class="headerlink" title="Array.prototype.includes"></a>Array.prototype.includes</h4><p>判断当前数组是否包含某指定的值，返回 Boolean 型的结果值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">arr.includes(value, index)</div></pre></td></tr></table></figure>
+<p>value - 需要查找的元素值</p>
+<p>index - 从索引值为 index 的元素位置开始查找</p>
+<h4 id="Array-prototype-join"><a href="#Array-prototype-join" class="headerlink" title="Array.prototype.join"></a>Array.prototype.join</h4><p>将数组中所有元素拼接到一个字符串中，返回这个字符串</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arr.join(separator)</div><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].join(<span class="string">'-'</span>) <span class="comment">// '1-2-3'</span></div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-slice"><a href="#Array-prototype-slice" class="headerlink" title="Array.prototype.slice"></a>Array.prototype.slice</h4><p>选取源数组中从起始索引到结束索引之间的元素，浅拷贝到新数组中，返回新数组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">arr.slice(start, end)</div><div class="line">[<span class="string">'zero'</span>, <span class="string">'one'</span>, <span class="string">'two'</span>, <span class="string">'three'</span>].slice(<span class="number">1</span>, <span class="number">3</span>) <span class="comment">// ['one', 'two', 'three']</span></div></pre></td></tr></table></figure>
+<p>start - 起始索引位置，负值从数组末尾开始计数；</p>
+<p>end - 结束索引位置，负值从数组末尾开始计数；</p>
+<h4 id="Array-prototype-indexOf"><a href="#Array-prototype-indexOf" class="headerlink" title="Array.prototype.indexOf"></a>Array.prototype.indexOf</h4><p>返回数组中第一个与给定值相等的元素的索引位置，没找到则返回 -1</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">arr.indexOf(value, index)</div></pre></td></tr></table></figure>
+<p>value - 检索的指定值</p>
+<p>index - 检索的起始索引值</p>
+<h4 id="Array-prototype-lastIndexOf"><a href="#Array-prototype-lastIndexOf" class="headerlink" title="Array.prototype.lastIndexOf"></a>Array.prototype.lastIndexOf</h4><p>实际原理同 <code>Array.prototype.indexOf</code> , 只是从数组右边开始检索</p>
+<h3 id="遍历方法"><a href="#遍历方法" class="headerlink" title="遍历方法"></a>遍历方法</h3><p>遍历数组的方法，通常需要指定一个遍历过程中的执行的回调函数，不一定有返回值</p>
+<h4 id="Array-prototype-forEach"><a href="#Array-prototype-forEach" class="headerlink" title="Array.prototype.forEach"></a>Array.prototype.forEach</h4><p>遍历数组，给每个元素执行一次回调</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.forEach(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<p>callback - 回调函数</p>
+<p>​    item - 元素对象</p>
+<p>​    index - 元素的索引值</p>
+<p>​    arr - 元素组</p>
+<p>thisArg - 回调函数执行时 this 的指向</p>
+<h4 id="Array-prototype-entries"><a href="#Array-prototype-entries" class="headerlink" title="Array.prototype.entries"></a>Array.prototype.entries</h4><p>将数组的遍历过程变成迭代器，迭代器包含每个元素</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> iter <span class="keyword">of</span> arr.entries()) &#123;</div><div class="line">  <span class="built_in">console</span>.log(iter) <span class="comment">// [index, item]</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> iterator = arr.entries()</div><div class="line"><span class="built_in">console</span>.log(iterator.next().value)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-keys"><a href="#Array-prototype-keys" class="headerlink" title="Array.prototype.keys"></a>Array.prototype.keys</h4><p>同 <code>Array.prototype.entries</code> , 迭代器包含每个元素的索引值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> iterator = arr.keys()</div><div class="line">iterator.next() <span class="comment">// &#123; value: 0, done: false &#125;</span></div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-values"><a href="#Array-prototype-values" class="headerlink" title="Array.prototype.values"></a>Array.prototype.values</h4><p>同<code>Array.prototype.entries</code> , 迭代器包含每个元素的值</p>
+<h4 id="Array-Symbol-iterator"><a href="#Array-Symbol-iterator" class="headerlink" title="Array[Symbol.iterator]"></a>Array[Symbol.iterator]</h4><p>同 <code>Array.prototype.values</code> , 同一功能</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> arr = [<span class="string">'w'</span>, <span class="string">'y'</span>, <span class="string">'k'</span>, <span class="string">'o'</span>, <span class="string">'p'</span>];</div><div class="line"><span class="keyword">var</span> eArr = arr[<span class="built_in">Symbol</span>.iterator]();</div><div class="line"><span class="built_in">console</span>.log(eArr.next().value); <span class="comment">// w</span></div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-every"><a href="#Array-prototype-every" class="headerlink" title="Array.prototype.every"></a>Array.prototype.every</h4><p>检测数组内所有元素是否通过了指定的函数测试，只要有一个未通过则返回 <code>false</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.every(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-some"><a href="#Array-prototype-some" class="headerlink" title="Array.prototype.some"></a>Array.prototype.some</h4><p>检测数组内所有元素中是否有一个元素通过指定的函数测试，只要有一个通过则返回 <code>true</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.some(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-filter"><a href="#Array-prototype-filter" class="headerlink" title="Array.prototype.filter"></a>Array.prototype.filter</h4><p>返回数组内所有通过指定函数测试的元素（返回值为 <code>true</code> ）所组成的数组</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.filter(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-find"><a href="#Array-prototype-find" class="headerlink" title="Array.prototype.find"></a>Array.prototype.find</h4><p>返回数组中满足指定的函数测试的第一个元素，否则返回 <code>undefiend</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.find(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-findIndex"><a href="#Array-prototype-findIndex" class="headerlink" title="Array.prototype.findIndex"></a>Array.prototype.findIndex</h4><p>同 <code>Array.prototype.find</code> , 返回元素的索引值，未找到则返回 -1</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.findIndex(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-map"><a href="#Array-prototype-map" class="headerlink" title="Array.prototype.map"></a>Array.prototype.map</h4><p>创建一个新的数组，每个元素都是源数组中的元素经过指定的函数处理后的结果</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.map(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, thisArg)</div></pre></td></tr></table></figure>
+<h4 id="Array-prototype-reduce"><a href="#Array-prototype-reduce" class="headerlink" title="Array.prototype.reduce"></a>Array.prototype.reduce</h4><p>对数组每个元素按照指定的函数进行累加操作，返回为单个值</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">arr.reduce(<span class="function">(<span class="params">item, index, arr</span>) =&gt;</span> &#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;, initialValue)</div></pre></td></tr></table></figure>
+<p>initiaValue - 累加值的初始值</p>
+<h4 id="Array-prototype-reduceRight"><a href="#Array-prototype-reduceRight" class="headerlink" title="Array.prototype.reduceRight"></a>Array.prototype.reduceRight</h4><p>同 <code>Array.prototype.reduce</code> , 按照从右至左的顺序累加</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/18/代理模式/" rel="next" title="代理模式">
+                <i class="fa fa-chevron-left"></i> 代理模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/12/策略模式/" rel="prev" title="策略模式">
+                策略模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建-Array"><span class="nav-number">1.</span> <span class="nav-text">创建 Array</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字面量声明"><span class="nav-number">1.0.1.</span> <span class="nav-text">字面量声明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-构造函数"><span class="nav-number">1.0.2.</span> <span class="nav-text">Array 构造函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Array-属性"><span class="nav-number">2.</span> <span class="nav-text">Array 属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-的属性与方法"><span class="nav-number">2.0.1.</span> <span class="nav-text">Object 的属性与方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#length-属性"><span class="nav-number">2.0.2.</span> <span class="nav-text">length 属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype"><span class="nav-number">2.0.3.</span> <span class="nav-text">Array.prototype</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Array-方法"><span class="nav-number">3.</span> <span class="nav-text">Array 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改自身的方法"><span class="nav-number">3.1.</span> <span class="nav-text">修改自身的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-copyWithin"><span class="nav-number">3.1.1.</span> <span class="nav-text">Array.prototype.copyWithin</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-fill"><span class="nav-number">3.1.2.</span> <span class="nav-text">Array.prototype.fill</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-pop"><span class="nav-number">3.1.3.</span> <span class="nav-text">Array.prototype.pop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-push"><span class="nav-number">3.1.4.</span> <span class="nav-text">Array.prototype.push</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-reverse"><span class="nav-number">3.1.5.</span> <span class="nav-text">Array.prototype.reverse</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-shift"><span class="nav-number">3.1.6.</span> <span class="nav-text">Array.prototype.shift</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-sort"><span class="nav-number">3.1.7.</span> <span class="nav-text">Array.prototype.sort</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-splice"><span class="nav-number">3.1.8.</span> <span class="nav-text">Array.prototype.splice</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-unshift"><span class="nav-number">3.1.9.</span> <span class="nav-text">Array.prototype.unshift</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不修改自身的方法"><span class="nav-number">3.2.</span> <span class="nav-text">不修改自身的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-concat"><span class="nav-number">3.2.1.</span> <span class="nav-text">Array.prototype.concat</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-includes"><span class="nav-number">3.2.2.</span> <span class="nav-text">Array.prototype.includes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-join"><span class="nav-number">3.2.3.</span> <span class="nav-text">Array.prototype.join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-slice"><span class="nav-number">3.2.4.</span> <span class="nav-text">Array.prototype.slice</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-indexOf"><span class="nav-number">3.2.5.</span> <span class="nav-text">Array.prototype.indexOf</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-lastIndexOf"><span class="nav-number">3.2.6.</span> <span class="nav-text">Array.prototype.lastIndexOf</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遍历方法"><span class="nav-number">3.3.</span> <span class="nav-text">遍历方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-forEach"><span class="nav-number">3.3.1.</span> <span class="nav-text">Array.prototype.forEach</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-entries"><span class="nav-number">3.3.2.</span> <span class="nav-text">Array.prototype.entries</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-keys"><span class="nav-number">3.3.3.</span> <span class="nav-text">Array.prototype.keys</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-values"><span class="nav-number">3.3.4.</span> <span class="nav-text">Array.prototype.values</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-Symbol-iterator"><span class="nav-number">3.3.5.</span> <span class="nav-text">Array[Symbol.iterator]</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-every"><span class="nav-number">3.3.6.</span> <span class="nav-text">Array.prototype.every</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-some"><span class="nav-number">3.3.7.</span> <span class="nav-text">Array.prototype.some</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-filter"><span class="nav-number">3.3.8.</span> <span class="nav-text">Array.prototype.filter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-find"><span class="nav-number">3.3.9.</span> <span class="nav-text">Array.prototype.find</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-findIndex"><span class="nav-number">3.3.10.</span> <span class="nav-text">Array.prototype.findIndex</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-map"><span class="nav-number">3.3.11.</span> <span class="nav-text">Array.prototype.map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-reduce"><span class="nav-number">3.3.12.</span> <span class="nav-text">Array.prototype.reduce</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array-prototype-reduceRight"><span class="nav-number">3.3.13.</span> <span class="nav-text">Array.prototype.reduceRight</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
