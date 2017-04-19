@@ -71,7 +71,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="CSS," />
+  <meta name="keywords" content="JavaScript,数据结构," />
 
 
 
@@ -87,20 +87,17 @@
 
 
 
-<meta name="description" content="偷个闲，写一篇小短文关于用 CSS 画平行四边形的两种方法。">
-<meta name="keywords" content="CSS">
+<meta name="description" content="Stack 的中文名字是 栈。作为一种数据结构，并不像数组一样在高级语言中有内置的实现，今天就动手定义一个 Stack 的实现类 🤔 。">
+<meta name="keywords" content="JavaScript,数据结构">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CSS Secrets a week">
-<meta property="og:url" content="http://swarosky44.github.io/2017/04/10/CSS Secrets a week (2)/index.html">
+<meta property="og:title" content="数据结构 - Stack">
+<meta property="og:url" content="http://swarosky44.github.io/2017/04/20/数据结构 - Stack/index.html">
 <meta property="og:site_name" content="Listen">
-<meta property="og:description" content="偷个闲，写一篇小短文关于用 CSS 画平行四边形的两种方法。">
-<meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/skew.png">
-<meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/skew%282%29.png">
-<meta property="og:updated_time" content="2017-04-12T01:38:00.000Z">
+<meta property="og:description" content="Stack 的中文名字是 栈。作为一种数据结构，并不像数组一样在高级语言中有内置的实现，今天就动手定义一个 Stack 的实现类 🤔 。">
+<meta property="og:updated_time" content="2017-04-19T16:54:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CSS Secrets a week">
-<meta name="twitter:description" content="偷个闲，写一篇小短文关于用 CSS 画平行四边形的两种方法。">
-<meta name="twitter:image" content="http://oe3rjg2g6.bkt.clouddn.com/skew.png">
+<meta name="twitter:title" content="数据结构 - Stack">
+<meta name="twitter:description" content="Stack 的中文名字是 栈。作为一种数据结构，并不像数组一样在高级语言中有内置的实现，今天就动手定义一个 Stack 的实现类 🤔 。">
 
 
 
@@ -128,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://swarosky44.github.io/2017/04/10/CSS Secrets a week (2)/"/>
+  <link rel="canonical" href="http://swarosky44.github.io/2017/04/20/数据结构 - Stack/"/>
 
 
 
 
 
-  <title> CSS Secrets a week | Listen </title>
+  <title> 数据结构 - Stack | Listen </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -263,7 +260,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/04/10/CSS Secrets a week (2)/">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/04/20/数据结构 - Stack/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Listen">
@@ -284,7 +281,7 @@
             
             
               
-                CSS Secrets a week
+                数据结构 - Stack
               
             
           </h1>
@@ -299,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-10T10:48:00+08:00">
-                2017-04-10
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-20T00:17:50+08:00">
+                2017-04-20
               </time>
             
 
@@ -322,8 +319,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CSS/" itemprop="url" rel="index">
-                    <span itemprop="name">CSS</span>
+                  <a href="/categories/数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
                   </a>
                 </span>
 
@@ -357,21 +354,16 @@
       
 
       
-        <p>偷个闲，写一篇小短文关于用 CSS 画平行四边形的两种方法。</p>
+        <p>Stack 的中文名字是 栈。作为一种数据结构，并不像数组一样在高级语言中有内置的实现，今天就动手定义一个 Stack 的实现类 🤔 。</p>
 <a id="more"></a>
-<h2 id="难题：平行四边形"><a href="#难题：平行四边形" class="headerlink" title="难题：平行四边形"></a>难题：平行四边形</h2><p>试着用 CSS 创建一个按钮状的平行四边形，通常我们都会用 <code>skew()</code> 变形属性来实现。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.button</span> &#123;</div><div class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</div><div class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</div><div class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid blue;</div><div class="line">  <span class="attribute">transform</span>: <span class="built_in">skew</span>(-45deg);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这样的确能够是一个元素实现变形，向右倾斜 45 度角。但是元素内的其他内容也会跟随变形。</p>
-<p><img src="http://oe3rjg2g6.bkt.clouddn.com/skew.png" alt=""></p>
-<p>我们需要解决的也就是这个难题。</p>
-<h2 id="嵌套元素解决"><a href="#嵌套元素解决" class="headerlink" title="嵌套元素解决"></a>嵌套元素解决</h2><p>因为外层元素发生了倾斜，我们可以让容器再多包裹一层元素，反向倾斜来解决这个问题。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"button"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"text"</span>&gt;</span></div><div class="line">    hello world</div><div class="line">  <span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div></pre></td></tr></table></figure>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.button</span> &#123;</div><div class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</div><div class="line">  <span class="attribute">height</span>: <span class="number">50px</span>;</div><div class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid blue;</div><div class="line">  <span class="attribute">transform</span>: <span class="built_in">skew</span>(-45deg);</div><div class="line">&#125;</div><div class="line"><span class="selector-class">.button</span> <span class="selector-class">.text</span> &#123;</div><div class="line">  <span class="attribute">text-align</span>: center;</div><div class="line">  <span class="attribute">transform</span>: <span class="built_in">skew</span>(45deg);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这个方法显然是有效的。</p>
-<p><img src="http://oe3rjg2g6.bkt.clouddn.com/skew%282%29.png" alt=""></p>
-<p>但是如果内层元素太多，就需要一个个去反向变形，显得很冗余。</p>
-<h2 id="伪元素方案"><a href="#伪元素方案" class="headerlink" title="伪元素方案"></a>伪元素方案</h2><p>这个方案在于在背景、边框、变形等样式应用到伪元素上，这样容器内的元素是不会发生变形的。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.button</span> &#123;</div><div class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</div><div class="line">  <span class="attribute">heigth</span>: <span class="number">200px</span>;</div><div class="line">  <span class="attribute">position</span>: relative;</div><div class="line">&#125;</div><div class="line"><span class="selector-class">.button</span><span class="selector-pseudo">::before</span> &#123;</div><div class="line">  <span class="attribute">content</span>: <span class="string">''</span>;</div><div class="line">  <span class="attribute">position</span>: absolute;</div><div class="line">  <span class="attribute">top</span>: <span class="number">0</span>;</div><div class="line">  <span class="attribute">left</span>: <span class="number">0</span>;</div><div class="line">  <span class="attribute">bottom</span>: <span class="number">0</span>;</div><div class="line">  <span class="attribute">right</span>: <span class="number">0</span>;</div><div class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid blue;</div><div class="line">  <span class="attribute">transform</span>: <span class="built_in">skew</span>(45deg);</div><div class="line">  <span class="attribute">z-index</span>: -<span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"><span class="selector-class">.button</span> <span class="selector-class">.text</span> &#123;</div><div class="line">  <span class="attribute">text-align</span>: center;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>Stack 是一种遵守先进后出（LIFO，Last in First Out）规则的有序的集合。在大多数的书籍中对它的实现都采用数组作为这个有序集合的实现。因此我们可以理解为一种有特殊规则的数组（实际上我们也可以用链表来实现一个 Stack）。</p>
+<p>既然采用数组来实现一个栈，那么必然在内存中也是以一片连续的内存空间进行存储的。如果在连续的内存空间十分紧张的时候，可以考虑采用链表实现一个 Stack ，这样在内存的存储形式上就是离散的，碎片化的。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Stack</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">this</span>.items = []</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  push (element) &#123;</div><div class="line">    <span class="keyword">this</span>.items.push(element)</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  pop () &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.items.pop(element)</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  peek () &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.items[<span class="keyword">this</span>.items.length - <span class="number">1</span>]</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  isEmpty () &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.items.length === <span class="number">0</span></div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  clear () &#123;</div><div class="line">    <span class="keyword">this</span>.items = []</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  size () &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.items.length</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>十分简单的一种数据结构，对于类内部的方法，我们发现大多数都是直接使用数组的内置函数。但是不要奇怪，这样子封装在多人项目中能起到非常好的风险把控效果，在业务场景中，能有效阻止一些新人或者脑子忘在家里的同事做一些某些数据不该做的事。</p>
+<p>接下来我们试着使用一下这个类，实现一个十进制转二进制的过程。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> divideBy2 = <span class="function"><span class="params">decNum</span> =&gt;</span> &#123;</div><div class="line">  <span class="keyword">let</span> stack = <span class="keyword">new</span> Stack()</div><div class="line">  <span class="keyword">let</span> num = <span class="built_in">parseInt</span>(decNum)</div><div class="line">  <span class="keyword">let</span> rem = <span class="number">0</span></div><div class="line">  <span class="keyword">let</span> result = <span class="string">''</span></div><div class="line">  </div><div class="line">  <span class="keyword">while</span> (num &gt; <span class="number">0</span>) &#123;</div><div class="line">    rem = num % <span class="number">2</span></div><div class="line">    stack.push(rem)</div><div class="line">    num = <span class="built_in">Math</span>.floor(num / <span class="number">2</span>)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">while</span> (stack.size() &gt; <span class="number">0</span>) &#123;</div><div class="line">    result += stack.pop()</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> result</div><div class="line">&#125;</div><div class="line"></div><div class="line">divideBy2(<span class="number">11</span>) <span class="comment">// "1101"</span></div><div class="line">divideBy2(<span class="number">1111.11</span>) <span class="comment">// "10001010111"</span></div></pre></td></tr></table></figure>
+<p>对于栈的实现与使用就是这么简单啦 ~ 这么多写下来，只有一点需要努力去记忆，就是 LIFO 是先进后出！！！</p>
+<h2 id="BTW"><a href="#BTW" class="headerlink" title="BTW"></a>BTW</h2><p>值得一提的是，栈不仅仅是一种数据结构中的术语，在计算机原理中，也是一种内存存储数据的内存区域的术语名词，如果感兴趣可以看看 <a href="http://www.ruanyifeng.com/blog/2013/11/stack.html" target="_blank" rel="external">阮老师的 Stack 的三种含义</a> 。</p>
 
       
     </div>
@@ -401,7 +393,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/CSS/" rel="tag"># CSS</a>
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
           
         </div>
       
@@ -414,18 +408,14 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/12/策略模式/" rel="next" title="策略模式">
-                <i class="fa fa-chevron-left"></i> 策略模式
-              </a>
-            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/03/25/CSS Secrets a week/" rel="prev" title="CSS Secrets a week">
-                CSS Secrets a week <i class="fa fa-chevron-right"></i>
+              <a href="/2017/04/18/代理模式/" rel="prev" title="代理模式">
+                代理模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -555,7 +545,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#难题：平行四边形"><span class="nav-number">1.</span> <span class="nav-text">难题：平行四边形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#嵌套元素解决"><span class="nav-number">2.</span> <span class="nav-text">嵌套元素解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#伪元素方案"><span class="nav-number">3.</span> <span class="nav-text">伪元素方案</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BTW"><span class="nav-number">3.</span> <span class="nav-text">BTW</span></a></li></ol></div>
             
 
           </div>
