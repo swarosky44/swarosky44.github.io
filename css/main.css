@@ -482,7 +482,7 @@ pre,
 }
 pre,
 code {
-  font-family: 'Roboto Mono', consolas, Menlo, "PingFang SC", "Microsoft YaHei", monospace;
+  font-family: 'Fira Mono', consolas, Menlo, "PingFang SC", "Microsoft YaHei", monospace;
 }
 code {
   padding: 2px 4px;
@@ -1691,7 +1691,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #22ff5d;
+  background: #a3fffc;
 }
 .links-of-blogroll {
   font-size: 13px;
