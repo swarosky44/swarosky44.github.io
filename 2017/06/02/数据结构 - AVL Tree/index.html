@@ -1,0 +1,770 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,数据结构," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="今天我又来撸 🌲 了…">
+<meta name="keywords" content="JavaScript,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构 - AVL Tree">
+<meta property="og:url" content="http://swarosky44.github.io/2017/06/02/数据结构 - AVL Tree/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="今天我又来撸 🌲 了…">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/avl1.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/avl2.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/avl3.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/avl4.jpeg">
+<meta property="og:updated_time" content="2017-06-02T07:37:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构 - AVL Tree">
+<meta name="twitter:description" content="今天我又来撸 🌲 了…">
+<meta name="twitter:image" content="http://7xro5v.com1.z0.glb.clouddn.com/avl1.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/06/02/数据结构 - AVL Tree/"/>
+
+
+
+
+
+  <title> 数据结构 - AVL Tree | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/06/02/数据结构 - AVL Tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据结构 - AVL Tree
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-02T11:07:19+08:00">
+                2017-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>今天我又来撸 🌲 了…</p>
+<a id="more"></a>
+<h2 id="平衡二叉树"><a href="#平衡二叉树" class="headerlink" title="平衡二叉树"></a>平衡二叉树</h2><p>AVL树并不是一种特殊的树结构，它也是二叉查找树（Binary Tree）的一种实现方式。<br>之前有提到过二叉查找树在查找功能和插入功能上时间复杂度为 O(lg2);<br>但是最差情况下会退化成链表结构，因此时间复杂度为 O(n);<br>因此在二叉查找树的基础上有人提出了优化方案 - 平衡二叉树。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>平衡二叉树在二叉查找树的实现上多了一条规则 - 它的左右两个子树的高度差的绝对值不能超过1。<br>而今天我们要实现的 AVL树正式平衡二叉树的一种实现方式。实际上实现方式并不单一，还包括红黑树、替罪羊树、伸展树 …反正我都不会 🙃 。</p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><p>为了防止直接撸码会逻辑混乱 … 我先试着梳理一下整个实现过程的步骤：</p>
+<ol>
+<li>递归查找插入新节点的对应位置 ;</li>
+<li>新节点插入后，判断当前树结构是否平衡（左右子树高度差的绝对值不能小于 1）;</li>
+<li>如果平衡那就没事了 …</li>
+<li>如果不平衡就进行旋转，使二叉树依然保持平衡状态；</li>
+</ol>
+<p>以上就是向一棵AVL树插入节点的过程。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>首先我们可以创建一个新类，大部分地方是可以继承之前写的 Binary Tree 的，只需要添加几个方法，同时修改一下 insert 方法即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>(data, left = null, right = null) &#123;</div><div class="line">    <span class="keyword">this</span>.data = data;</div><div class="line">    <span class="keyword">this</span>.left = left;</div><div class="line">    <span class="keyword">this</span>.right = right;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">AVLTree</span> <span class="keyword">extends</span> <span class="title">BTS</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>() &#123;</div><div class="line">    <span class="keyword">super</span>();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  insert() &#123;&#125;</div><div class="line"></div><div class="line">  insertNode() &#123;&#125;</div><div class="line"></div><div class="line">  isBalance() &#123;&#125;</div><div class="line"></div><div class="line">  getNodeHeight() &#123;&#125;</div><div class="line"></div><div class="line">  rotate() &#123;&#125;</div><div class="line"></div><div class="line">  findBeforeNode() &#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="实现插入"><a href="#实现插入" class="headerlink" title="实现插入"></a>实现插入</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">insert(data) &#123;</div><div class="line">  <span class="keyword">const</span> node = <span class="keyword">new</span> Node(data);</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.root === <span class="literal">null</span>) &#123;</div><div class="line">    <span class="keyword">this</span>.root = node;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">this</span>.insertNode(<span class="keyword">this</span>.root, node);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">insertNode(node, newNode, direction) &#123;</div><div class="line">  <span class="keyword">if</span> (node.data &lt; newNode.data) &#123;</div><div class="line">    <span class="keyword">if</span> (node.right === <span class="literal">null</span>) &#123;</div><div class="line">      node.right = newNode;</div><div class="line">      <span class="keyword">const</span> balanceNode = <span class="keyword">this</span>.isBalance(<span class="keyword">this</span>.root);</div><div class="line">      <span class="keyword">if</span> (balanceNode) &#123;</div><div class="line">        <span class="built_in">console</span>.log(balanceNode, <span class="string">'节点 -- 不平衡'</span>);</div><div class="line">        <span class="keyword">this</span>.rotate(balanceNode, direction);</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="keyword">const</span> direct = direction || <span class="string">'right'</span>;</div><div class="line">      <span class="keyword">this</span>.insertNode(node.right, newNode, direct);</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (node.data &gt; newNode.data) &#123;</div><div class="line">    <span class="keyword">if</span> (node.left === <span class="literal">null</span>) &#123;</div><div class="line">      node.left = newNode;</div><div class="line">      <span class="keyword">const</span> balanceNode = <span class="keyword">this</span>.isBalance(<span class="keyword">this</span>.root);</div><div class="line">      <span class="keyword">if</span> (balanceNode) &#123;</div><div class="line">        <span class="built_in">console</span>.log(balanceNode, <span class="string">'节点 -- 不平衡'</span>);</div><div class="line">        <span class="keyword">this</span>.rotate(balanceNode, direction);</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="keyword">const</span> direct = direction || <span class="string">'left'</span>;</div><div class="line">      <span class="keyword">this</span>.insertNode(node.left, newNode, direct);</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'树中已存在该值, 不允许重复存储！'</span>);</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们将原来一个 insert 的函数拆分成了两个函数，然后递归调用 insertNode 函数，一步一步找到适合 data 存储的节点位置。<br>其实大部分代码和之前的是差不多的，两个转变：</p>
+<ol>
+<li>迭代变成了递归；</li>
+<li>插入了新节点之后多了一段验证树结构是否平衡的代码。通过两个函数 isBalance &amp; rotate 实现了树的自平衡功能。</li>
+</ol>
+<h3 id="实现验证树是否平衡"><a href="#实现验证树是否平衡" class="headerlink" title="实现验证树是否平衡"></a>实现验证树是否平衡</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">isBalance(node) &#123;</div><div class="line">  <span class="keyword">const</span> leftTree = <span class="keyword">this</span>.getNodeHeight(node.left);</div><div class="line">  <span class="keyword">const</span> rightTree = <span class="keyword">this</span>.getNodeHeight(node.right);</div><div class="line">  <span class="keyword">const</span> remainder = leftTree - rightTree;</div><div class="line">  <span class="keyword">if</span> (remainder === <span class="number">-2</span>) &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'右子树不平衡'</span>);</div><div class="line">    <span class="keyword">return</span> node;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (remainder === <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'左子树不平衡'</span>);</div><div class="line">    <span class="keyword">return</span> node;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">const</span> balanceLeft = node.left ? <span class="keyword">this</span>.isBalance(node.left) : <span class="literal">null</span>;</div><div class="line">    <span class="keyword">const</span> balanceRight = node.right ? <span class="keyword">this</span>.isBalance(node.right) : <span class="literal">null</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (balanceLeft) &#123;</div><div class="line">      <span class="keyword">return</span> balanceLeft;</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (balanceRight) &#123;</div><div class="line">      <span class="keyword">return</span> balanceRight;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="keyword">return</span> <span class="literal">null</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">getNodeHeight(node) &#123;</div><div class="line">  <span class="keyword">if</span> (node === <span class="literal">null</span>) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">const</span> oLeft = <span class="keyword">this</span>.getNodeHeight(node.left);</div><div class="line">  <span class="keyword">const</span> oRight = <span class="keyword">this</span>.getNodeHeight(node.right);</div><div class="line">  <span class="keyword">return</span> <span class="number">1</span> + <span class="built_in">Math</span>.max(oLeft, oRight);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>isBalance 用于验证当前传入节点 node 的左子树 &amp; 右子树之间的层级差的是否超过了 2 层, 超过了就返回子树不平衡的父节点，用于 rotate 处理该父节点以及以下的子树。<br>这段函数里面：</p>
+<ol>
+<li>先求得当前节点的左子树深度 &amp; 右子树的深度。</li>
+<li>如果 |深度差| === 2， 我们就返回当前的节点。这里为什么是 === 而不是 &gt;= 呢？因为 2 是异常的临界值，每次插入新节点的时候一旦发生不平衡的情况就会被旋转，所以子树之间的层级差最大值也就是 2 层。</li>
+<li>如果 |深度差| &lt; 2, 我们就继续递归当前节点的子节点，直到发现不平衡的存在。</li>
+<li>如果树是平衡的，则返回 null。</li>
+</ol>
+<p>getNodeHeight 是一个工具函数。<br>用于返回当前节点下，子树的深度，通过递归返回从当前父节点，到子树最下面的节点之间的路径长，然后累加返回，最后取左子树 &amp; 右子树之间最大值返回。</p>
+<h3 id="实现自平衡（旋转）"><a href="#实现自平衡（旋转）" class="headerlink" title="实现自平衡（旋转）"></a>实现自平衡（旋转）</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">rotate(balanceNode, direction) &#123;</div><div class="line">  <span class="keyword">let</span> nextNode = balanceNode[direction];</div><div class="line">  <span class="keyword">let</span> nextNodeLeft = nextNode.left;</div><div class="line">  <span class="keyword">let</span> nextNodeRight = nextNode.right;</div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>需要旋转的情况比较多，以下只写左子树的情况，因为右子树只需要与其相反就行了（即左子树需要右旋转，那么右子树就需要做旋转）。<br>顺便借用一下慕课网的图 …🙂</p>
+<h4 id="第一种情况"><a href="#第一种情况" class="headerlink" title="第一种情况"></a>第一种情况</h4><p><img src="http://7xro5v.com1.z0.glb.clouddn.com/avl1.jpeg" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (direction === <span class="string">'left'</span>) &#123;</div><div class="line">  <span class="keyword">if</span> (nextNode.right === <span class="literal">null</span>) &#123;</div><div class="line">    nextNode.right === balanceNode;</div><div class="line">    balanceNode.left === <span class="literal">null</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="第二种情况"><a href="#第二种情况" class="headerlink" title="第二种情况"></a>第二种情况</h4><p><img src="http://7xro5v.com1.z0.glb.clouddn.com/avl2.jpeg" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (direction === <span class="string">'left'</span>) &#123;</div><div class="line">  <span class="keyword">if</span> (nextNode.right !== <span class="literal">null</span>) &#123;</div><div class="line">    balanceNode.left = nextNode.right;</div><div class="line">    nextNode.right = balanceNode;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="第三种情况"><a href="#第三种情况" class="headerlink" title="第三种情况"></a>第三种情况</h4><p><img src="http://7xro5v.com1.z0.glb.clouddn.com/avl3.jpeg" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (direction === <span class="string">'left'</span>) &#123;</div><div class="line">  <span class="keyword">if</span> (!nextNodeLeft &amp;&amp; nextNodeRight) &#123;</div><div class="line">    nextNode.right = <span class="literal">null</span>;</div><div class="line">    balanceNode.left = nextNode.right;</div><div class="line">    nextNodeRight.left = nextNode;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (nextNode.right === <span class="literal">null</span>) &#123;</div><div class="line">    nextNode.right === balanceNode;</div><div class="line">    balanceNode.left === <span class="literal">null</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="第四种情况"><a href="#第四种情况" class="headerlink" title="第四种情况"></a>第四种情况</h4><p><img src="http://7xro5v.com1.z0.glb.clouddn.com/avl4.jpeg" alt=""></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (direction === <span class="string">'left'</span>) &#123;</div><div class="line">  <span class="keyword">if</span> (nextNodeLeft &amp;&amp; nextNodeRight &amp;&amp; <span class="keyword">this</span>.getNodeHeight(nextNodeLeft) &lt; <span class="keyword">this</span>.getNodeHeight(nextNodeRight)) &#123;</div><div class="line">    nextNode.right = <span class="literal">null</span>;</div><div class="line">    balanceNode.left = nextNodeRight;</div><div class="line">    nextNodeRight.left = nextNode;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (nextNode.right !== <span class="literal">null</span>) &#123;</div><div class="line">    balanceNode.left = nextNode.right;</div><div class="line">    nextNode.right = balanceNode;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line">rotate(balanceNode, direction) &#123;</div><div class="line">  <span class="keyword">let</span> nextNode = balanceNode[direction];</div><div class="line">  <span class="keyword">let</span> nextNodeLeft = nextNode.left;</div><div class="line">  <span class="keyword">let</span> nextNodeRight = nextNode.right;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (direction === <span class="string">'right'</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (nextNodeLeft &amp;&amp; !nextNodeRight) &#123;</div><div class="line">      nextNode.left = <span class="literal">null</span>;</div><div class="line">      balanceNode.right = nextNodeLeft;</div><div class="line">      nextNodeLeft.right = nextNode;</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nextNodeLeft &amp;&amp; nextNodeRight &amp;&amp; <span class="keyword">this</span>.getNodeHeight(nextNodeLeft) &gt; <span class="keyword">this</span>.getNodeHeight(nextNodeRight)) &#123;</div><div class="line">      nextNode.left = <span class="literal">null</span>;</div><div class="line">      balanceNode.right = nextNodeLeft;</div><div class="line">      nextNodeRight.right = nextNode;</div><div class="line">    &#125;</div><div class="line">    nextNode = balanceNode[direction];</div><div class="line">    <span class="keyword">if</span> (nextNode.left === <span class="literal">null</span>) &#123;</div><div class="line">      nextNode.left = balanceNode;</div><div class="line">      balanceNode.right = <span class="literal">null</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      balanceNode.right = nextNode.left;</div><div class="line">      nextNode.left = balanceNode;</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (direction === <span class="string">'left'</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (!nextNodeLeft &amp;&amp; nextNodeRight) &#123;</div><div class="line">      nextNode.right = <span class="literal">null</span>;</div><div class="line">      balanceNode.left = nextNode.right;</div><div class="line">      nextNodeRight.left = nextNode;</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nextNodeLeft &amp;&amp; nextNodeRight &amp;&amp; <span class="keyword">this</span>.getNodeHeight(nextNodeLeft) &lt; <span class="keyword">this</span>.getNodeHeight(nextNodeRight)) &#123;</div><div class="line">      nextNode.right = <span class="literal">null</span>;</div><div class="line">      balanceNode.left = nextNodeRight;</div><div class="line">      nextNodeRight.left = nextNode;</div><div class="line">    &#125;</div><div class="line">    nextNode = balanceNode[direction];</div><div class="line">    <span class="keyword">if</span> (nextNode.right === <span class="literal">null</span>) &#123;</div><div class="line">      nextNode.right = balanceNode;</div><div class="line">      balanceNode.left = <span class="literal">null</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      balanceNode.left = nextNode.right;</div><div class="line">      nextNode.right = balanceNode;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.root === balanceNode) &#123;</div><div class="line">    <span class="keyword">this</span>.root = nextNode;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">const</span> beforeNode = <span class="keyword">this</span>.findBeforeNode(<span class="keyword">this</span>.root, balanceNode);</div><div class="line">    beforeNode[direction] = nextNode;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> newBalanceNode = <span class="keyword">this</span>.isBalance(<span class="keyword">this</span>.root);</div><div class="line">  <span class="keyword">if</span> (newBalanceNode) &#123;</div><div class="line">    <span class="built_in">console</span>.log(newBalanceNode, <span class="string">'节点第二次 -- 不平衡'</span>);</div><div class="line">    <span class="keyword">this</span>.rotate(newBalanceNode, direction);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">findBeforeNode(root, node) &#123;</div><div class="line">  <span class="keyword">if</span> (root.left === node || root.right === node) &#123;</div><div class="line">    <span class="keyword">return</span> root;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="keyword">if</span> (root.left) &#123;</div><div class="line">      <span class="keyword">const</span> resultL = <span class="keyword">this</span>.findBeforeNode(root.left, node);</div><div class="line">      <span class="keyword">if</span> (resultL !== <span class="literal">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> resultL;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (root.right) &#123;</div><div class="line">      <span class="keyword">const</span> resultR = <span class="keyword">this</span>.findBeforeNode(root.right, node);</div><div class="line">      <span class="keyword">if</span> (resultR !== <span class="literal">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> resultR;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>综上就完成了AVL树的全部内容了 … 其实对于多种情况下树的旋转如果不是很明白，简单画一下草图，然后跟着代码旋转两次就容易明白多了。</p>
+<blockquote>
+<p>参考 <a href="http://www.imooc.com/article/16589?block_id=tuijian_wz" target="_blank" rel="external">AVL平衡二叉树 AND 旋转 js 版</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/01/数据结构 - BinaryTree/" rel="prev" title="数据结构 - Binnary Tree">
+                数据结构 - Binnary Tree <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#平衡二叉树"><span class="nav-number">1.</span> <span class="nav-text">平衡二叉树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">2.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#步骤"><span class="nav-number">3.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">4.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现插入"><span class="nav-number">4.1.</span> <span class="nav-text">实现插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现验证树是否平衡"><span class="nav-number">4.2.</span> <span class="nav-text">实现验证树是否平衡</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现自平衡（旋转）"><span class="nav-number">4.3.</span> <span class="nav-text">实现自平衡（旋转）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一种情况"><span class="nav-number">4.3.1.</span> <span class="nav-text">第一种情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二种情况"><span class="nav-number">4.3.2.</span> <span class="nav-text">第二种情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三种情况"><span class="nav-number">4.3.3.</span> <span class="nav-text">第三种情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第四种情况"><span class="nav-number">4.3.4.</span> <span class="nav-text">第四种情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#完整代码"><span class="nav-number">4.3.5.</span> <span class="nav-text">完整代码</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
