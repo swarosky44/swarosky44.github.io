@@ -1,0 +1,760 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,数据结构," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="啊 每天都好闲啊 … 今天来撸图吧">
+<meta name="keywords" content="JavaScript,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构 - Graph">
+<meta property="og:url" content="http://swarosky44.github.io/2017/06/03/数据结构 - Graph/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="啊 每天都好闲啊 … 今天来撸图吧">
+<meta property="og:updated_time" content="2017-06-03T09:23:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构 - Graph">
+<meta name="twitter:description" content="啊 每天都好闲啊 … 今天来撸图吧">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/06/03/数据结构 - Graph/"/>
+
+
+
+
+
+  <title> 数据结构 - Graph | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/06/03/数据结构 - Graph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据结构 - Graph
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-03T16:31:10+08:00">
+                2017-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据结构/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>啊 每天都好闲啊 … 今天来撸图吧</p>
+<a id="more"></a>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>由顶点与边组成的集合，用于描述顶点的流向的一种数据结构。<br>图的分类很多, 不过这里我们就不多加分类了。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>图的实现方式也有很多，常见教材上主要是邻接表的实现，这里一样也采用这种方式。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Graph</span> </span>&#123;</div><div class="line">  <span class="comment">/**</span></div><div class="line">   * 构造函数</div><div class="line">   * @method constructor</div><div class="line">   * @param    &#123;Array&#125;     vertices [顶点的集合]</div><div class="line">   * @property &#123;Array&#125;     vertices [存储顶点的集合]</div><div class="line">   * @property &#123;Object&#125;    adjList  [顶点的邻接表]</div><div class="line">   * @property &#123;Object&#125;    marked   [顶点的访问标志]</div><div class="line">   * @return   &#123;Graph obj&#125;          [Graph的实例]</div><div class="line">   */</div><div class="line">  <span class="keyword">constructor</span>(vertices=[]) &#123;</div><div class="line">    <span class="keyword">this</span>.vertices = vertices;</div><div class="line">    <span class="keyword">this</span>.adjList = &#123;&#125;;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; vertices.length; i++) &#123;</div><div class="line">      <span class="keyword">this</span>.adjList[vertices[i]] = [];</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">this</span>.marked = &#123;&#125;;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * 添加新顶点</div><div class="line">   * @method addVertex</div><div class="line">   * @param  &#123;String&#125;  v [新的顶点]</div><div class="line">   */</div><div class="line">  addVertex(v) &#123;</div><div class="line">    <span class="keyword">this</span>.vertices.push(v);</div><div class="line">    <span class="keyword">this</span>.adjList[v] = [];</div><div class="line">    <span class="keyword">this</span>.marked[v] = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">/**</span></div><div class="line">   * 添加顶点间的边</div><div class="line">   * @method addEdge</div><div class="line">   * @param  &#123;String&#125; v [顶点]</div><div class="line">   * @param  &#123;String&#125; w [顶点]</div><div class="line">   */</div><div class="line">  addEdge(v, w) &#123;</div><div class="line">    <span class="keyword">this</span>.adjList[v].push(w);</div><div class="line">    <span class="keyword">this</span>.adjList[w].push(v);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  toString() &#123;</div><div class="line">    <span class="keyword">let</span> s = <span class="string">''</span>;</div><div class="line">    <span class="keyword">let</span> len = <span class="keyword">this</span>.vertices.length;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;</div><div class="line">      s += <span class="keyword">this</span>.vertices[i] + <span class="string">'-&gt;'</span>;</div><div class="line">      <span class="keyword">let</span> neighbors = <span class="keyword">this</span>.adjList[<span class="keyword">this</span>.vertices[i]];</div><div class="line">      <span class="keyword">let</span> nLen = neighbors.length;</div><div class="line">      <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; nLen; j++) &#123;</div><div class="line">        s += neighbors[j] + <span class="string">' '</span>;</div><div class="line">      &#125;</div><div class="line">      s += <span class="string">'\n'</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">console</span>.log(s);</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">const</span> graph = <span class="keyword">new</span> Graph([<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>, <span class="string">'E'</span>, <span class="string">'F'</span>, <span class="string">'G'</span>, <span class="string">'H'</span>, <span class="string">'M'</span>, <span class="string">'N'</span>, <span class="string">'O'</span>, <span class="string">'Z'</span>])</div><div class="line">graph</div><div class="line">  .addEdge(<span class="string">'A'</span>, <span class="string">'B'</span>)</div><div class="line">  .addEdge(<span class="string">'A'</span>, <span class="string">'C'</span>)</div><div class="line">  .addEdge(<span class="string">'A'</span>, <span class="string">'D'</span>)</div><div class="line">  .addEdge(<span class="string">'A'</span>, <span class="string">'G'</span>)</div><div class="line">  .addEdge(<span class="string">'B'</span>, <span class="string">'E'</span>)</div><div class="line">  .addEdge(<span class="string">'B'</span>, <span class="string">'F'</span>)</div><div class="line">  .addEdge(<span class="string">'G'</span>, <span class="string">'H'</span>)</div><div class="line">  .addEdge(<span class="string">'G'</span>, <span class="string">'M'</span>)</div><div class="line">  .addEdge(<span class="string">'G'</span>, <span class="string">'N'</span>)</div><div class="line">  .addEdge(<span class="string">'G'</span>, <span class="string">'O'</span>)</div><div class="line">  .addEdge(<span class="string">'G'</span>, <span class="string">'Z'</span>)</div><div class="line">  .toString();</div><div class="line"></div><div class="line"><span class="comment">/*</span></div><div class="line"> * A-&gt;B C D G</div><div class="line"> * B-&gt;A E F</div><div class="line"> * C-&gt;A</div><div class="line"> * D-&gt;A</div><div class="line"> * E-&gt;B</div><div class="line"> * F-&gt;B</div><div class="line"> * G-&gt;A H M N O Z</div><div class="line"> * H-&gt;G</div><div class="line"> * M-&gt;G</div><div class="line"> * N-&gt;G</div><div class="line"> * O-&gt;G</div><div class="line"> * Z-&gt;G</div><div class="line"> */</div></pre></td></tr></table></figure>
+<h2 id="深度优先算法"><a href="#深度优先算法" class="headerlink" title="深度优先算法"></a>深度优先算法</h2><p>深度优先（DFS）是图的遍历的一种算法。<br>其思路很简单：</p>
+<ol>
+<li>选定起始顶点，并访问该顶点；</li>
+<li>递归访问当前选中顶点的邻接表里面的未访问过的顶点；</li>
+</ol>
+<p>eg： 比如我们选择之前的数据</p>
+<ol>
+<li>初始顶点定位 A，访问 A；</li>
+<li>第一次递归进入 B 顶点，访问 B；</li>
+<li>继续递归，访问 B 顶点的邻接表，A 已被访问过，则访问下一个顶点 E。</li>
+<li>继续递归，访问 E 顶点的邻接表，A 已被访问过且没有其他邻接顶点，回到上一次递归，访问 B 顶点的邻接顶点 F；</li>
+<li>持续递归知道所有顶点都被标记为已访问；</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">dfs(v) &#123;</div><div class="line">  <span class="keyword">this</span>.marked[v] = <span class="literal">true</span>;</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.adjList[v] !== <span class="literal">undefined</span>) &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'Visited vertex: '</span> + v);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> w <span class="keyword">of</span> <span class="keyword">this</span>.adjList[v]) &#123;</div><div class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.marked[w]) &#123;</div><div class="line">      <span class="keyword">this</span>.dfs(w);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="广度优先算法"><a href="#广度优先算法" class="headerlink" title="广度优先算法"></a>广度优先算法</h2><p>深度优先（BFS）是图的遍历的一种算法。<br>其思路是：</p>
+<ol>
+<li>访问初始顶点；</li>
+<li>将初始顶点的所有邻接顶点全部入队列；</li>
+<li>按队列顺序一个个出列，访问顶点，同时将该顶点的所有未访问的邻接顶点全部入队;</li>
+<li>持续迭代，直到队列为空；</li>
+</ol>
+<p>eg:</p>
+<ol>
+<li>初始顶点定位 A，访问 A；</li>
+<li>B、C、D、G 作为未访问的邻接顶点入队；</li>
+<li>继续迭代，访问 B ，同时 B 的未访问的邻接顶点 E、F 入队；</li>
+<li>接续迭代，访问 C，无符合条件的邻接顶点入队；</li>
+<li>持续迭代，直到队列为空；</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">bfs(v) &#123;</div><div class="line">  <span class="keyword">const</span> queue = [];</div><div class="line">  <span class="keyword">this</span>.marked[v] = <span class="literal">true</span>;</div><div class="line">  queue.push(v);</div><div class="line">  <span class="keyword">while</span> (queue.length &gt; <span class="number">0</span>) &#123;</div><div class="line">    <span class="keyword">const</span> v = queue.shift();</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.adjList[v] !== <span class="literal">undefined</span>) &#123;</div><div class="line">      <span class="built_in">console</span>.log(<span class="string">'Visited vertex: '</span> + v);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> w <span class="keyword">of</span> <span class="keyword">this</span>.adjList[v]) &#123;</div><div class="line">      <span class="keyword">if</span> (!<span class="keyword">this</span>.marked[w]) &#123;</div><div class="line">        queue.push(w);</div><div class="line">        <span class="keyword">this</span>.marked[w] = <span class="literal">true</span>;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上就是一个不知道什么分类的简单的图, 当然关于图的高级算法有很多，可是我不会 🙃</p>
+<blockquote>
+<p>《 数据结构与算法 JavaScript 描述 》</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/02/数据结构 - AVL Tree/" rel="prev" title="数据结构 - AVL Tree">
+                数据结构 - AVL Tree <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深度优先算法"><span class="nav-number">3.</span> <span class="nav-text">深度优先算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#广度优先算法"><span class="nav-number">4.</span> <span class="nav-text">广度优先算法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
