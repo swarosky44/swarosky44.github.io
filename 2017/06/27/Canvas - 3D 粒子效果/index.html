@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="JavaScript,Canvas," />
+  <meta name="keywords" content="Canvas,JavaScript," />
 
 
 
@@ -93,18 +93,18 @@
 
 
 
-<meta name="description" content="最近很喜欢玩 canvas，所以就撸完了每周一点 canvas 动画系列博客以及一本 《 HTML5 Canvas 开发详解 》。 逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就挑一个准备来现实一下。😎 先上效果图： See the Pen Little Emitter by deepmagic (@deepmagic) on CodePen.">
-<meta name="keywords" content="JavaScript,Canvas">
+<meta name="description" content="最近很喜欢玩 canvas，所以就撸完了每周一点 canvas 动画系列博客以及一本 《 HTML5 Canvas 开发详解 》。 逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就准备自己也来玩一下，做个相似的 3D 粒子效果。😎">
+<meta name="keywords" content="Canvas,JavaScript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Canvas - 3D 粒子效果">
 <meta property="og:url" content="http://swarosky44.github.io/2017/06/27/Canvas - 3D 粒子效果/index.html">
 <meta property="og:site_name" content="Listen">
-<meta property="og:description" content="最近很喜欢玩 canvas，所以就撸完了每周一点 canvas 动画系列博客以及一本 《 HTML5 Canvas 开发详解 》。 逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就挑一个准备来现实一下。😎 先上效果图： See the Pen Little Emitter by deepmagic (@deepmagic) on CodePen.">
+<meta property="og:description" content="最近很喜欢玩 canvas，所以就撸完了每周一点 canvas 动画系列博客以及一本 《 HTML5 Canvas 开发详解 》。 逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就准备自己也来玩一下，做个相似的 3D 粒子效果。😎">
 <meta property="og:image" content="https://sfault-image.b0.upaiyun.com/468/049/468049480-57b3deadaec18">
-<meta property="og:updated_time" content="2017-06-27T10:05:49.000Z">
+<meta property="og:updated_time" content="2017-06-28T07:51:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Canvas - 3D 粒子效果">
-<meta name="twitter:description" content="最近很喜欢玩 canvas，所以就撸完了每周一点 canvas 动画系列博客以及一本 《 HTML5 Canvas 开发详解 》。 逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就挑一个准备来现实一下。😎 先上效果图： See the Pen Little Emitter by deepmagic (@deepmagic) on CodePen.">
+<meta name="twitter:description" content="最近很喜欢玩 canvas，所以就撸完了每周一点 canvas 动画系列博客以及一本 《 HTML5 Canvas 开发详解 》。 逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就准备自己也来玩一下，做个相似的 3D 粒子效果。😎">
 <meta name="twitter:image" content="https://sfault-image.b0.upaiyun.com/468/049/468049480-57b3deadaec18">
 
 
@@ -363,9 +363,8 @@
 
       
         <p>最近很喜欢玩 canvas，所以就撸完了<a href="http://supperjet.github.io/tags/canvas/" target="_blank" rel="external">每周一点 canvas 动画</a>系列博客以及一本 《 HTML5 Canvas 开发详解 》。</p>
-<p>逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就挑一个准备来现实一下。😎</p>
-<p>先上<a href="https://codepen.io/deepmagic/pen/mKryH#code-area" target="_blank" rel="external">效果图</a>：</p>
-<iframe height="365" scrolling="no" title="Little Emitter" src="//codepen.io/deepmagic/embed/mKryH/?height=365&theme-id=dark&default-tab=js&embed-version=2" frameborder="no" allowtransparency="true" allowfullscreen="true" style="width: 100%;">See the Pen <a href="https://codepen.io/deepmagic/pen/mKryH/" target="_blank" rel="external">Little Emitter</a> by deepmagic (<a href="https://codepen.io/deepmagic" target="_blank" rel="external">@deepmagic</a>) on <a href="https://codepen.io" target="_blank" rel="external">CodePen</a>.<br></iframe>
+<p>逛了下 codeopen 发现了超多酷炫的 canvas 的作品，就准备自己也来玩一下，做个相似的 3D 粒子效果。😎</p>
+<iframe width="100%" height="300" src="//jsfiddle.net/swarosky44/mce99bk2/16/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
 <a id="more"></a>
 <h2 id="基础知识准备"><a href="#基础知识准备" class="headerlink" title="基础知识准备"></a>基础知识准备</h2><p>其实不打算记录太多基础 API 的实现，只是有关几个在这里提一下。<br>至于那些基础的 API 我推荐到 MDN 上老老实实把 demo 都刷一遍，平常写的时候不记得就立马去查，这些东西，熟能生巧嘛 ~</p>
@@ -397,7 +396,7 @@
 <h4 id="4-小球的绘制"><a href="#4-小球的绘制" class="headerlink" title="4.小球的绘制"></a>4.小球的绘制</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ctx.save();</div><div class="line">ctx.translate(<span class="keyword">this</span>.x, <span class="keyword">this</span>.y);</div><div class="line">ctx.scale(<span class="keyword">this</span>.scaleX, <span class="keyword">this</span>.scaleY);</div><div class="line">ctx.fillStyle = <span class="keyword">this</span>.color;</div><div class="line">ctx.beginPath();</div><div class="line">ctx.arc(<span class="number">0</span>, <span class="number">0</span>, <span class="keyword">this</span>.r, <span class="number">0</span>, (<span class="built_in">Math</span>.PI / <span class="number">180</span>) * <span class="number">360</span>, <span class="literal">false</span>);</div><div class="line">ctx.closePath();</div><div class="line">ctx.fill();</div><div class="line">ctx.restore();</div></pre></td></tr></table></figure>
 <p>这里只有一点需要提醒，为什么要用 translate 做平移，而不是直接绘制小球的时候用 arc 选择好圆心。<br>因为基础知识里提到了 scale 是对坐标的刻度进行缩放，如果先缩放，再绘制小球则一方面小球的 x, y 坐标在运动，坐标刻度也在运动，这样最终的效果非常差。<br>所以在缩放之前，先平移定好位值，然后再缩放，最后绘制原点处的小球就不会发生之上的问题。</p>
 <p>可以试一试，不用平移的效果，部分会左上角飘，部分会右下角飘。</p>
-<h2 id="未完待续"><a href="#未完待续" class="headerlink" title="未完待续"></a>未完待续</h2><p>至此，我们在 codeopen 上看到效果图最核心的部分已经完成了。加上颜色变化、运动轨迹完善、拖拽等操作就全部完成了。<br>但是我要下班了，文明 6 在召唤我。有空再来继续填坑。🙃</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Canvas 还是蛮好玩的，天天撸业务，偶尔做一些酷炫点的东西能很好的保持对前端的兴趣。😀</p>
 
       
     </div>
@@ -427,9 +426,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
-          
             <a href="/tags/Canvas/" rel="tag"># Canvas</a>
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
           
         </div>
       
@@ -579,7 +578,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识准备"><span class="nav-number">1.</span> <span class="nav-text">基础知识准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#画圆"><span class="nav-number">1.1.</span> <span class="nav-text">画圆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缩放"><span class="nav-number">1.2.</span> <span class="nav-text">缩放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#透视"><span class="nav-number">1.3.</span> <span class="nav-text">透视</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#步骤"><span class="nav-number">2.</span> <span class="nav-text">步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个绘制圆的类"><span class="nav-number">2.1.</span> <span class="nav-text">一个绘制圆的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3D-粒子运动"><span class="nav-number">2.2.</span> <span class="nav-text">3D 粒子运动</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-准备参数"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. 准备参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-动画循环"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.动画循环</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-运动过程"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.运动过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-小球的绘制"><span class="nav-number">2.2.4.</span> <span class="nav-text">4.小球的绘制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#未完待续"><span class="nav-number">3.</span> <span class="nav-text">未完待续</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识准备"><span class="nav-number">1.</span> <span class="nav-text">基础知识准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#画圆"><span class="nav-number">1.1.</span> <span class="nav-text">画圆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缩放"><span class="nav-number">1.2.</span> <span class="nav-text">缩放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#透视"><span class="nav-number">1.3.</span> <span class="nav-text">透视</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#步骤"><span class="nav-number">2.</span> <span class="nav-text">步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个绘制圆的类"><span class="nav-number">2.1.</span> <span class="nav-text">一个绘制圆的类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3D-粒子运动"><span class="nav-number">2.2.</span> <span class="nav-text">3D 粒子运动</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-准备参数"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. 准备参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-动画循环"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.动画循环</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-运动过程"><span class="nav-number">2.2.3.</span> <span class="nav-text">3.运动过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-小球的绘制"><span class="nav-number">2.2.4.</span> <span class="nav-text">4.小球的绘制</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
