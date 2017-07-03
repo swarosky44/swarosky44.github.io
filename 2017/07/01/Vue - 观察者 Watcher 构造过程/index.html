@@ -1,0 +1,795 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Vue," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="写过上一次的 Vue 响应式数据构造过程 的文章后，感觉确实能帮助理解不少。所以再接再厉，撸完之前避开没有谈及的 Watcher（观察者）构造的过程。">
+<meta name="keywords" content="JavaScript,Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue - 观察者 Watcher 构造过程">
+<meta property="og:url" content="http://swarosky44.github.io/2017/07/01/Vue - 观察者 Watcher 构造过程/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="写过上一次的 Vue 响应式数据构造过程 的文章后，感觉确实能帮助理解不少。所以再接再厉，撸完之前避开没有谈及的 Watcher（观察者）构造的过程。">
+<meta property="og:updated_time" content="2017-07-03T06:53:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue - 观察者 Watcher 构造过程">
+<meta name="twitter:description" content="写过上一次的 Vue 响应式数据构造过程 的文章后，感觉确实能帮助理解不少。所以再接再厉，撸完之前避开没有谈及的 Watcher（观察者）构造的过程。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/07/01/Vue - 观察者 Watcher 构造过程/"/>
+
+
+
+
+
+  <title> Vue - 观察者 Watcher 构造过程 | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/07/01/Vue - 观察者 Watcher 构造过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Vue - 观察者 Watcher 构造过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-01T18:01:15+08:00">
+                2017-07-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>写过上一次的 <a href="http://swarosky44.github.io/2017/06/30/Vue%20-%20%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B/#more">Vue 响应式数据构造过程</a> 的文章后，感觉确实能帮助理解不少。所以再接再厉，撸完之前避开没有谈及的 Watcher（观察者）构造的过程。</p>
+<a id="more"></a>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>同样先给出一些预备的知识点，尤其是响应式数据构造的知识，因为 watcher 的实现中会有发生交集的地方。</p>
+<ul>
+<li>观察者模式：<a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="external">图说设计模式</a> &amp; <a href="http://swarosky44.github.io/2017/05/02/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/#more">我的文章</a></li>
+<li>发布者构造：<a href="http://swarosky44.github.io/2017/06/30/Vue%20-%20%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B/#more">Vue 响应式数据构造过程</a></li>
+</ul>
+<h2 id="watch"><a href="#watch" class="headerlink" title="$watch"></a>$watch</h2><p>我是从 Vue.prototype.$watch 这个 API 切入的。实际上 .vue 文件中的 watch 选项也是通过遍历对象属性，然后依次调用 $watch 实现的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Vue.prototype.$watch = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></div><div class="line">  expOrFn: string | Function,</div><div class="line">  cb: any,</div><div class="line">  options?: Object</div><div class="line">): <span class="title">Function</span> &#123;</div><div class="line">  <span class="comment">// TODO</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们先看一下这里三个参数：<br>expOrFn： 我们观察的对象。如果是字符串，代表某个 obj 上的属性的键路径；如果是函数，代表计算属性，(tip: 运行时已经绑定了 vm 为 this 的志向，因此不可以是箭头函数)。<br>cb：回调函数，用于在 watcher 接收到更新信息后执行的函数，就是 watch 内定义的函数。<br>options：观察者创建时的配置项，有 deep、immediate 等选项。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> vm: Component = <span class="keyword">this</span></div><div class="line"><span class="keyword">if</span> (isPlainObject(cb)) &#123;</div><div class="line">  <span class="keyword">return</span> createWatcher(vm, expOrFn, cb, options)</div><div class="line">&#125;</div><div class="line">options = options || &#123;&#125;</div><div class="line">options.user = <span class="literal">true</span></div><div class="line"><span class="keyword">const</span> watcher = <span class="keyword">new</span> Watcher(vm, expOrFn, cb, options)</div><div class="line"><span class="keyword">if</span> (options.immediate) &#123;</div><div class="line">  cb.call(vm, watcher.value)</div><div class="line">&#125;</div><div class="line"><span class="keyword">return</span> <span class="function"><span class="keyword">function</span> <span class="title">unwatchFn</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  watcher.teardown()</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再看下内部的实现：</p>
+<ul>
+<li><p>我们先判断参数 cb 是不是对象，如果是对象的话则调用 createWatcher 函数，这里这个函数非常简单，只是用于寻找一个真正为函数的 cb，然后重新调用 vm.$watch 方法，确保 cb 被执行时一定是函数。这里如果 cb 是对象则会寻找 handler 属性的值。如果 cb 是字符串的话，则会选择 vm 实例上已经注册了的方法（列如：method 内注册的方法）。</p>
+</li>
+<li><p><code>options.user</code> 属性是用于区分生产环境和开发环境下一些警告语句的输出。</p>
+</li>
+<li><p>创建了一个观察者的实例。</p>
+</li>
+<li><p>如果配置项 <code>options.immediate</code> 为 true，则立即以观察的对象的初始值来执行回调函数。</p>
+</li>
+<li><p>最后返回的一个工具函数，在官网 API 里面有提及，是用于取消观察者的工具，可以让一个 watcher 实例失效。</p>
+</li>
+</ul>
+<h2 id="Class-Watcher"><a href="#Class-Watcher" class="headerlink" title="Class Watcher"></a>Class Watcher</h2><p>这里我们将类里面的每个方法都逐个看一下。</p>
+<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.vm = vm</div><div class="line">vm._watchers.push(<span class="keyword">this</span>)</div></pre></td></tr></table></figure>
+<p>在当前 Vue 的实例 <code>vm._wathcers</code> 上收集这个观察者。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (options) &#123;</div><div class="line">  <span class="keyword">this</span>.deep = !!options.deep</div><div class="line">  <span class="keyword">this</span>.user = !!options.user</div><div class="line">  <span class="keyword">this</span>.lazy = !!options.lazy</div><div class="line">  <span class="keyword">this</span>.sync = !!options.sync</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="keyword">this</span>.deep = <span class="keyword">this</span>.user = <span class="keyword">this</span>.lazy = <span class="keyword">this</span>.sync = <span class="literal">false</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">this</span>.cb = cb</div><div class="line"><span class="keyword">this</span>.id = ++uid <span class="comment">// uid for batching</span></div><div class="line"><span class="keyword">this</span>.active = <span class="literal">true</span></div><div class="line"><span class="keyword">this</span>.dirty = <span class="keyword">this</span>.lazy <span class="comment">// for lazy watchers</span></div><div class="line"><span class="keyword">this</span>.deps = []</div><div class="line"><span class="keyword">this</span>.newDeps = []</div><div class="line"><span class="keyword">this</span>.depIds = <span class="keyword">new</span> <span class="built_in">Set</span>()</div><div class="line"><span class="keyword">this</span>.newDepIds = <span class="keyword">new</span> <span class="built_in">Set</span>()</div><div class="line"><span class="keyword">this</span>.expression = process.env.NODE_ENV !== <span class="string">'production'</span></div><div class="line">  ? expOrFn.toString()</div><div class="line">  : <span class="string">''</span></div></pre></td></tr></table></figure>
+<p>初始化 options 上的各项参数（用户未配置则初始化为 false）：</p>
+<ul>
+<li>deep 决定 <code>wathcer.value</code> 上的值是否深度观察。</li>
+<li>user 区分某些情况下是否应给出警示或者错误提示。</li>
+<li>lazy 是否延迟或者 expOrFn 的值，如果延迟的话，必须等待外部调用 <code>watcher.get</code> 后才会获取 expOrFn 的值，然后赋值到 <code>watcher.value</code> 上。</li>
+<li>sync 决定是立即执行回调函数，还是进入更新队列，等待执行。</li>
+</ul>
+<p>初始化 watcher 的 ID（ID：step 为 1 递增）；<br>初始化 deps、newDeps、depIds、newDepIds，这些是用于记录该观察者都被哪些观察者容器收集了（或者说当前的观察者都观察了哪些 Observer），其中 deps 和 depIds 是真正用于收集的容器，而 newDeps 和 newDepIds 则类似于一个缓冲容器，当 cleanupDeps 执行时完成清空缓冲，赋值容器的工作；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> expOrFn === <span class="string">'function'</span>) &#123;</div><div class="line">  <span class="keyword">this</span>.getter = expOrFn</div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="keyword">this</span>.getter = parsePath(expOrFn)</div><div class="line">  <span class="keyword">if</span> (!<span class="keyword">this</span>.getter) &#123;</div><div class="line">    <span class="keyword">this</span>.getter = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;&#125;</div><div class="line">    process.env.NODE_ENV !== <span class="string">'production'</span> &amp;&amp; warn(</div><div class="line">      <span class="string">`Failed watching path: "<span class="subst">$&#123;expOrFn&#125;</span>" `</span> +</div><div class="line">      <span class="string">'Watcher only accepts simple dot-delimited paths. '</span> +</div><div class="line">      <span class="string">'For full control, use a function instead.'</span>,</div><div class="line">      vm</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>之前有说过，如果 expOrFn 是键路径的字符串：</p>
+<p>我们可以简单看一下 parsePath 的实现（util/lang.js）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">parsePath</span> (<span class="params">path: string</span>): <span class="title">any</span> </span>&#123;</div><div class="line">  <span class="keyword">if</span> (bailRE.test(path)) &#123;</div><div class="line">    <span class="keyword">return</span></div><div class="line">  &#125;</div><div class="line">  <span class="keyword">const</span> segments = path.split(<span class="string">'.'</span>)</div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; segments.length; i++) &#123;</div><div class="line">      <span class="keyword">if</span> (!obj) <span class="keyword">return</span></div><div class="line">      obj = obj[segments[i]]</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> obj</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里很简单，我们先解析路径，随后利用闭包将 segments 推出parsePath 的生命周期，使其存在内存中，当闭包调用时，就可以调用这个路径数组，返回我们想要的值。</p>
+<p>如果 expOrFn 本身就是计算属性的函数的话，就可以在调用时，直接返回一个值给我们。<br>如果 expOrFn 两者都不符合，则会给出警示。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.value = <span class="keyword">this</span>.lazy</div><div class="line">  ? <span class="literal">undefined</span></div><div class="line">  : <span class="keyword">this</span>.get()</div></pre></td></tr></table></figure>
+<p>这里比较简单，就是判断是否需要延迟计算，如果不需要的话，就直接计算 expOrFn 的值，然后保存在 value 属性上。</p>
+<h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">get () &#123;</div><div class="line">  pushTarget(<span class="keyword">this</span>)</div><div class="line">  <span class="keyword">let</span> value</div><div class="line">  <span class="keyword">const</span> vm = <span class="keyword">this</span>.vm</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.user) &#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      value = <span class="keyword">this</span>.getter.call(vm, vm)</div><div class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</div><div class="line">      handleError(e, vm, <span class="string">`getter for watcher "<span class="subst">$&#123;<span class="keyword">this</span>.expression&#125;</span>"`</span>)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    value = <span class="keyword">this</span>.getter.call(vm, vm)</div><div class="line">  &#125;</div><div class="line">  <span class="comment">// "touch" every property so they are all tracked as</span></div><div class="line">  <span class="comment">// dependencies for deep watching</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.deep) &#123;</div><div class="line">    traverse(value)</div><div class="line">  &#125;</div><div class="line">  popTarget()</div><div class="line">  <span class="keyword">this</span>.cleanupDeps()</div><div class="line">  <span class="keyword">return</span> value</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里用于获取 expOrFn 的值。</p>
+<ul>
+<li>首先我们将当前的观察者推送到 Dep.target 内，为了让 Vue 能够完成内部依赖收集的工作。（详见 defineReactive 的 getter 的实现）。</li>
+<li>计算 getter，获取值。</li>
+<li>如果 options.deep 为 true，则开启深度依赖收集。随后会深入介绍，这里和 observe 之间的互动比较隐晦。</li>
+<li>从 Dep.target 推出当前的观察者。</li>
+<li>同步容器。</li>
+<li>返回 getter 计算值。</li>
+</ul>
+<h4 id="traverse"><a href="#traverse" class="headerlink" title="traverse"></a>traverse</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> seenObjects = <span class="keyword">new</span> <span class="built_in">Set</span>()</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">traverse</span> (<span class="params">val: any</span>) </span>&#123;</div><div class="line">  seenObjects.clear()</div><div class="line">  _traverse(val, seenObjects)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">_traverse</span> (<span class="params">val: any, seen: ISet</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> i, keys</div><div class="line">  <span class="keyword">const</span> isA = <span class="built_in">Array</span>.isArray(val)</div><div class="line">  <span class="keyword">if</span> ((!isA &amp;&amp; !isObject(val)) || !<span class="built_in">Object</span>.isExtensible(val)) &#123;</div><div class="line">    <span class="keyword">return</span></div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (val.__ob__) &#123;</div><div class="line">    <span class="keyword">const</span> depId = val.__ob__.dep.id</div><div class="line">    <span class="keyword">if</span> (seen.has(depId)) &#123;</div><div class="line">      <span class="keyword">return</span></div><div class="line">    &#125;</div><div class="line">    seen.add(depId)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (isA) &#123;</div><div class="line">    i = val.length</div><div class="line">    <span class="keyword">while</span> (i--) _traverse(val[i], seen)</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    keys = <span class="built_in">Object</span>.keys(val)</div><div class="line">    i = keys.length</div><div class="line">    <span class="keyword">while</span> (i--) _traverse(val[keys[i]], seen)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里简单来看，就是一次单纯的递归。但是 <code>while (i--) _traverse(val[i], seen)</code> &amp; <code>while (i--) _traverse(val[keys[i]], seen)</code> 是会触发我们之前在 defineReactive 中定义的 getter, 如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (Dep.target) &#123;</div><div class="line">  <span class="comment">// 当前 dep 收集 Dep.target 观察者</span></div><div class="line">  dep.depend()</div><div class="line">  <span class="keyword">if</span> (childOb) &#123;</div><div class="line">    <span class="comment">// childOb.dep 收集 Dep.target 观察者</span></div><div class="line">    childOb.dep.depend()</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(value)) &#123;</div><div class="line">    <span class="comment">// value 数组中每个值都会完成 dep 对 Dep.target 的收集</span></div><div class="line">    dependArray(value)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>因此 val 下的每个紫属性都会完成依赖收集，只要是 val 下的子属性发生变化时都会触发 val 的 update 以及回到函数的执行。<br>因此说这里有个非常隐晦的互动关系。</p>
+<h3 id="addDep"><a href="#addDep" class="headerlink" title="addDep"></a>addDep</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">addDep (dep: Dep) &#123;</div><div class="line">  <span class="keyword">const</span> id = dep.id</div><div class="line">  <span class="keyword">if</span> (!<span class="keyword">this</span>.newDepIds.has(id)) &#123;</div><div class="line">    <span class="keyword">this</span>.newDepIds.add(id)</div><div class="line">    <span class="keyword">this</span>.newDeps.push(dep)</div><div class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.depIds.has(id)) &#123;</div><div class="line">      <span class="comment">// this =&gt; watcher || Dep.target</span></div><div class="line">      dep.addSub(<span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里需要提前说明白的是：Dep 类 与 Watcher 类 的关系是 N 对 N 的关系。也就是两者之间的联系是如果你收集了我，我也必须收集你。<br>所以这里当要给 watcher 实例添加一个新的观察，则先收集它的观察者容器。然后让自己被这个观察者容器收集。</p>
+<h3 id="cleanupDeps"><a href="#cleanupDeps" class="headerlink" title="cleanupDeps"></a>cleanupDeps</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">cleanupDeps () &#123;</div><div class="line">  <span class="keyword">let</span> i = <span class="keyword">this</span>.deps.length</div><div class="line">  <span class="keyword">while</span> (i--) &#123;</div><div class="line">    <span class="keyword">const</span> dep = <span class="keyword">this</span>.deps[i]</div><div class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.newDepIds.has(dep.id)) &#123;</div><div class="line">      dep.removeSub(<span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">let</span> tmp = <span class="keyword">this</span>.depIds</div><div class="line">  <span class="keyword">this</span>.depIds = <span class="keyword">this</span>.newDepIds</div><div class="line">  <span class="keyword">this</span>.newDepIds = tmp</div><div class="line">  <span class="keyword">this</span>.newDepIds.clear()</div><div class="line">  tmp = <span class="keyword">this</span>.deps</div><div class="line">  <span class="keyword">this</span>.deps = <span class="keyword">this</span>.newDeps</div><div class="line">  <span class="keyword">this</span>.newDeps = tmp</div><div class="line">  <span class="keyword">this</span>.newDeps.length = <span class="number">0</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的工作其实就是同步一下 缓冲容器 和 真正容器。在真正容器中移除缓冲容器中不存在的对象，将缓冲容器中的值赋予真正容器，并清空缓冲容器。</p>
+<h3 id="update"><a href="#update" class="headerlink" title="update"></a>update</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">update () &#123;</div><div class="line">  <span class="comment">/* istanbul ignore else */</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.lazy) &#123;</div><div class="line">    <span class="keyword">this</span>.dirty = <span class="literal">true</span></div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.sync) &#123;</div><div class="line">    <span class="keyword">this</span>.run()</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    queueWatcher(<span class="keyword">this</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就是接受 Observe 实例的更新通知的函数了，根据 sync 的值我们判断是立即更新还是进入更新队列，等待更新。</p>
+<p>###<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">run () &#123;</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.active) &#123;</div><div class="line">    <span class="keyword">const</span> value = <span class="keyword">this</span>.get()</div><div class="line">    <span class="keyword">if</span> (</div><div class="line">      value !== <span class="keyword">this</span>.value ||</div><div class="line">      <span class="comment">// Deep watchers and watchers on Object/Arrays should fire even</span></div><div class="line">      <span class="comment">// when the value is the same, because the value may</span></div><div class="line">      <span class="comment">// have mutated.</span></div><div class="line">      isObject(value) ||</div><div class="line">      <span class="keyword">this</span>.deep</div><div class="line">    ) &#123;</div><div class="line">      <span class="comment">// set new value</span></div><div class="line">      <span class="keyword">const</span> oldValue = <span class="keyword">this</span>.value</div><div class="line">      <span class="keyword">this</span>.value = value</div><div class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.user) &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">          <span class="keyword">this</span>.cb.call(<span class="keyword">this</span>.vm, value, oldValue)</div><div class="line">        &#125; <span class="keyword">catch</span> (e) &#123;</div><div class="line">          handleError(e, <span class="keyword">this</span>.vm, <span class="string">`callback for watcher "<span class="subst">$&#123;<span class="keyword">this</span>.expression&#125;</span>"`</span>)</div><div class="line">        &#125;</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">this</span>.cb.call(<span class="keyword">this</span>.vm, value, oldValue)</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里就是执行 watcher 的回调，同时传入新旧值。</p>
+<h3 id="evaluate"><a href="#evaluate" class="headerlink" title="evaluate"></a>evaluate</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">evaluate () &#123;</div><div class="line">  <span class="keyword">this</span>.value = <span class="keyword">this</span>.get()</div><div class="line">  <span class="keyword">this</span>.dirty = <span class="literal">false</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>暂时没遇见过这里的调用环境，不太明确，只能理解为获取 getter 的值。</p>
+<h3 id="depend"><a href="#depend" class="headerlink" title="depend"></a>depend</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">depend () &#123;</div><div class="line">  <span class="keyword">let</span> i = <span class="keyword">this</span>.deps.length</div><div class="line">  <span class="keyword">while</span> (i--) &#123;</div><div class="line">    <span class="keyword">this</span>.deps[i].depend()</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这其实就是一次从 watcher 开始触发的 Dep 和 Watcher 之间依赖互相收集的过程。</p>
+<h3 id="teardown"><a href="#teardown" class="headerlink" title="teardown"></a>teardown</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">teardown () &#123;</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.active) &#123;</div><div class="line">    <span class="comment">// remove self from vm's watcher list</span></div><div class="line">    <span class="comment">// this is a somewhat expensive operation so we skip it</span></div><div class="line">    <span class="comment">// if the vm is being destroyed.</span></div><div class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.vm._isBeingDestroyed) &#123;</div><div class="line">      remove(<span class="keyword">this</span>.vm._watchers, <span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">let</span> i = <span class="keyword">this</span>.deps.length</div><div class="line">    <span class="keyword">while</span> (i--) &#123;</div><div class="line">      <span class="keyword">this</span>.deps[i].removeSub(<span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">this</span>.active = <span class="literal">false</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就是一个 watcher 实例的取消工具，在 <code>vm._watchers</code> 上移除自己，同时通知 deps 中所有 dep 移除自己，然后清空 deps。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是一个 Watcher 的所有构造过程，以及工具函数的使用。自己仔细去读的话可以理解很多，一方面是如果架构这样一种非常大型的观察者模式，同时看看相关工具函数，学学高手的高级招数也是很不错的。</p>
+<p>这里 Watcher 主要表现的业务场景还是 watch 这个选项。但是随着之后源码更多深入挖掘，应该会发觉更多的使用场景。😎</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/30/Vue - 响应式数据构造过程/" rel="prev" title="Vue - 响应式数据构造过程">
+                Vue - 响应式数据构造过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#预备知识"><span class="nav-number">1.</span> <span class="nav-text">预备知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#watch"><span class="nav-number">2.</span> <span class="nav-text">$watch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Class-Watcher"><span class="nav-number">3.</span> <span class="nav-text">Class Watcher</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#constructor-NaN"><span class="nav-number">3.1.</span> <span class="nav-text">constructor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get"><span class="nav-number">3.2.</span> <span class="nav-text">get</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#traverse"><span class="nav-number">3.2.1.</span> <span class="nav-text">traverse</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#addDep"><span class="nav-number">3.3.</span> <span class="nav-text">addDep</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cleanupDeps"><span class="nav-number">3.4.</span> <span class="nav-text">cleanupDeps</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#update"><span class="nav-number">3.5.</span> <span class="nav-text">update</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#evaluate"><span class="nav-number">3.6.</span> <span class="nav-text">evaluate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#depend"><span class="nav-number">3.7.</span> <span class="nav-text">depend</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#teardown"><span class="nav-number">3.8.</span> <span class="nav-text">teardown</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
