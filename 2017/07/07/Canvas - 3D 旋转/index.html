@@ -1,0 +1,752 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Canvas," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近两天撸了两个 canvas，3D 旋转 &amp;amp; ribbon。   3D 旋转我是从这里学来的，因为原博主写的比较简单，所以重新实现了一下。">
+<meta name="keywords" content="JavaScript,Canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Canvas - 3D 旋转">
+<meta property="og:url" content="http://swarosky44.github.io/2017/07/07/Canvas - 3D 旋转/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="最近两天撸了两个 canvas，3D 旋转 &amp;amp; ribbon。   3D 旋转我是从这里学来的，因为原博主写的比较简单，所以重新实现了一下。">
+<meta property="og:image" content="https://sfault-image.b0.upaiyun.com/362/072/3620720564-57de449b83024_articlex">
+<meta property="og:updated_time" content="2017-07-07T05:49:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Canvas - 3D 旋转">
+<meta name="twitter:description" content="最近两天撸了两个 canvas，3D 旋转 &amp;amp; ribbon。   3D 旋转我是从这里学来的，因为原博主写的比较简单，所以重新实现了一下。">
+<meta name="twitter:image" content="https://sfault-image.b0.upaiyun.com/362/072/3620720564-57de449b83024_articlex">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/07/07/Canvas - 3D 旋转/"/>
+
+
+
+
+
+  <title> Canvas - 3D 旋转 | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/07/07/Canvas - 3D 旋转/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Canvas - 3D 旋转
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-07T10:55:54+08:00">
+                2017-07-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Canvas/" itemprop="url" rel="index">
+                    <span itemprop="name">Canvas</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近两天撸了两个 canvas，3D 旋转 &amp; ribbon。</p>
+<iframe width="100%" height="300" src="//jsfiddle.net/eLnpwuye/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<p>3D 旋转我是从<a href="http://supperjet.github.io/2016/09/29/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%943D%E6%97%8B%E8%BD%AC%E4%B8%8E%E7%A2%B0%E6%92%9E/" target="_blank" rel="external">这里</a>学来的，因为原博主写的比较简单，所以重新实现了一下。</p>
+<a id="more"></a>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><ul>
+<li><a href="http://supperjet.github.io/2016/08/17/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%943%E7%BB%B4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_blank" rel="external">3维模型构建</a> &amp; <a href="http://swarosky44.github.io/2017/06/27/Canvas%20-%203D%20%E7%B2%92%E5%AD%90%E6%95%88%E6%9E%9C/#more">3D粒子效果</a></li>
+<li><a href="http://supperjet.github.io/2016/07/06/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%94%E5%9D%90%E6%A0%87%E6%97%8B%E8%BD%AC/" target="_blank" rel="external">圆周运动</a></li>
+</ul>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>基本了解了圆周运动的坐标计算公式 &amp; 3D模型之后，简单总结一下就是，如果想模拟一个物体的 3D 旋转，就必须扩展一下圆周运动的坐标计算公式。<br>盗用一下一只会飞的鱼的图：<br><img src="https://sfault-image.b0.upaiyun.com/362/072/3620720564-57de449b83024_articlex" alt=""></p>
+<p>由此可以得到公式<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 绕Z轴</span></div><div class="line">newX = x * cos(angleZ) - y * sin(angleZ);</div><div class="line">newY = y * cos(angleZ) + x * sin(angleZ);</div><div class="line"></div><div class="line"><span class="comment">// 绕X轴</span></div><div class="line">newY = y * cos(angleX) - z * sin(angleX);</div><div class="line">newZ = z * cos(angleX) - y * sin(angleX);</div><div class="line"></div><div class="line"><span class="comment">// 绕Y轴</span></div><div class="line">newX = x * cos(angleY) - z * sin(angleY);</div><div class="line">newZ = z * cos(angleY) + x * sin(angleY);</div></pre></td></tr></table></figure></p>
+<p>实际操作上，我们是没有办法改变鼠标在 Z 轴上的值，我们只能改变 X 和 Y 轴的坐标，因此主要的两个旋转公式就是围绕着 X 和 Y 使用的。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="参数准备"><a href="#参数准备" class="headerlink" title="参数准备"></a>参数准备</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> W = canvas.width = <span class="built_in">window</span>.innerWidth;</div><div class="line"><span class="keyword">const</span> H = canvas.height = <span class="built_in">window</span>.innerHeight;</div><div class="line"><span class="keyword">const</span> balls = [];</div><div class="line"><span class="keyword">const</span> ballsNum = <span class="number">250</span>;</div><div class="line"><span class="keyword">const</span> fl = <span class="number">250</span>;</div><div class="line"><span class="keyword">const</span> vpX = W / <span class="number">2</span>;</div><div class="line"><span class="keyword">const</span> vpY = H / <span class="number">2</span>;</div><div class="line"><span class="keyword">let</span> mouseX = <span class="number">0</span>;</div><div class="line"><span class="keyword">let</span> mouseY = <span class="number">0</span>;</div><div class="line"><span class="keyword">let</span> angleX;</div><div class="line"><span class="keyword">let</span> angleY;</div></pre></td></tr></table></figure>
+<ul>
+<li>W 、H: canvas 的宽高；</li>
+<li>balls: 用来存储小球的容器；</li>
+<li>ballsNum: 小球数量的上限；</li>
+<li>fl: 眼睛距离屏幕的距离；</li>
+<li>vpX、vpY: 消失点的坐标，即 canvas 的中心点；</li>
+<li>mouseX、mouseY: 鼠标的 X 、Y 轴坐标；</li>
+<li>angleX、angleY: X 和 Y 轴的旋转角度；</li>
+</ul>
+<h3 id="生成小球"><a href="#生成小球" class="headerlink" title="生成小球"></a>生成小球</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; ballsNum; i++) &#123;</div><div class="line">  <span class="keyword">const</span> r = <span class="built_in">Math</span>.random() * <span class="number">5</span> + <span class="number">1</span>;</div><div class="line">  <span class="keyword">const</span> ball = <span class="keyword">new</span> Ball(r);</div><div class="line">  ball.xpos = <span class="built_in">Math</span>.random() * <span class="number">300</span> - <span class="number">150</span>;</div><div class="line">  ball.ypos = <span class="built_in">Math</span>.random() * <span class="number">300</span> - <span class="number">150</span>;</div><div class="line">  ball.zpos = <span class="built_in">Math</span>.random() * <span class="number">300</span> - <span class="number">150</span>;</div><div class="line">  balls.push(ball);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里很简单，随机定义小球的半径 &amp; x、y、z 轴的坐标，并且推入存储容器中。</p>
+<h3 id="旋转角度计算"><a href="#旋转角度计算" class="headerlink" title="旋转角度计算"></a>旋转角度计算</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">angleX = (mouseY - vpY) * <span class="number">0.0001</span>;</div><div class="line">angleY = (mouseX - vpX) * <span class="number">0.0001</span>;</div></pre></td></tr></table></figure>
+<p>这里我们用鼠标位置与消失点的偏移量来计算 X 、 Y 轴的旋转角度。</p>
+<h3 id="运动量计算"><a href="#运动量计算" class="headerlink" title="运动量计算"></a>运动量计算</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">move</span>(<span class="params">ball</span>) </span>&#123;</div><div class="line">  rotateX(ball, angleX);</div><div class="line">  rotateY(ball, angleY);</div><div class="line">  setPerspective(ball);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">rotateX</span>(<span class="params">ball, angle</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> cos = <span class="built_in">Math</span>.cos(angle);</div><div class="line">  <span class="keyword">const</span> sin = <span class="built_in">Math</span>.sin(angle);</div><div class="line">  <span class="keyword">const</span> y1 = ball.ypos * cos - ball.zpos * sin;</div><div class="line">  <span class="keyword">const</span> z1 = ball.zpos * cos + ball.ypos * sin;</div><div class="line">  ball.ypos = y1;</div><div class="line">  ball.zpos = z1;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">rotateY</span>(<span class="params">ball, angle</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> cos = <span class="built_in">Math</span>.cos(angle);</div><div class="line">  <span class="keyword">const</span> sin = <span class="built_in">Math</span>.sin(angle);</div><div class="line">  <span class="keyword">const</span> x1 = ball.xpos * cos - ball.zpos * sin;</div><div class="line">  <span class="keyword">const</span> z1 = ball.zpos * cos + ball.xpos * sin;</div><div class="line">  ball.xpos = x1;</div><div class="line">  ball.zpos = z1;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">setPerspective</span>(<span class="params">ball</span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (ball.zpos &gt; -fl) &#123;</div><div class="line">    ball.scaleX = ball.scaleY = fl / (fl + ball.zpos);</div><div class="line">    ball.x = vpX + ball.xpos * ball.scaleX;</div><div class="line">    ball.y = vpY + ball.ypos * ball.scaleY;</div><div class="line">    ball.visible = <span class="literal">true</span>;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    ball.visible = <span class="literal">false</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就是对之前原理的一个运用，计算 X 、 Y 的轴旋转后的各个小球的坐标。<br>最后再计算小球在 Z 轴的坐标对缩放的影响。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实只要掌握了坐标计算公式 &amp; 3D 环境搭建的原理，3D 旋转其实还是蛮容易的，但是做出来的效果却非常酷炫，到 codeopen 上可以看到各种各样的旋转效果。<br>所以之前提及的几篇文章可以多看看，那些是非常基础的概念，理解好之后再加上点创意，就可以创造很多了 🤓</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Canvas/" rel="tag"># Canvas</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/01/Vue - 观察者 Watcher 构造过程/" rel="prev" title="Vue - 观察者 Watcher 构造过程">
+                Vue - 观察者 Watcher 构造过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本原理"><span class="nav-number">2.</span> <span class="nav-text">基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">3.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#参数准备"><span class="nav-number">3.1.</span> <span class="nav-text">参数准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成小球"><span class="nav-number">3.2.</span> <span class="nav-text">生成小球</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#旋转角度计算"><span class="nav-number">3.3.</span> <span class="nav-text">旋转角度计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运动量计算"><span class="nav-number">3.4.</span> <span class="nav-text">运动量计算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
