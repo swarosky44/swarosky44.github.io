@@ -1,0 +1,762 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Vue," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="有段时间没写关于 Vue 源码的东西了，最近都在折腾 python 的 flask &amp;amp; vue-ssr。">
+<meta name="keywords" content="JavaScript,Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue - 实例事件构建过程">
+<meta property="og:url" content="http://swarosky44.github.io/2017/07/13/Vue - 实例方法构建过程/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="有段时间没写关于 Vue 源码的东西了，最近都在折腾 python 的 flask &amp;amp; vue-ssr。">
+<meta property="og:updated_time" content="2017-07-13T10:30:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vue - 实例事件构建过程">
+<meta name="twitter:description" content="有段时间没写关于 Vue 源码的东西了，最近都在折腾 python 的 flask &amp;amp; vue-ssr。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/07/13/Vue - 实例方法构建过程/"/>
+
+
+
+
+
+  <title> Vue - 实例事件构建过程 | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/07/13/Vue - 实例方法构建过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Vue - 实例事件构建过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-13T17:51:14+08:00">
+                2017-07-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有段时间没写关于 Vue 源码的东西了，最近都在折腾 python 的 flask &amp; vue-ssr。</p>
+<a id="more"></a>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>相比之前 vue 的观察者模式的构建过程，这里的实例事件就要显得简单多了。不需要了解什么特别的设计模式啊或者其他balbala的知识点。熟悉一下官方的 API 就好了。</p>
+<ul>
+<li><a href="https://cn.vuejs.org/v2/api/#实例方法-事件" target="_blank" rel="external">vue 实例方法/事件</a></li>
+</ul>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>整个事件的体系构造是在 eventsMixin 里面完成的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">eventsMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> hookRE = <span class="regexp">/^hook:/</span></div><div class="line">  Vue.prototype.$on = <span class="function"><span class="keyword">function</span> (<span class="params">event: string | Array&lt;string&gt;, fn: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Vue.prototype.$once = <span class="function"><span class="keyword">function</span> (<span class="params">event: string, fn: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Vue.prototype.$off = <span class="function"><span class="keyword">function</span> (<span class="params">event?: string | Array&lt;string&gt;, fn?: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Vue.prototype.$emit = <span class="function"><span class="keyword">function</span> (<span class="params">event: string</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>根据 VUE 官网的 API ，很容易就知道这四个函数分别定义用来处理什么问题的，接下来就一个个来分析咯。</p>
+<h3 id="on"><a href="#on" class="headerlink" title="$on"></a>$on</h3><p>绑定事件和执行事件的方法；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Vue.prototype.$on = <span class="function"><span class="keyword">function</span> (<span class="params">event: string | Array&lt;string&gt;, fn: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="keyword">const</span> vm: Component = <span class="keyword">this</span></div><div class="line">  <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(event)) &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = event.length; i &lt; l; i++) &#123;</div><div class="line">      <span class="keyword">this</span>.$on(event[i], fn)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    (vm._events[event] || (vm._events[event] = [])).push(fn)</div><div class="line">    <span class="comment">// optimize hook:event cost by using a boolean flag marked at registration</span></div><div class="line">    <span class="comment">// instead of a hash lookup</span></div><div class="line">    <span class="keyword">if</span> (hookRE.test(event)) &#123;</div><div class="line">      vm._hasHookEvent = <span class="literal">true</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> vm</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>先简单看一下参数：</p>
+<ul>
+<li>event：需要绑定的事件名，可以为字符串或者数组；</li>
+<li>fn: 需要绑定的执行函数；</li>
+</ul>
+<p>如果 event 是数组的话我们需要遍历每个元素，然后重新调用 $on 分别对每个元素进行绑定工作，我们在 Vue 的实例 vm 上创建了一个属性 <code>_events</code> 用于存储这些事件以及其对应的执行方法。这里需要注意的是：</p>
+<p>一个函数可能会有多个事件都会去绑定，同样一个事件也可能绑定多个函数。</p>
+<h3 id="off"><a href="#off" class="headerlink" title="$off"></a>$off</h3><p>取消事件和执行函数之间的互相绑定关系。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">Vue.prototype.$off = <span class="function"><span class="keyword">function</span> (<span class="params">event?: string | Array&lt;string&gt;, fn?: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="keyword">const</span> vm: Component = <span class="keyword">this</span></div><div class="line">  <span class="comment">// all</span></div><div class="line">  <span class="keyword">if</span> (!<span class="built_in">arguments</span>.length) &#123;</div><div class="line">    vm._events = <span class="built_in">Object</span>.create(<span class="literal">null</span>)</div><div class="line">    <span class="keyword">return</span> vm</div><div class="line">  &#125;</div><div class="line">  <span class="comment">// array of events</span></div><div class="line">  <span class="keyword">if</span> (<span class="built_in">Array</span>.isArray(event)) &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = event.length; i &lt; l; i++) &#123;</div><div class="line">      <span class="keyword">this</span>.$off(event[i], fn)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> vm</div><div class="line">  &#125;</div><div class="line">  <span class="comment">// specific event</span></div><div class="line">  <span class="keyword">const</span> cbs = vm._events[event]</div><div class="line">  <span class="keyword">if</span> (!cbs) &#123;</div><div class="line">    <span class="keyword">return</span> vm</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">if</span> (<span class="built_in">arguments</span>.length === <span class="number">1</span>) &#123;</div><div class="line">    vm._events[event] = <span class="literal">null</span></div><div class="line">    <span class="keyword">return</span> vm</div><div class="line">  &#125;</div><div class="line">  <span class="comment">// specific handler</span></div><div class="line">  <span class="keyword">let</span> cb</div><div class="line">  <span class="keyword">let</span> i = cbs.length</div><div class="line">  <span class="keyword">while</span> (i--) &#123;</div><div class="line">    cb = cbs[i]</div><div class="line">    <span class="keyword">if</span> (cb === fn || cb.fn === fn) &#123;</div><div class="line">      cbs.splice(i, <span class="number">1</span>)</div><div class="line">      <span class="keyword">break</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> vm</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里取消绑定和绑定的参数没有什么区别，我们可以直接看执行过程：</p>
+<ul>
+<li><p>这里首先判断了是否有参数 <code>if (!arguments.length)</code>，这里其实是尤大自己用来调用的，如果没有传递参数就直接清空 <code>vm._events</code>，也就是说直接取消掉了所有的事件绑定。尤大自己在组件 <code>$destroyed</code> 调用时会这样用。</p>
+</li>
+<li><p>正常情况下，使用者如果传递的 event 是数组，就意味着有多组事件绑定需要取消，所以要遍历对每个元素执行 $off，分别取消。</p>
+</li>
+<li><p>如果只传了事件名，但是不指定取消哪个执行函数的话， 就会直接清空这个事件名下所有的绑定的执行函数。</p>
+</li>
+<li><p>在指定了函数名 &amp; 执行函数的情况下，会找到 <code>vm._events</code> 里这个 <code>event</code>，然后从它里面再找到指定的函数，移除掉。</p>
+</li>
+</ul>
+<h3 id="once"><a href="#once" class="headerlink" title="$once"></a>$once</h3><p>绑定事件，但只允许执行一次</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Vue.prototype.$once = <span class="function"><span class="keyword">function</span> (<span class="params">event: string, fn: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="keyword">const</span> vm: Component = <span class="keyword">this</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">on</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    vm.$off(event, on)</div><div class="line">    fn.apply(vm, <span class="built_in">arguments</span>)</div><div class="line">  &#125;</div><div class="line">  on.fn = fn</div><div class="line">  vm.$on(event, on)</div><div class="line">  <span class="keyword">return</span> vm</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>装饰了一下调用者传递进来的执行函数，绑定成功后，第一次执行的时候，装饰函数就会取消掉绑定。</p>
+<h3 id="emit"><a href="#emit" class="headerlink" title="$emit"></a>$emit</h3><p>触发事件</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">Vue.prototype.$emit = <span class="function"><span class="keyword">function</span> (<span class="params">event: string</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">  <span class="keyword">const</span> vm: Component = <span class="keyword">this</span></div><div class="line">  <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) &#123;</div><div class="line">    <span class="keyword">const</span> lowerCaseEvent = event.toLowerCase()</div><div class="line">    <span class="keyword">if</span> (lowerCaseEvent !== event &amp;&amp; vm._events[lowerCaseEvent]) &#123;</div><div class="line">      tip(</div><div class="line">        <span class="string">`Event "<span class="subst">$&#123;lowerCaseEvent&#125;</span>" is emitted in component `</span> +</div><div class="line">        <span class="string">`<span class="subst">$&#123;formatComponentName(vm)&#125;</span> but the handler is registered for "<span class="subst">$&#123;event&#125;</span>". `</span> +</div><div class="line">        <span class="string">`Note that HTML attributes are case-insensitive and you cannot use `</span> +</div><div class="line">        <span class="string">`v-on to listen to camelCase events when using in-DOM templates. `</span> +</div><div class="line">        <span class="string">`You should probably use "<span class="subst">$&#123;hyphenate(event)&#125;</span>" instead of "<span class="subst">$&#123;event&#125;</span>".`</span></div><div class="line">      )</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">let</span> cbs = vm._events[event]</div><div class="line">  <span class="keyword">if</span> (cbs) &#123;</div><div class="line">    cbs = cbs.length &gt; <span class="number">1</span> ? toArray(cbs) : cbs</div><div class="line">    <span class="keyword">const</span> args = toArray(<span class="built_in">arguments</span>, <span class="number">1</span>)</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = cbs.length; i &lt; l; i++) &#123;</div><div class="line">      <span class="keyword">try</span> &#123;</div><div class="line">        cbs[i].apply(vm, args)</div><div class="line">      &#125; <span class="keyword">catch</span> (e) &#123;</div><div class="line">        handleError(e, vm, <span class="string">`event handler for "<span class="subst">$&#123;event&#125;</span>"`</span>)</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> vm</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>首先判断用户是否已经完成了指定事件的绑定。</li>
+<li>然后从 <code>vm._events</code> 这个事件存储容器中找到对应事件，再遍历执行该事件下已经绑定了的执行函数们。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>实例事件的构造还是很简单的，但是接下来就会有两个复杂度非常高的模块，模板计算和渲染。<br>我读了两次，放弃了两次。哈哈哈 🙄</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/07/Canvas - ribbon/" rel="prev" title="Canvas - ribbon">
+                Canvas - ribbon <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础知识"><span class="nav-number">1.</span> <span class="nav-text">基础知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#on"><span class="nav-number">2.1.</span> <span class="nav-text">$on</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#off"><span class="nav-number">2.2.</span> <span class="nav-text">$off</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#once"><span class="nav-number">2.3.</span> <span class="nav-text">$once</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#emit"><span class="nav-number">2.4.</span> <span class="nav-text">$emit</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
