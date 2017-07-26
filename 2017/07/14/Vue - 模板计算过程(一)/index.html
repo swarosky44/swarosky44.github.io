@@ -96,14 +96,14 @@
 <meta name="description" content="Vue 的模板计算过程应该是 Vue 源码中最大头的东西，也是响应式数据外另一个核心。其实自己也没读完，或者弄得非常明白，所以打算边写边读，加深理解。">
 <meta name="keywords" content="JavaScript,Vue">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vue - 模板计算过程(一)">
+<meta property="og:title" content="Vue - 模板计算过程">
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/14/Vue - 模板计算过程(一)/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="Vue 的模板计算过程应该是 Vue 源码中最大头的东西，也是响应式数据外另一个核心。其实自己也没读完，或者弄得非常明白，所以打算边写边读，加深理解。">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/vue%20patch%20%E6%A8%A1%E6%9D%BF%E8%AE%A1%E7%AE%97%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
-<meta property="og:updated_time" content="2017-07-20T09:50:39.000Z">
+<meta property="og:updated_time" content="2017-07-26T02:41:03.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vue - 模板计算过程(一)">
+<meta name="twitter:title" content="Vue - 模板计算过程">
 <meta name="twitter:description" content="Vue 的模板计算过程应该是 Vue 源码中最大头的东西，也是响应式数据外另一个核心。其实自己也没读完，或者弄得非常明白，所以打算边写边读，加深理解。">
 <meta name="twitter:image" content="http://7xro5v.com1.z0.glb.clouddn.com/vue%20patch%20%E6%A8%A1%E6%9D%BF%E8%AE%A1%E7%AE%97%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
 
@@ -139,7 +139,7 @@
 
 
 
-  <title> Vue - 模板计算过程(一) | Listen </title>
+  <title> Vue - 模板计算过程 | Listen </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -289,7 +289,7 @@
             
             
               
-                Vue - 模板计算过程(一)
+                Vue - 模板计算过程
               
             
           </h1>
@@ -372,7 +372,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Vue.prototype.$mount = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></div><div class="line">  el?: string | Element,</div><div class="line">  hydrating?: boolean</div><div class="line">): <span class="title">Component</span> &#123;</div><div class="line">  el = el &amp;&amp; inBrowser ? query(el) : <span class="literal">undefined</span></div><div class="line">  <span class="keyword">return</span> mountComponent(<span class="keyword">this</span>, el, hydrating)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这里简单说一下 hydrating 这参数，我们是不需要太关心的，因为这是 vue-ssr 渲染时才会用上，所以之后我们都会忽略这个参数。<br>这里我们发现 $mount 只是一层装饰，核心在于 <code>mountComponent</code> 这个函数的执行。</p>
 <p>在 platforms/web/entry-runtime-with-compiler.js 中会进行一层装饰<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> mount = Vue.prototype.$mount</div><div class="line">Vue.prototype.$mount = <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></div><div class="line">  el?: string | Element,</div><div class="line">  hydrating?: boolean</div><div class="line">): <span class="title">Component</span> &#123;</div><div class="line">  <span class="comment">// Compile TODO</span></div><div class="line">  <span class="keyword">return</span> mount.call(<span class="keyword">this</span>, el, hydrating)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>这里省略的代码就是整个模板从计算 -&gt; 渲染 -&gt; 挂载中的第一步：计算。<br>这里将一个 render Function 的字符串形式准备好，存储到 vm._render 中，等待模板的下一步处理过程。 </p>
+<p>这里省略的代码就是整个模板从计算 -&gt; 渲染 -&gt; 挂载中的第一步：计算。<br>这里将一个 render Function 的字符串形式准备好，存储到 vm._render 中，等待模板的下一步处理过程。</p>
 <h3 id="mountComponent"><a href="#mountComponent" class="headerlink" title="mountComponent"></a>mountComponent</h3><p><code>mountComponent</code> 定义在 /core/instance/lifecycle.js。</p>
 <p><code>mountComponent</code> 这个函数主要做以下几件事：</p>
 <ul>
@@ -466,6 +466,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/07/26/翻译 - 写一个 JavaScript 框架（一）/" rel="prev" title="写一个 JavaScript 框架（一）">
+                写一个 JavaScript 框架（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -536,7 +540,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -547,7 +551,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -558,7 +562,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
