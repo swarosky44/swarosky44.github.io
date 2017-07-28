@@ -1,0 +1,812 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="TDD,JavaScript," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="就目前两年左右的工作经验来说，任职过的公司很少有强制的单元测试要求，大多数时间都是被需求和业务追着屁股跑 🙃不过写单元测试还是蛮爽的，见下图：怎么样，是不是看着很爽 🤓">
+<meta name="keywords" content="TDD,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ES6 + Mocha 前端自动化测试 &amp; 持续集成">
+<meta property="og:url" content="http://swarosky44.github.io/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="就目前两年左右的工作经验来说，任职过的公司很少有强制的单元测试要求，大多数时间都是被需求和业务追着屁股跑 🙃不过写单元测试还是蛮爽的，见下图：怎么样，是不是看着很爽 🤓">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/tdd.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis1.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis2.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis3.jpeg">
+<meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis4.jpeg">
+<meta property="og:updated_time" content="2017-07-28T06:38:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ES6 + Mocha 前端自动化测试 &amp; 持续集成">
+<meta name="twitter:description" content="就目前两年左右的工作经验来说，任职过的公司很少有强制的单元测试要求，大多数时间都是被需求和业务追着屁股跑 🙃不过写单元测试还是蛮爽的，见下图：怎么样，是不是看着很爽 🤓">
+<meta name="twitter:image" content="http://7xro5v.com1.z0.glb.clouddn.com/tdd.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/"/>
+
+
+
+
+
+  <title> ES6 + Mocha 前端自动化测试 & 持续集成 | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ES6 + Mocha 前端自动化测试 & 持续集成
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-28T10:55:02+08:00">
+                2017-07-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TDD/" itemprop="url" rel="index">
+                    <span itemprop="name">TDD</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>就目前两年左右的工作经验来说，任职过的公司很少有强制的单元测试要求，大多数时间都是被需求和业务追着屁股跑 🙃<br>不过写单元测试还是蛮爽的，见下图：<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/tdd.jpeg" alt=""><br>怎么样，是不是看着很爽 🤓</p>
+<a id="more"></a>
+<h2 id="配置流程"><a href="#配置流程" class="headerlink" title="配置流程"></a>配置流程</h2><p>这次主要是配置 Webpack + ES6 + Karma + Mocha + Chai + Travis-ci + Coveralls;</p>
+<ol>
+<li>写好需要单元测试的代码；</li>
+<li>正常配置好 <code>webpack.config.js</code>，用于 babel 编译和 webpack 代码打包；</li>
+<li>安装 karma 测试过程管理工具，并配置好 <code>karma.conf.js</code>;</li>
+<li>安装 Mocha + Chai 作为测试框架和断言库，修改 <code>karma.conf.js</code>;</li>
+<li>配置 <code>.travis.yml</code> 文件</li>
+<li>配置 <code>.coveralls.yml</code> 文件</li>
+</ol>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="业务代码"><a href="#业务代码" class="headerlink" title="业务代码"></a>业务代码</h3><p>这里就随便写一个单链表用于测试<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>(value) &#123;</div><div class="line">    <span class="keyword">this</span>.value = value;</div><div class="line">    <span class="keyword">this</span>.next = <span class="literal">null</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  setNextNode(node) &#123;</div><div class="line">    <span class="keyword">this</span>.next = node;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  getNextNode() &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.next;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinkedList</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>() &#123;</div><div class="line">    <span class="keyword">this</span>.head = <span class="literal">null</span>;</div><div class="line">    <span class="keyword">this</span>.length = <span class="number">0</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  append(value) &#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  insert(position, value) &#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  removeAt(position) &#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  valueOf() &#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> LinkedList;</div></pre></td></tr></table></figure></p>
+<p>因为之后会配置 webpack + babel 所以可以放心的使用 ES6 的语法。</p>
+<h3 id="配置-webpack"><a href="#配置-webpack" class="headerlink" title="配置 webpack"></a>配置 webpack</h3><p>首先装好依赖<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i <span class="_">-s</span> webpack babel-core babel-loader babel-preset-es2015 istanbul-instrumenter-loader</div></pre></td></tr></table></figure></p>
+<p>然后写好 <code>webpack.config.js</code> 的配置文件</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</div><div class="line"><span class="built_in">module</span>.exports = &#123;</div><div class="line">  <span class="attr">devtool</span>: <span class="string">'inline-source-map'</span>,</div><div class="line">  <span class="attr">module</span>: &#123;</div><div class="line">    <span class="attr">rules</span>: [</div><div class="line">      &#123;</div><div class="line">        <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</div><div class="line">        <span class="attr">exclude</span>: <span class="regexp">/node_modules/</span>,</div><div class="line">        <span class="attr">use</span>: [<span class="string">'babel-loader'</span>],</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</div><div class="line">        <span class="attr">exclude</span>: <span class="regexp">/node_modules|\.spec\.js$/</span>,</div><div class="line">        <span class="attr">use</span>: &#123;</div><div class="line">          <span class="attr">loader</span>: <span class="string">'istanbul-instrumenter-loader'</span>,</div><div class="line">          <span class="attr">options</span>: &#123;</div><div class="line">            <span class="attr">esModules</span>: <span class="literal">true</span>,</div><div class="line">          &#125;,</div><div class="line">        &#125;,</div><div class="line">        <span class="attr">enforce</span>: <span class="string">'pre'</span>,</div><div class="line">      &#125;,</div><div class="line">    ],</div><div class="line">  &#125;,</div><div class="line">  <span class="attr">resolve</span>: &#123;</div><div class="line">    <span class="attr">extensions</span>: [<span class="string">'.js'</span>],</div><div class="line">    <span class="attr">alias</span>: &#123;</div><div class="line">      <span class="string">'src'</span>: path.resolve(__dirname, <span class="string">'./src'</span>),</div><div class="line">    &#125;,</div><div class="line">  &#125;,</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>现在都是 webpack2 的配置了，相关语法不熟悉的话，最好是去看一下<a href="https://doc.webpack-china.org/configuration/" target="_blank" rel="external">webpack2 文档</a><br><code>rules</code> 就是以前的 loaders：</p>
+<ul>
+<li>test：文件检测规则；</li>
+<li>exclude：排除在外的文件目录；</li>
+<li><p>use：所使用的 loaders，可以配置成如下的形式：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">use: [</div><div class="line">  &#123;</div><div class="line">    <span class="attr">loader</span>: <span class="string">'babel-loader'</span>,</div><div class="line">    <span class="attr">options</span>: &#123;</div><div class="line">      <span class="attr">presets</span>: [<span class="string">'es2015'</span>]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">]</div></pre></td></tr></table></figure>
+<p>这样就可以不要配置 .babelrc 文件了, 可以自由选择配置方式 ~</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"presets"</span>: [<span class="string">"es2015"</span>]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="配置-Karma"><a href="#配置-Karma" class="headerlink" title="配置 Karma"></a>配置 Karma</h3><p>Karma 是一个测试过程管理工具，相当于一个整个配置过程的一个收敛点。<br>首先安装所需依赖</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i <span class="_">-s</span> karma karma-chai karma-mocha karma-mocha-reporter karma-coverage-istanbul-reporter karma-phantomjs-launcher karma-sourcemap-loader karma-webpack mocha mocha-lcov-reporter chai</div></pre></td></tr></table></figure>
+<p>然后编写配置文件 <code>karma.conf.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> webpackConfig = <span class="built_in">require</span>(<span class="string">'./webpack.config.js'</span>);</div><div class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">config</span>) </span>&#123;</div><div class="line">  config.set(&#123;</div><div class="line">    <span class="attr">frameworks</span>: [<span class="string">'mocha'</span>, <span class="string">'chai'</span>],</div><div class="line">    <span class="attr">files</span>: [</div><div class="line">      <span class="string">'test/*.spec.js'</span>,</div><div class="line">    ],</div><div class="line">    <span class="attr">preprocessors</span>: &#123;</div><div class="line">      <span class="string">'test/*.spec.js'</span>: [<span class="string">'webpack'</span>, <span class="string">'sourcemap'</span>],</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">reporters</span>: [<span class="string">'mocha'</span>, <span class="string">'coverage-istanbul'</span>],</div><div class="line">    <span class="attr">webpackServer</span>: &#123;</div><div class="line">      <span class="attr">noInfo</span>: <span class="literal">true</span>,</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">plugins</span>: [</div><div class="line">      <span class="string">'karma-coverage'</span>,</div><div class="line">      <span class="string">'karma-webpack'</span>,</div><div class="line">      <span class="string">'karma-mocha'</span>,</div><div class="line">      <span class="string">'karma-chai'</span>,</div><div class="line">      <span class="string">'karma-phantomjs-launcher'</span>,</div><div class="line">      <span class="string">'karma-sourcemap-loader'</span>,</div><div class="line">      <span class="string">'karma-mocha-reporter'</span>,</div><div class="line">      <span class="string">'karma-coverage-istanbul-reporter'</span>,</div><div class="line">    ],</div><div class="line">    <span class="attr">webpack</span>: webpackConfig,</div><div class="line">    <span class="attr">port</span>: <span class="number">9876</span>,</div><div class="line">    <span class="attr">colors</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">autoWatch</span>: <span class="literal">false</span>,</div><div class="line">    <span class="attr">browsers</span>: [<span class="string">'PhantomJS'</span>],</div><div class="line">    <span class="attr">singleRun</span>: <span class="literal">true</span>,</div><div class="line">    <span class="attr">coverageIstanbulReporter</span>: &#123;</div><div class="line">      <span class="attr">reports</span>: [<span class="string">'html'</span>, <span class="string">'lcovonly'</span>, <span class="string">'text-summary'</span>],</div><div class="line">      <span class="attr">dir</span>: path.resolve(__dirname, <span class="string">'coverage'</span>),</div><div class="line">      <span class="attr">fixWebpackSourcePath</span>: <span class="literal">true</span>,</div><div class="line">      <span class="string">'report-config'</span>: &#123;</div><div class="line">        <span class="attr">html</span>: &#123;</div><div class="line">          <span class="attr">subdir</span>: <span class="string">'html'</span>,</div><div class="line">        &#125;,</div><div class="line">      &#125;,</div><div class="line">    &#125;,</div><div class="line">  &#125;);</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>讲解一下各个参数的含义：</p>
+<ul>
+<li>frameworks：所用的测试框架；</li>
+<li>files: 需要加载到测试浏览器的文件；</li>
+<li>preprocessors: 加载之前需要预处理的文件；</li>
+<li>reporters：输出测试结果的工具；</li>
+<li>webpackServer： webpack 在 karma 中的配置，我这里配置了在测试过程中不要输出 webpack 打包过程的信息；</li>
+<li>plugins：所用到的插件；</li>
+<li>webpack：webpack 的配置；</li>
+<li>port：测试服的端口号；</li>
+<li>colors：报告中的颜色是否开启；</li>
+<li>autoWatch: 是否观察文件自动变化；</li>
+<li>browsers：测试浏览器；</li>
+<li>singleRun：是否只运行一次；</li>
+<li>coverageIstanbulReporter：输出的报告形式。</li>
+</ul>
+<p>从 webpack 的配置中开始，就可以看到一些 istanbul 字样的配置信息，这些用于打点的工具，主要服务于测试覆盖率。如果不需要用 webpack + ES6 的话，测试覆盖率可以直接用 <code>karma-coverage</code> 工具。<br>由于 webpack 会将代码打包，并且加入大量的 polyfills，导致源码的体量增大，所以覆盖率会测试不准。<br>这里用 <code>istanbul-instrumenter-loader</code> 可以在打包之前就完成打点的工作。<br>理论上，到这一步如果配置完成了，并且依赖都成功安装了。就可以开始单元测试了。</p>
+<h3 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> LinkedList <span class="keyword">from</span> <span class="string">'src/linkedList'</span>;</div><div class="line"><span class="keyword">import</span> &#123; expect &#125; <span class="keyword">from</span> <span class="string">'chai'</span>;</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList append function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'length should be 1'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.length).to.be.equal(<span class="number">2</span>);</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  it(<span class="string">'the value of the head should be 1'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.head.value).to.be.equal(<span class="number">1</span>);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList valueOf function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'the result should equal [1, 2]'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.valueOf()).to.deep.equal([<span class="number">1</span>, <span class="number">2</span>]);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList insert function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line">  ll.insert(<span class="number">1</span>, <span class="number">3</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'the result should equal [1, 3, 2]'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.valueOf()).to.deep.equal([<span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>]);</div><div class="line">  &#125;);</div><div class="line">&#125;)</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList removeAt function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line">  ll.append(<span class="number">3</span>);</div><div class="line">  ll.removeAt(<span class="number">1</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'the result should equal [1, 3]'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.valueOf()).to.deep.equal([<span class="number">1</span>, <span class="number">3</span>]);</div><div class="line">  &#125;);</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>具体的 <a href="https://mochajs.org/" target="_blank" rel="external">Mocha</a> + <a href="http://chaijs.com/" target="_blank" rel="external">Chai</a> 的语法可以自己去官网学习一下，非常简单的。</p>
+<h3 id="Travis-集成"><a href="#Travis-集成" class="headerlink" title="Travis 集成"></a>Travis 集成</h3><p>Travis 是一个持续集成的工具，当我们成功配置好之后，可以让我们一提交代码到 github 仓库之后，就立即执行我们的单元测试。<br>然后我们还可以简单配置一下 github 项目的 Readme.md，获得一个小 badage。</p>
+<p>首先去 <a href="https://travis-ci.org/" target="_blank" rel="external">travis-ci</a> 的官网上完成注册（用 github 账号登录）。然后在项目列表：<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis.jpeg" alt=""><br>选中自己要开启持续集成功能的项目，并在该项目里面添加一个 .travis.yml 文件。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="attr">language:</span> <span class="string">node_js</span></div><div class="line"><span class="attr">sudo:</span> <span class="literal">true</span></div><div class="line"><span class="attr">node_js:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">stable</span></div><div class="line"><span class="attr">cache:</span></div><div class="line"><span class="attr">  directories:</span></div><div class="line"><span class="bullet">    -</span> <span class="string">node_modules</span></div><div class="line"><span class="attr">before_install:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">i</span></div><div class="line"><span class="attr">script:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">test</span></div><div class="line"><span class="attr">after_success:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">coverage</span></div></pre></td></tr></table></figure>
+<p>这份配置的各项参数：</p>
+<ul>
+<li>language: 告诉服务器我们所使用的语言，我们用的是 nodejs；</li>
+<li>sudo: 是否开启管理员权限；</li>
+<li>node_js: node 的版本，我们选择稳定版；</li>
+<li>cache：每次重新执行测试，都需要重装环境和依赖，这里可以选择一些东西进行缓存，我们就缓存了我们的依赖库 node_modules；</li>
+<li>before_install: 依赖安装前需要做的事情；</li>
+<li>script：测试的执行命令；</li>
+<li>after_success: 集成测试覆盖率；</li>
+</ul>
+<p>然后 push github，可以到 travis 上面看到如下：<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis1.jpeg" alt=""><br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis2.jpeg" alt=""></p>
+<p>点击小猫咪头像边上的 badage，然后选择 markdown 格式，复制下面的代码，添加到 readme.md 文件中，就可以获得一次装逼的机会。🤓<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis3.jpeg" alt=""></p>
+<p>BTW：这里注意要将 <code>karma.conf.js</code> 文件中的配置 - <code>authoWatch： false</code> &amp; <code>singleRun: true</code>。否则会一直卡住 travis 服务器。</p>
+<h3 id="coveralls集成"><a href="#coveralls集成" class="headerlink" title="coveralls集成"></a>coveralls集成</h3><p>这个是用于集成测试覆盖率的，也比较简单。先去<a href="https://coveralls.io/" target="_blank" rel="external">coveralls</a>完成注册（github 账号登录），同样去列表选中自己要开通的项目。然后安装一个依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i -s coveralls</div></pre></td></tr></table></figure></p>
+<p>这是用于向 coveralls 上传单元测试完成后的 lcov.info 文件的。<br>在项目里添加一个文件 .coveralls.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">service_name:</span> <span class="string">travis-ci</span></div><div class="line"><span class="attr">repo_token:</span> <span class="string">xxx</span></div></pre></td></tr></table></figure>
+<p>service_name 是写死的，不需要理会。<br>repo_token：是开启项目之后，detail 页面给你的 repo_token，作为账户的唯一识别。</p>
+<p>然后在 <code>package.json</code> 文件下添加一条命令：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">"coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"</div></pre></td></tr></table></figure></p>
+<p>这里集成的整个逻辑其实不复杂：</p>
+<ul>
+<li>首先我们完成了单元测试的代码</li>
+<li>git push 代码之后 travis 会收到然后执行我们单元测试</li>
+<li>单元测试完成后（即.travis.yml 中配置的 after_success 触发钩子）会执行 <code>npm run coverage</code>，向 coveralls 上传我们的覆盖率报告。</li>
+<li>coveralls 会收到请求，然后生成相关数据。</li>
+</ul>
+<p>同样我们也可以收获一个装逼用 badage ~</p>
+<p>BTW: 这里我其实遇见了一个挺麻烦的问题，就是在 travis 的服务器上执行 <code>npm run coverage</code> 后，并没有成功执行，而是抛出了个错误:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Bad response: 422 &#123;&quot;message&quot;:&quot;Couldn&apos;t find a repository matching this job.&quot;,&quot;error&quot;:true&#125;</div></pre></td></tr></table></figure></p>
+<p>具体我也不清楚要怎么解决，貌似 coveralls issue 蛮多的，网上也搜了很多，但是都没用。<br>最后我关闭了项目（列表勾选那里），然后重新开启，更换了 repo_token 就行了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整个过程不算复杂，就是很繁琐。耐心点跟着配置就好了，遇见问题多 google 总能解决的。<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis4.jpeg" alt=""></p>
+<blockquote>
+<p>参阅的文章太多啦~ 文档也蛮多的~<br><a href="https://github.com/swarosky44/Unit-Test-CI" target="_blank" rel="external">项目地址</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TDD/" rel="tag"># TDD</a>
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/26/翻译 - 写一个 JavaScript 框架（一）/" rel="next" title="写一个 JavaScript 框架（一）">
+                <i class="fa fa-chevron-left"></i> 写一个 JavaScript 框架（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置流程"><span class="nav-number">1.</span> <span class="nav-text">配置流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#业务代码"><span class="nav-number">2.1.</span> <span class="nav-text">业务代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-webpack"><span class="nav-number">2.2.</span> <span class="nav-text">配置 webpack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-Karma"><span class="nav-number">2.3.</span> <span class="nav-text">配置 Karma</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试代码"><span class="nav-number">2.4.</span> <span class="nav-text">测试代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Travis-集成"><span class="nav-number">2.5.</span> <span class="nav-text">Travis 集成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#coveralls集成"><span class="nav-number">2.6.</span> <span class="nav-text">coveralls集成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
