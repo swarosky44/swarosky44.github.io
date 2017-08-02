@@ -1,0 +1,791 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,翻译,架构," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="这是写一个 JavaScript 框架系列的第二篇。在这个章节中，我将会阐明多种在浏览器中执行异步代码的方式。你们将会了解到事件轮询，各种调度技巧的区别，比如 setTimeout 和 Promises。 这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览NX 主页。 这个系列包括以下几个章节：  项目结构">
+<meta name="keywords" content="JavaScript,翻译,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="写一个 JavaScript 框架（二）">
+<meta property="og:url" content="http://swarosky44.github.io/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="这是写一个 JavaScript 框架系列的第二篇。在这个章节中，我将会阐明多种在浏览器中执行异步代码的方式。你们将会了解到事件轮询，各种调度技巧的区别，比如 setTimeout 和 Promises。 这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览NX 主页。 这个系列包括以下几个章节：  项目结构">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_lopp_with_tasks-1470127590983.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_task_queues-1470127624172.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_microtask_queue-1470127679393.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_rendering-1470127703068.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_microtask_registration_method-1470127727609.svg">
+<meta property="og:updated_time" content="2017-07-31T09:51:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="写一个 JavaScript 框架（二）">
+<meta name="twitter:description" content="这是写一个 JavaScript 框架系列的第二篇。在这个章节中，我将会阐明多种在浏览器中执行异步代码的方式。你们将会了解到事件轮询，各种调度技巧的区别，比如 setTimeout 和 Promises。 这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览NX 主页。 这个系列包括以下几个章节：  项目结构">
+<meta name="twitter:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_lopp_with_tasks-1470127590983.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/"/>
+
+
+
+
+
+  <title> 写一个 JavaScript 框架（二） | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                写一个 JavaScript 框架（二）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-31T13:47:49+08:00">
+                2017-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/翻译/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是写一个 JavaScript 框架系列的第二篇。在这个章节中，我将会阐明多种在浏览器中执行异步代码的方式。你们将会了解到事件轮询，各种调度技巧的区别，比如 <code>setTimeout</code> 和 <code>Promises</code>。</p>
+<p>这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览<a href="http://nx-framework.com/" target="_blank" rel="external">NX 主页</a>。</p>
+<p>这个系列包括以下几个章节：</p>
+<ol>
+<li><a href="http://swarosky44.github.io/2017/07/26/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/#more">项目结构</a></li>
+<li>调度执行（当前章节）</li>
+<li>沙箱求值</li>
+<li>数据绑定简介</li>
+<li>用 ES6 Proxy 实现数据绑定</li>
+<li>自定义元素</li>
+<li>客户端路由<a id="more"></a>
+</li>
+</ol>
+<p>可能大部分的人都熟悉用 <code>Promise</code> , <code>process.nextTick()</code>, <code>setTimeout()</code> 以及 <code>requestAnimationFrame()</code> 执行异步代码。它们都会在内部执行事件的轮询，但是在时间精度上表现出来的差异性十分明显。</p>
+<p>这个章节里，我将会解释它们之间的区别，然后向你们展示 NX 是如何实现一个时间系统的。我们不会重新造一个轮子，我们将使用原生的事件轮询去达成我们的目标。</p>
+<h2 id="事件轮询"><a href="#事件轮询" class="headerlink" title="事件轮询"></a>事件轮询</h2><p>事件轮询不仅仅是在 ES6 标准提及，JavaScript 有它自己的任务和任务队列。更复杂的事件轮询在 NodeJS 和 HTML5 标准中有具体说明。由于这是另一个关于前端的系列，我会在后续的文章中提及。</p>
+<p>事件轮询之所以叫轮询的原因是，它会不断地循环寻找新的任务去执行。轮询的一次迭代我们称为一个时刻，在这个时刻中执行的代码我们称为一次任务。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (eventLoop.waitForTask()) &#123;</div><div class="line">  eventLoop.processNextTask();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在轮询中，一次任务的代码是可以安排其他任务同步执行的。一种简单的手动编程方式去安排一个新的任务是使用 <code>setTimeout(taskFn)</code>。尽管如此，任务的来源是多种多样的，比如用户行为，网络请求或者 DOM 操作。</p>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_lopp_with_tasks-1470127590983.svg" alt=""></p>
+<h2 id="任务队列"><a href="#任务队列" class="headerlink" title="任务队列"></a>任务队列</h2><p>事情更加复杂一点的话，事件轮询可以有多个任务队列。这里有两个限制，同一类的任务必须来自于同一个任务队列，并且任务在每个队列中必须是以插入顺序去执行。除去这些，用户可以自由的做他所想的事。比如，他可以决定下一次执行哪个任务队列。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (eventLoop.waitForTask()) &#123;</div><div class="line">  <span class="keyword">const</span> taskQueue = eventLoop.selectTaskQueue();</div><div class="line">  <span class="keyword">if</span> (taskQueue.hasNextTask()) &#123;</div><div class="line">    taskQueue.processNextTask();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在这个模型中，我们放松了对时间精度的控制。在我们的任务使用 <code>setTimeout()</code> 之前，浏览器可能已经决定完全清空好几个其他的任务队列了。</p>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_task_queues-1470127624172.svg" alt=""></p>
+<h2 id="微任务队列"><a href="#微任务队列" class="headerlink" title="微任务队列"></a>微任务队列</h2><p>幸运的是，事件轮询还拥有一种单独的队列叫微任务队列。它在每个时刻的任务执行完成之后会完全清空。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">while (eventLoop.waitForTask()) &#123;</div><div class="line">  const taskQueue = eventLoop.selectTaskQueue();</div><div class="line">  if (taskQueue.hasNextTask()) &#123;</div><div class="line">    taskQueue.processNextTask();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  const microTaskQueue = eventLoop.microTaskQueue;</div><div class="line">  while (microTaskQueue.hasNextMicroTask()) &#123;</div><div class="line">    microTaskQueue.processNextMicroTask();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最简单的安排一次微任务的方式是 <code>Promise.resolve().then(microtaskFn)</code>。微任务是以插入顺序执行的，由于这里只有一个微队列，这个时候用户是不会混淆我们的。</p>
+<p>此外，微任务可以安排新的微任务插入到同一个队列，并在同一个时刻处理。</p>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_microtask_queue-1470127679393.svg" alt=""></p>
+<h2 id="渲染"><a href="#渲染" class="headerlink" title="渲染"></a>渲染</h2><p>最后一件被遗落的事情是渲染计划。不同于事件的处理和分析，渲染并不是由一个单独的后台任务完成的。它是一种可以运行在每一个轮询时刻最后面的算法。<br>用户因此又拥有许多自由：可以在每个任务之后渲染，也可以让许多任务不用去执行渲染。<br>幸运的是，我们有 <code>requestAnimationFrame()</code>，它在下一次渲染之前执行传递的函数。最终我们的事件模型看上去是这样的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (eventLoop.waitForTask()) &#123;</div><div class="line">  <span class="keyword">const</span> taskQueue = eventLoop.selectTaskQueue();</div><div class="line">  <span class="keyword">if</span> (taskQueue.hasNextTask()) &#123;</div><div class="line">    taskQueue.processNextTask();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">const</span> microTaskQueue = eventLoop.microTaskQueue;</div><div class="line">  <span class="keyword">if</span> (microTaskQueue.hasNextTask()) &#123;</div><div class="line">    microTaskQueue.processNextMicroTask();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (shouldRender()) &#123;</div><div class="line">    applyScrollResizeAndCSS();</div><div class="line">    runAnimationFrames();</div><div class="line">    render();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_rendering-1470127703068.svg" alt=""></p>
+<p>现在让我们用所有的知识去建立一个调度系统。</p>
+<h2 id="使用事件轮询"><a href="#使用事件轮询" class="headerlink" title="使用事件轮询"></a>使用事件轮询</h2><p>和大部分现代框架一样，NX 在后台处理 DOM 操作和数据绑定。NX 分批处理这些操作，并且为了更好的性能，异步执行他们。为了能安排好处理这些操作，NX 依赖于 <code>Promises</code>, <code>MutationObservers</code> &amp; <code>requestAnimationFrame()</code>。</p>
+<p>预期的安排有如下：</p>
+<ol>
+<li>来自开发者的业务代码；</li>
+<li>NX 的数据绑定 &amp; DOM 的回应操作；</li>
+<li>用户定义的钩子函数；</li>
+<li>客户端的渲染；</li>
+</ol>
+<h3 id="步骤一"><a href="#步骤一" class="headerlink" title="步骤一"></a>步骤一</h3><p>NX 同步完成 ES6 Proxies 注册对象 &amp; <code>MutationObserver</code> 完成 DOM 变化观察者(这些知识大部分都在下一个章节)。为了优化性能的反馈事件可以通过作为微任务延迟完成。为了观察对象变化的事件可以使用 <code>Promise.resolve().then(reaction)</code> 延迟实现，并且通过 MutationObserver (它在内部会调用微任务)自动执行。</p>
+<h3 id="步骤二"><a href="#步骤二" class="headerlink" title="步骤二"></a>步骤二</h3><p>当用户的业务代码执行完成后，通过 NX 注册的响应微任务开始执行。因为它们是微任务，所以它们是按照顺序执行的。需要提醒的是，我们目前仍然是在同一个轮询的时刻里面。</p>
+<h3 id="步骤三"><a href="#步骤三" class="headerlink" title="步骤三"></a>步骤三</h3><p>NX 用 <code>requestAnimationFrame(hook)</code> 运行用户传递进来的钩子事件。这个可能发生在下一个轮询的时刻。最重要的是，这些钩子事件运行于下一次渲染之前，所有数据、DOM &amp; CSS 变化已经被处理之后。</p>
+<h3 id="步骤四"><a href="#步骤四" class="headerlink" title="步骤四"></a>步骤四</h3><p>浏览器渲染下一个页面。这个仍然可能发生在下一个轮询时刻，但是它不能发生在上一个步骤的时刻之前。</p>
+<h2 id="需要牢记于心的事情"><a href="#需要牢记于心的事情" class="headerlink" title="需要牢记于心的事情"></a>需要牢记于心的事情</h2><p>我们刚刚基于原生的轮询之上实现了一个简单但是高效的调度系统。理论上它是可以正常工作的，但是调度是非常容易出错的，一些轻微的误差可能造成严重的bug。</p>
+<p>在一个复杂的系统中，设立一些调度规则，并且一直坚持是非常重要的。对于 NX，我有以下几个规则：</p>
+<ol>
+<li>永远不要在内部操作中使用 <code>setTimeout(Fn, 0)</code>;</li>
+<li>用同一个方法注册微任务；</li>
+<li>微任务只用于存储内部操作；</li>
+<li>不要用任何事情去污染开发者的钩子函数执行。</li>
+</ol>
+<h3 id="规则-1-amp-2"><a href="#规则-1-amp-2" class="headerlink" title="规则 1 &amp; 2"></a>规则 1 &amp; 2</h3><p>数据和 DOM 操作上的响应行为应该按照变化的顺序执行，为了不造成执行顺序混淆，即使延迟执行也是 👌 的。混淆执行顺序使事情变得难以把握并且难以究其原因。<code>setTimeout(Fn, 0)</code> 就是完全不可预测的。<br>通过不同的方式注册微任务也会造成执行顺序混淆，比如下面的案例：微任务2错误的在微任务1之前执行了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Promise</span>.resolve().then().then(microtask1)</div><div class="line"><span class="built_in">Promise</span>.resolve().then(microtask2)</div></pre></td></tr></table></figure>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_microtask_registration_method-1470127727609.svg" alt=""></p>
+<h3 id="Rule-3-amp-4"><a href="#Rule-3-amp-4" class="headerlink" title="Rule 3 &amp; 4"></a>Rule 3 &amp; 4</h3><p>区分开发者的任务代码和系统内部操作是非常重要的。将这两个行为混淆在一起可能会导致一些意料之外的行为，而且它还可能会导致开发者不得不去了解框架内部的工作机制。我相信许多前端开发人员已经有过类似的体验了。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>如果你对 NX 框架感兴趣，可以参阅<a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="external">主页</a>。热衷于探索的读者可以在<a href="https://github.com/RisingStack/nx-framework" target="_blank" rel="external">GitHub Repo</a>参阅源码。</p>
+<p>我希望你能认为这一篇好的文章，下次将会讨论沙箱求值。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/" rel="next" title="ES6 + Mocha 前端自动化测试 & 持续集成">
+                <i class="fa fa-chevron-left"></i> ES6 + Mocha 前端自动化测试 & 持续集成
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/" rel="prev" title="写一个 JavaScript 框架（三）">
+                写一个 JavaScript 框架（三） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#事件轮询"><span class="nav-number">1.</span> <span class="nav-text">事件轮询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务队列"><span class="nav-number">2.</span> <span class="nav-text">任务队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微任务队列"><span class="nav-number">3.</span> <span class="nav-text">微任务队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染"><span class="nav-number">4.</span> <span class="nav-text">渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用事件轮询"><span class="nav-number">5.</span> <span class="nav-text">使用事件轮询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤一"><span class="nav-number">5.1.</span> <span class="nav-text">步骤一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤二"><span class="nav-number">5.2.</span> <span class="nav-text">步骤二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤三"><span class="nav-number">5.3.</span> <span class="nav-text">步骤三</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#步骤四"><span class="nav-number">5.4.</span> <span class="nav-text">步骤四</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需要牢记于心的事情"><span class="nav-number">6.</span> <span class="nav-text">需要牢记于心的事情</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#规则-1-amp-2"><span class="nav-number">6.1.</span> <span class="nav-text">规则 1 & 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rule-3-amp-4"><span class="nav-number">6.2.</span> <span class="nav-text">Rule 3 & 4</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">7.</span> <span class="nav-text">结论</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Open Sans:300,300italic,400,400italic,700,700italic|Fira Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,翻译,架构," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="这是写一个 JavaScript 框架系列文章的第三篇，这次我会阐明几种在浏览器中求值的方式以及它们将引起的一些问题。我还会介绍一个依赖于一些新的鲜为人知的 JavaScript 特性的方法。 这个系列包括以下几个章节：  项目结构 调度执行 沙箱求值（当前章节） 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta name="keywords" content="JavaScript,翻译,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="写一个 JavaScript 框架（三）">
+<meta property="og:url" content="http://swarosky44.github.io/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="这是写一个 JavaScript 框架系列文章的第三篇，这次我会阐明几种在浏览器中求值的方式以及它们将引起的一些问题。我还会介绍一个依赖于一些新的鲜为人知的 JavaScript 特性的方法。 这个系列包括以下几个章节：  项目结构 调度执行 沙箱求值（当前章节） 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_simple_with_statement-1470403007416.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_with_statement_and_proxies-1470403030877.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_security_issue-1470403047129.svg">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/with_statements_and_proxies_has_and_get_traps-1470403073125.svg">
+<meta property="og:updated_time" content="2017-08-02T10:40:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="写一个 JavaScript 框架（三）">
+<meta name="twitter:description" content="这是写一个 JavaScript 框架系列文章的第三篇，这次我会阐明几种在浏览器中求值的方式以及它们将引起的一些问题。我还会介绍一个依赖于一些新的鲜为人知的 JavaScript 特性的方法。 这个系列包括以下几个章节：  项目结构 调度执行 沙箱求值（当前章节） 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta name="twitter:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_simple_with_statement-1470403007416.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://swarosky44.github.io/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/"/>
+
+
+
+
+
+  <title> 写一个 JavaScript 框架（三） | Listen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Listen</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">a Front-End Engineer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://swarosky44.github.io/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Listen">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Listen">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                写一个 JavaScript 框架（三）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-02T11:55:35+08:00">
+                2017-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/翻译/" itemprop="url" rel="index">
+                    <span itemprop="name">翻译</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这是写一个 JavaScript 框架系列文章的第三篇，这次我会阐明几种在浏览器中求值的方式以及它们将引起的一些问题。我还会介绍一个依赖于一些新的鲜为人知的 JavaScript 特性的方法。</p>
+<p>这个系列包括以下几个章节：</p>
+<ol>
+<li><a href="http://swarosky44.github.io/2017/07/26/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/#more">项目结构</a></li>
+<li><a href="http://swarosky44.github.io/2017/07/31/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6/#more">调度执行</a></li>
+<li>沙箱求值（当前章节）</li>
+<li>数据绑定简介</li>
+<li>用 ES6 Proxy 实现数据绑定</li>
+<li>自定义元素</li>
+<li>客户端路由</li>
+</ol>
+<a id="more"></a>
+<h2 id="恶魔般的-eval"><a href="#恶魔般的-eval" class="headerlink" title="恶魔般的 eval"></a>恶魔般的 eval</h2><blockquote>
+<p>eval() 函数将传入的字符串当做 JavaScript 代码执行。</p>
+</blockquote>
+<p>一个常见的执行代码的方案是使用 eval() 函数。通过 eval() 执行的代码能够访问到全局和闭包的作用域，但这会引起代码注入的安全问题，这也是让它成为 JavaScript 特性中最臭名昭著的一个的原因。<br>尽管 eval() 让人很厌恶，但是在某些场景下不得不说它十分有用。绝大多数的现代前端框架都需要它的功能，但是由于上述提及的问题而不敢使用它。结果就是，许多在沙箱中求值而不是全局作用域下的替代方案如雨后春笋般涌现。沙箱可以阻止代码访问我们的安全数据，通常它只是一个普通的 JavaScript 对象取代了原来的全局对象，用来运行代码。</p>
+<h2 id="常用方案"><a href="#常用方案" class="headerlink" title="常用方案"></a>常用方案</h2><p>最常用的 eval() 的替代方案是用一个分步过程完全重写，它由两个步骤组成 - 分析和编译传递过来的字符串。首先解析器会创建一个抽象的语法树，然后由编译器遍历这个树，在沙箱中编译成正常的代码。<br>这是一个广泛应用了的方案，但是被认为对于如此简单的一件事而言，它过于庞大和复杂了。比起修复 <code>eval()</code>，重写所有代码本身就有可能导致大量的 bug，并且还需要频繁更新代码以遵循编程语言的更新。</p>
+<h2 id="替代方案"><a href="#替代方案" class="headerlink" title="替代方案"></a>替代方案</h2><p><a href="http://nx-framework.com/" target="_blank" rel="external">NX</a> 避免重写所有原生代码。通过一个迷你的库执行代码，这个库使用了一些新的并且鲜为人知的 JavaScript 特性。<br>这一部分将会逐步介绍一些 JavaScript 特性，并且使用它们来剖析<a href="https://github.com/RisingStack/nx-compile" target="_blank" rel="external">nx-compile</a>这个执行代码的库。这个库有一个叫 <code>compileCode()</code> 函数，工作方式如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> code = compileCode(<span class="string">'return num1 + num2'</span>)</div><div class="line"><span class="built_in">console</span>.log(code(&#123; <span class="attr">num1</span>: <span class="number">10</span>, <span class="attr">num2</span>: <span class="number">7</span> &#125;))</div><div class="line"><span class="comment">// 输出17</span></div><div class="line"><span class="keyword">const</span> globalNum = <span class="number">12</span></div><div class="line"><span class="keyword">const</span> otherCode = compileCode(<span class="string">'return globalNum'</span>)</div><div class="line"><span class="built_in">console</span>.log(otherCode(&#123; <span class="attr">num1</span>: <span class="number">2</span>, num2; <span class="number">3</span> &#125;))</div><div class="line"><span class="comment">// 全局作用域是被保护的</span></div><div class="line"><span class="comment">// 输出 undefined</span></div></pre></td></tr></table></figure>
+<p>在文章的最后，我们将会用少于20行代码实现<code>compileCode()</code>函数。</p>
+<h2 id="new-Function"><a href="#new-Function" class="headerlink" title="new Function()"></a>new Function()</h2><blockquote>
+<p>这个构造函数用于创建函数对象。在 JavaScript 中，每个函数其实都是一个函数对象。</p>
+</blockquote>
+<p>这个 <code>Function</code> 就是 <code>eval()</code> 的替代方案。<code>new Function(...args, &#39;funcBody&#39;)</code> 以代码形式运算传递进来的 <code>funcBody</code> 字符串，并且返回一个函数用于执行解析完的代码。它和 <code>eval()</code> 不同的地方在于两个主要地方：</p>
+<ul>
+<li>传递进来的代码它进行一次运算。调用返回的函数也不会再次运算，只是执行这段代码。</li>
+<li>它不能访问本地闭包内的变量，但是，它可以访问全局作用域。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span>(<span class="params">src</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Function</span>(src);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>对于 <code>eval()</code>, <code>new Function()</code> 在我们的案例中是一个更好的替代方案。在性能和安全上它表现得更加优秀，但是为了让它真的可用，全局作用域还是需要被保护起来的。</p>
+<h2 id="With-关键字"><a href="#With-关键字" class="headerlink" title="With 关键字"></a>With 关键字</h2><blockquote>
+<p>with 语句用于扩展一个语句的作用域链</p>
+</blockquote>
+<p><code>with</code> 是个鲜为人知的 JavaScript 关键字。它允许在半沙箱环境下的执行。在 <code>with</code> 的块作用域下的代码会首先尝试从传递进来的对象上检索变量，但是如果它从里面找不到，它会去闭包作用域和全局作用域中寻找，闭包作用域被 <code>new Function()</code> 保护起来了，所以我们只需要担心全局作用域了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span>(<span class="params">src</span>) </span>&#123;</div><div class="line">  src = <span class="string">'with (sandbox) &#123;'</span> + src + <span class="string">'&#125;'</span></div><div class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">'sandbox'</span>, src)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>with</code> 在内部使用了 <code>in</code> 操作符。在块作用域里面的每个变量都会执行 <code>variable in sandbox</code> 的判断。如果判断为真，它从 sandbox 中检索出变量。否则，它会从全局作用域中寻找。通过糊弄 <code>with</code> 让它每次执行 <code>variable in sandbox</code> 都为真值，从而阻止它访问全局作用域。</p>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_simple_with_statement-1470403007416.svg" alt=""></p>
+<h2 id="ES6-Proxy"><a href="#ES6-Proxy" class="headerlink" title="ES6 Proxy"></a>ES6 Proxy</h2><blockquote>
+<p>Proxy 对象用于定义基本操作的自定义行为 (例如, 属性查找，赋值，枚举，函数调用,等)。</p>
+</blockquote>
+<p>ES6 的 Proxy 会包裹一个对象并且定义代理函数，代理函数可能会拦截一个对象的基本操作。在一个基本操作触发时会调用代理函数。通过用 <code>Proxy</code> 包裹 <code>sandbox</code> 对象和定义 <code>has</code> 代理，我们可以重写默认的 <code>in</code> 操作符的行为。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span>(<span class="params">src</span>) </span>&#123;</div><div class="line">  src = <span class="string">'with (sandbox) &#123;'</span> + src + <span class="string">'&#125;'</span></div><div class="line">  <span class="keyword">const</span> code = <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">'sandbox'</span>, src)</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">sandbox</span>) </span>&#123;</div><div class="line">    <span class="keyword">const</span> sandboxProxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>(sandbox, &#123; has &#125;)</div><div class="line">    <span class="keyword">return</span> code(sandboxProxy)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">has</span>(<span class="params">target, key</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> has</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述的代码糊弄了 <code>with</code> 块级作用域。<code>variable in sandbox</code> 将会总是执行结果为真，因为 <code>has</code> 被代理成总是返回真。在 <code>with</code> 块级作用域内的代码就绝不会访问到全局作用域了。</p>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_with_statement_and_proxies-1470403030877.svg" alt=""></p>
+<h2 id="Symbol-unscopables"><a href="#Symbol-unscopables" class="headerlink" title="Symbol.unscopables"></a>Symbol.unscopables</h2><blockquote>
+<p>Symbol 是一种唯一且不可变的数据类型，可以用作对象的属性。</p>
+</blockquote>
+<p><code>Symbol.unscopables</code> 是一种符号。一个用 JavaScript <code>Symbol</code> 构建的，代表语言的内部行为。比如符号可以用于添加或者重写遍历或者原始的换行行为。</p>
+<blockquote>
+<p>Symbol.unscopables 指用于指定对象值，其对象自身和继承的从关联对象的 with 环境绑定中排除的属性名称。</p>
+</blockquote>
+<p><code>Symbol.unscopable</code> 用于定义一个对象的不可访问属性。在 <code>with</code> 块级作用域中是不能访问到 sandbox 内的不可能访问属性的，但是闭包作用域和全局作用域是可以直接访问的。<code>Symbol.unscopable</code> 是一种十分少用的特性。可以读这篇<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/unscopables" target="_blank" rel="external">文章</a>了解原因。</p>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_security_issue-1470403047129.svg" alt=""></p>
+<p>我们可以修复这个问题，通过定义一个 <code>get</code> 代理函数到 sandbox 的 <code>Proxy</code> 上，它拦截 <code>Symbol.unscopables</code> 的检索，并且总是返回 <code>undefined</code>。这可以糊弄 <code>with</code> 块级作用域认为我们的 sandbox 对象上没有这个属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span>(<span class="params">src</span>) </span>&#123;</div><div class="line">  src = <span class="string">'with (sandbox) &#123;'</span> + src + <span class="string">'&#125;'</span></div><div class="line">  <span class="keyword">const</span> code = <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">'sandbox'</span>, src)</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">sandbox</span>) </span>&#123;</div><div class="line">    <span class="keyword">const</span> sandProxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>(sandbox, &#123; has, get &#125;)</div><div class="line">    <span class="keyword">return</span> code(sandbox)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">has</span>(<span class="params">target, key</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params">target, key</span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (key === <span class="built_in">Symbol</span>.unscopables) <span class="keyword">return</span> <span class="literal">undefined</span></div><div class="line">  <span class="keyword">return</span> target[key]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="http://blog-assets.risingstack.com/2016/Aug/with_statements_and_proxies_has_and_get_traps-1470403073125.svg" alt=""></p>
+<h2 id="用于缓存的-WeakMap"><a href="#用于缓存的-WeakMap" class="headerlink" title="用于缓存的 WeakMap"></a>用于缓存的 WeakMap</h2><p>现在的代码安全性是 👌 的，但是性能还有待提升，因为它在每次调用返回新的函数时都要创新一个代理对象。这个可以用缓存来解决，让每次用同一个沙箱的函数在调用的时用同一个 <code>Proxy</code>。</p>
+<p>一个代理属于一个沙箱对象，所以我们可以简单的添加代理到沙箱对象上作为属性值。尽管如此，这样的实现会暴露我们的内部细节，并且在沙箱对象被 <code>Object.freeze()</code> 处理成不可变对象的时候就失效了。在这样的情况下，用 <code>WeakMap</code> 是一种更好的选择。</p>
+<blockquote>
+<p>WeakMap 对象是一组键/值对的集合，且其中的键是弱引用的。键必须是对象，值可以是任意值。</p>
+</blockquote>
+<p>WeakMap 可以不需要扩展属性就把一份数据放到一个对象上。我们可以用 <code>WeakMap</code> 直接把沙箱对象放到 <code>Proxies</code> 缓存里面去。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> sandboxProxies = <span class="keyword">new</span> <span class="built_in">WeakMap</span>()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span> (<span class="params">src</span>) </span>&#123;  </div><div class="line">  src = <span class="string">'with (sandbox) &#123;'</span> + src + <span class="string">'&#125;'</span></div><div class="line">  <span class="keyword">const</span> code = <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">'sandbox'</span>, src)</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">sandbox</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!sandboxProxies.has(sandbox)) &#123;</div><div class="line">      <span class="keyword">const</span> sandboxProxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>(sandbox, &#123;has, get&#125;)</div><div class="line">      sandboxProxies.set(sandbox, sandboxProxy)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> code(sandboxProxies.get(sandbox))</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">has</span> (<span class="params">target, key</span>) </span>&#123;  </div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span> (<span class="params">target, key</span>) </span>&#123;  </div><div class="line">  <span class="keyword">if</span> (key === <span class="built_in">Symbol</span>.unscopables) <span class="keyword">return</span> <span class="literal">undefined</span></div><div class="line">  <span class="keyword">return</span> target[key]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样每个沙箱对象就只会创建一次 <code>Proxy</code>。</p>
+<h2 id="最后的提醒"><a href="#最后的提醒" class="headerlink" title="最后的提醒"></a>最后的提醒</h2><p>上述的 <code>compileCode()</code> 案例是一个可用沙箱求值代码，仅仅只用了 19 行代码。如果你想看完整的 nx-compile 库，可以在<a href="https://github.com/RisingStack/nx-compile" target="_blank" rel="external">这里</a>找到。</p>
+<p>抛开代码执行的解释，这一章节的目标是展示 ES6 的新属性是如何修复一些已存在的问题，而不是重写他们。我试着通过这个案例证明 <code>Proxy</code> 和 <code>Symbol</code> 的能力有多大。</p>
+<blockquote>
+<p><a href="https://blog.risingstack.com/writing-a-javascript-framework-sandboxed-code-evaluation/" target="_blank" rel="external">原文</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/tags/翻译/" rel="tag"># 翻译</a>
+          
+            <a href="/tags/架构/" rel="tag"># 架构</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/" rel="next" title="写一个 JavaScript 框架（二）">
+                <i class="fa fa-chevron-left"></i> 写一个 JavaScript 框架（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars1.githubusercontent.com/u/15364542?v=3&s=460"
+               alt="Listen" />
+          <p class="site-author-name" itemprop="name">Listen</p>
+           
+              <p class="site-description motion-element" itemprop="description">Wanner be a great Engineer</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#恶魔般的-eval"><span class="nav-number">1.</span> <span class="nav-text">恶魔般的 eval</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用方案"><span class="nav-number">2.</span> <span class="nav-text">常用方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#替代方案"><span class="nav-number">3.</span> <span class="nav-text">替代方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-Function"><span class="nav-number">4.</span> <span class="nav-text">new Function()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#With-关键字"><span class="nav-number">5.</span> <span class="nav-text">With 关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ES6-Proxy"><span class="nav-number">6.</span> <span class="nav-text">ES6 Proxy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Symbol-unscopables"><span class="nav-number">7.</span> <span class="nav-text">Symbol.unscopables</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用于缓存的-WeakMap"><span class="nav-number">8.</span> <span class="nav-text">用于缓存的 WeakMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后的提醒"><span class="nav-number">9.</span> <span class="nav-text">最后的提醒</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Listen</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
