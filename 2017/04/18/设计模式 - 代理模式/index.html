@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="设计模式 - 代理模式"/>
+
+
+
+
+  <meta name="keywords" content="JavaScript,设计模式," />
+
+
+
+
+  <link rel="alternate" href="/default" title="Listen">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+
+
+
+<link rel="canonical" href="http://swarosky44.github.io/2017/04/18/设计模式 - 代理模式/"/>
+
+
+<meta name="description" content="最近离职在家，闲了好几天，复习一下代理模式。">
+<meta name="keywords" content="JavaScript,设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式 - 代理模式">
+<meta property="og:url" content="http://swarosky44.github.io/2017/04/18/设计模式 - 代理模式/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="最近离职在家，闲了好几天，复习一下代理模式。">
+<meta property="og:image" content="https://design-patterns.readthedocs.io/zh_CN/latest/_images/Proxy.jpg">
+<meta property="og:image" content="https://design-patterns.readthedocs.io/zh_CN/latest/_images/seq_Proxy.jpg">
+<meta property="og:updated_time" content="2017-09-13T07:23:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式 - 代理模式">
+<meta name="twitter:description" content="最近离职在家，闲了好几天，复习一下代理模式。">
+<meta name="twitter:image" content="https://design-patterns.readthedocs.io/zh_CN/latest/_images/Proxy.jpg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+
+<script>
+  var CONFIG = {
+    search: false,
+    searchPath: "/search.xml",
+    fancybox: true,
+    toc: true,
+  }
+</script>
+
+
+
+
+  
+
+  <script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-103969555-1', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+
+    <title> 设计模式 - 代理模式 · Listen </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Listen</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            Categories
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Listen</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              Home
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              Archives
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              Tags
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              Categories
+            
+          </a>
+        </li>
+      
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          设计模式 - 代理模式
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          Apr 18, 2017
+        </span>
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构"><span class="toc-text">结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UML-类图"><span class="toc-text">UML 类图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#时序图"><span class="toc-text">时序图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#图片懒加载"><span class="toc-text">图片懒加载</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <p>最近离职在家，闲了好几天，复习一下代理模式。</p>
+<a id="more"></a>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>给某一个对象提供一个代理对象，并有代理对象控制原对象的引用。属于结构型模式。</p>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><h3 id="UML-类图"><a href="#UML-类图" class="headerlink" title="UML 类图"></a>UML 类图</h3><p><img src="https://design-patterns.readthedocs.io/zh_CN/latest/_images/Proxy.jpg" alt=""></p>
+<p>由上图可以分析出构造一个代理模式需要三个类：</p>
+<ul>
+<li>Subject：抽象类；</li>
+<li>Proxy：代理类；</li>
+<li>RealSubject：实际类；</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;&#125;</div><div class="line"></div><div class="line">  request () &#123;</div><div class="line">    <span class="built_in">console</span>.error(<span class="string">'请重写 request 方法！'</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">extends</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  afterRequest () &#123;&#125;</div><div class="line"></div><div class="line">  beforeRequest () &#123;&#125;</div><div class="line"></div><div class="line">  request () &#123;&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">RealSubject</span> <span class="keyword">extends</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  request () &#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h3><p><img src="https://design-patterns.readthedocs.io/zh_CN/latest/_images/seq_Proxy.jpg" alt=""></p>
+<p>通过时序图，我们可以了解到 用户（:Client）是直接交互 <code>Proxy</code> 类的实例的。所以我们按照时序图中的 1.0 - 1.5 顺序去具体实现 UML 图的三个类。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;&#125;</div><div class="line"></div><div class="line">  request () &#123;</div><div class="line">    <span class="built_in">console</span>.error(<span class="string">'请重写 request 方法！'</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">extends</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">    <span class="keyword">this</span>.realSubject = <span class="keyword">new</span> RealSubject()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  afterRequest () &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'request end'</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  beforeRequest () &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'request start'</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  request () &#123;</div><div class="line">    <span class="keyword">this</span>.beforeRequest()</div><div class="line">    <span class="keyword">this</span>.realSubject.request()</div><div class="line">    <span class="keyword">this</span>.afterRequest()</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">RealSubject</span> <span class="keyword">extends</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  request () &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'requesting'</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> proxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>()</div><div class="line">proxy.request()</div><div class="line"></div><div class="line"><span class="comment">// "request start"</span></div><div class="line"><span class="comment">// "requesting"</span></div><div class="line"><span class="comment">// "request end"</span></div></pre></td></tr></table></figure>
+<p>这样我们就可以实现一个 代理模式啦 🙃</p>
+<p>当然实际项目中可能没有这么简单，也许在访问真实对象之前需要发送一个异步请求 或者 真实对象的请求是个异步对象，这样我们就需要加上一些异步处理了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">extends</span> <span class="title">Subject</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">    <span class="keyword">this</span>.realSubject = <span class="keyword">new</span> RealSubject()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  afterRequest () &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'request end'</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  beforeRequest () &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</div><div class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'request start, sleep 1000'</span>)</div><div class="line">        resolve()</div><div class="line">      &#125;, <span class="number">1000</span>)</div><div class="line">    &#125;)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  request () &#123;</div><div class="line">    (<span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params">_this</span>) </span>&#123;</div><div class="line">      <span class="keyword">await</span> _this.beforeRequest()</div><div class="line">      <span class="keyword">await</span> _this.realSubject.request()</div><div class="line">      <span class="keyword">await</span> _this.afterRequest()</div><div class="line">    &#125;)(<span class="keyword">this</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这只是一个简单的示例，具体的实现依据业务实际的需求进行改写。</p>
+<h2 id="图片懒加载"><a href="#图片懒加载" class="headerlink" title="图片懒加载"></a>图片懒加载</h2><p>web 上对于代理模式的实现，懒加载是最好的体现了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ImgSubject</span> </span>&#123;</div><div class="line">	<span class="keyword">constructor</span> (node, imgUrl) &#123;</div><div class="line">      	<span class="keyword">this</span>.node = node</div><div class="line">        <span class="keyword">this</span>.imgUrl = imgUrl</div><div class="line">    &#125;</div><div class="line">    request () &#123;</div><div class="line">        <span class="built_in">console</span>.error(<span class="string">'请重写 request 方法'</span>)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">RealImgSubject</span> <span class="keyword">extends</span> <span class="title">ImgSubject</span> </span>&#123;</div><div class="line">    <span class="keyword">constructor</span> (node, imgUrl) &#123;</div><div class="line">        <span class="keyword">super</span>(node, imgUrl)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    request () &#123;</div><div class="line">        <span class="keyword">this</span>.node.src = <span class="keyword">this</span>.imgUrl</div><div class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.node.src)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ImgProxy</span> <span class="keyword">extends</span> <span class="title">ImgSubject</span> </span>&#123;</div><div class="line">    <span class="keyword">constructor</span> (node, imgUrl, loadSrc) &#123;</div><div class="line">        <span class="keyword">super</span>(node, imgUrl)</div><div class="line">        <span class="keyword">this</span>.loadSrc = loadSrc</div><div class="line">        <span class="keyword">this</span>.realImg = <span class="keyword">new</span> RealImgSubject(node, imgUrl)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    beforeRequest () &#123;</div><div class="line">        <span class="comment">// 先加载较小的 loading 图片</span></div><div class="line">        <span class="keyword">this</span>.node.src = <span class="keyword">this</span>.loadSrc</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</div><div class="line">            <span class="keyword">let</span> fakeImgNode = <span class="built_in">document</span>.createElement(<span class="string">'img'</span>)</div><div class="line">            fakeImgNode.src = <span class="keyword">this</span>.imgUrl</div><div class="line">            fakeImgNode.onload = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">                resolve()</div><div class="line">            &#125;</div><div class="line">        &#125;)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    afterRequest () &#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'其实没我什么事...'</span>)</div><div class="line">    &#125;</div><div class="line">    request () &#123;</div><div class="line">        (<span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params">_this</span>) </span>&#123;</div><div class="line">            <span class="keyword">await</span> _this.beforeRequest()</div><div class="line">            <span class="keyword">await</span> _this.realImg.request()</div><div class="line">            <span class="keyword">await</span> _this.afterRequest()</div><div class="line">        &#125;)(<span class="keyword">this</span>)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> node = <span class="built_in">document</span>.querySelector(<span class="string">'#testImg'</span>)</div><div class="line"><span class="keyword">let</span> proxy = <span class="keyword">new</span> ImgProxy(</div><div class="line">    node,</div><div class="line">    <span class="string">'https://www.google.com/logos/doodles/2017/esther-afua-ocloos-98th-birthday-5995813305057280-l.png'</span>,</div><div class="line">    <span class="string">'http://img.lanrentuku.com/img/allimg/1212/5-121204193Q8.gif'</span></div><div class="line">)</div><div class="line"><span class="built_in">console</span>.log(proxy)</div><div class="line">proxy.request()</div></pre></td></tr></table></figure>
+<p>以上就是一个简单的图片懒加载的实现。当然代理模式的使用场景是非常多的。代理模式的优点在于</p>
+<ul>
+<li>代理模式能够协调调用者和被调用者，在一定程度上降低了系 统的耦合度。</li>
+<li>远程代理使得客户端可以访问在远程机器上的对象，远程机器 可能具有更好的计算性能与处理速度，可以快速响应并处理客户端请求。</li>
+<li>虚拟代理通过使用一个小对象来代表一个大对象，可以减少系 统资源的消耗，对系统进行优化并提高运行速度。</li>
+<li>保护代理可以控制对真实对象的使用权限。</li>
+</ul>
+<p>以上就是我对代理模式的学习啦 ~ 😎</p>
+<hr>
+<blockquote>
+<p><a href="https://design-patterns.readthedocs.io/zh_CN/latest/structural_patterns/proxy.html#id12" target="_blank" rel="external">图解代理模式</a></p>
+</blockquote>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>Listen</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="http://swarosky44.github.io">http://swarosky44.github.io</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="http://swarosky44.github.io/2017/04/18/设计模式 - 代理模式/">http://swarosky44.github.io/2017/04/18/设计模式 - 代理模式/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/JavaScript/">JavaScript</a>
+            
+              <a href="/tags/设计模式/">设计模式</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/04/20/数据结构 - Stack/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">数据结构 - Stack</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/04/12/数据结构 - Array/">
+        <span class="next-text nav-default">数据结构 - Array</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
+  </span>
+  
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Listen</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://swarosky44.github.io/2017/04/18/设计模式 - 代理模式/';
+        this.page.identifier = '2017/04/18/设计模式 - 代理模式/';
+        this.page.title = '设计模式 - 代理模式';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//swarosky44.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
+
+    
+  </body>
+</html>
