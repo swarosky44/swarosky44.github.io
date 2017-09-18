@@ -34,18 +34,18 @@
 <link rel="canonical" href="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript框架（四）/"/>
 
 
-<meta name="description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由  数据绑定简介 数据绑定是一种很常用的技术用于绑定和同步数据源的生产者和消费者  这是一种通用的定义，指出了通常数据绑定">
+<meta name="description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
 <meta name="keywords" content="JavaScript,翻译,架构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="写一个 JavaScript 框架（四）">
 <meta property="og:url" content="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript框架（四）/index.html">
 <meta property="og:site_name" content="Listen">
-<meta property="og:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由  数据绑定简介 数据绑定是一种很常用的技术用于绑定和同步数据源的生产者和消费者  这是一种通用的定义，指出了通常数据绑定">
+<meta property="og:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Sep/The_accessor_data_binding_technique-1473151244710.svg">
-<meta property="og:updated_time" content="2017-09-18T06:16:36.000Z">
+<meta property="og:updated_time" content="2017-09-18T06:29:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="写一个 JavaScript 框架（四）">
-<meta name="twitter:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由  数据绑定简介 数据绑定是一种很常用的技术用于绑定和同步数据源的生产者和消费者  这是一种通用的定义，指出了通常数据绑定">
+<meta name="twitter:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
 <meta name="twitter:image" content="http://blog-assets.risingstack.com/2016/Sep/The_accessor_data_binding_technique-1473151244710.svg">
 
 
@@ -236,6 +236,7 @@
 <li>自定义元素</li>
 <li>客户端路由</li>
 </ol>
+<a id="more"></a>
 <h2 id="数据绑定简介"><a href="#数据绑定简介" class="headerlink" title="数据绑定简介"></a>数据绑定简介</h2><blockquote>
 <p>数据绑定是一种很常用的技术用于绑定和同步数据源的生产者和消费者</p>
 </blockquote>
@@ -302,15 +303,15 @@
 
   <div class="post-copyright">
     <p class="copyright-item">
-      <span>作者: </span>
+      <span>Author: </span>
       <span>Listen</span>
     </p>
     <p class="copyright-item">
-      <span>来源: </span>
+      <span>Origin: </span>
       <a href="http://swarosky44.github.io">http://swarosky44.github.io</a>
     </p>
     <p class="copyright-item">
-      <span>链接: </span>
+      <span>Link: </span>
       <a href="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript框架（四）/">http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript框架（四）/</a>
     </p>
 
