@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="写一个 JavaScript 框架（四）"/>
+
+
+
+
+  <meta name="keywords" content="JavaScript,翻译,架构," />
+
+
+
+
+  <link rel="alternate" href="/default" title="Listen">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+
+
+
+<link rel="canonical" href="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/"/>
+
+
+<meta name="description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta name="keywords" content="JavaScript,翻译,架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="写一个 JavaScript 框架（四）">
+<meta property="og:url" content="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/index.html">
+<meta property="og:site_name" content="Listen">
+<meta property="og:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta property="og:image" content="http://blog-assets.risingstack.com/2016/Sep/The_accessor_data_binding_technique-1473151244710.svg">
+<meta property="og:updated_time" content="2017-09-18T06:29:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="写一个 JavaScript 框架（四）">
+<meta name="twitter:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta name="twitter:image" content="http://blog-assets.risingstack.com/2016/Sep/The_accessor_data_binding_technique-1473151244710.svg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+
+<script>
+  var CONFIG = {
+    search: false,
+    searchPath: "/search.xml",
+    fancybox: true,
+    toc: true,
+  }
+</script>
+
+
+
+
+  
+
+  <script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-103969555-1', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+
+    <title> 写一个 JavaScript 框架（四） · Listen </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Listen</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/categories">
+        <li class="mobile-menu-item">
+          
+          
+            Categories
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Listen</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              Home
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              Archives
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              Tags
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/categories">
+            
+            
+              Categories
+            
+          </a>
+        </li>
+      
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          写一个 JavaScript 框架（四）
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          Sep 15, 2017
+        </span>
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">Contents</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数据绑定简介"><span class="toc-text">数据绑定简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#脏检查"><span class="toc-text">脏检查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#语法"><span class="toc-text">语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#监听转变"><span class="toc-text">监听转变</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问器技术"><span class="toc-text">访问器技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#语法-1"><span class="toc-text">语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#监听转变-1"><span class="toc-text">监听转变</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#两种技术的比较"><span class="toc-text">两种技术的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#语法-2"><span class="toc-text">语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#表现"><span class="toc-text">表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#灵活性"><span class="toc-text">灵活性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#选择的时机"><span class="toc-text">选择的时机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于下一篇文章"><span class="toc-text">关于下一篇文章</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <p>这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。</p>
+<p>这个系列包括以下章节：</p>
+<ol>
+<li><a href="http://swarosky44.github.io/2017/07/26/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/#more">项目结构</a></li>
+<li><a href="http://swarosky44.github.io/2017/07/31/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6/#more">调度执行</a></li>
+<li><a href="http://swarosky44.github.io/2017/08/02/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%89%EF%BC%89/">沙箱求值</a></li>
+<li>数据绑定简介（当前章节）</li>
+<li>用 ES6 Proxy 实现数据绑定</li>
+<li>自定义元素</li>
+<li>客户端路由</li>
+</ol>
+<a id="more"></a>
+<h2 id="数据绑定简介"><a href="#数据绑定简介" class="headerlink" title="数据绑定简介"></a>数据绑定简介</h2><blockquote>
+<p>数据绑定是一种很常用的技术用于绑定和同步数据源的生产者和消费者</p>
+</blockquote>
+<p>这是一种通用的定义，指出了通常数据绑定技术需要构建的模块。</p>
+<ul>
+<li>定义生产者和消费者的句柄</li>
+<li>定义触发同步操作的变量的句柄</li>
+<li>定义监听生产者变量改变的方法</li>
+<li>定义当改变发生时的同步函数的句柄。文本从现在开始这个函数我们统称为 <code>handler()</code></li>
+</ul>
+<p>在不同的数据绑定技术中会用不同的方法实现以上的模块，在下一个章节中就会介绍两个这样的技术：脏检查 &amp; 访问器。它们都各有优缺点，在介绍完之后，我会简单的评价一下两种技术。</p>
+<h2 id="脏检查"><a href="#脏检查" class="headerlink" title="脏检查"></a>脏检查</h2><p>脏检查可能是当下最被人们熟悉的数据绑定技术。在核心概念上它十分简单，不需要用到复杂的语法技巧，这让它在以前是一个不错的选择。</p>
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>定义生产者和消费者不需要特别的语法，直接用 JavaScript 的空对象即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> provider = &#123;</div><div class="line">  <span class="attr">message</span>: <span class="string">'Hello World'</span>,</div><div class="line">&#125;;</div><div class="line"><span class="keyword">const</span> consumer = <span class="built_in">document</span>.createElement(<span class="string">'p'</span>);</div></pre></td></tr></table></figure>
+<p>同步通常是由于生产者的属性转变所触发。这些需要被观察转变的属性必须明确映射到它们的 <code>handler()</code> 上。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">observe(provider, <span class="string">'message'</span>, message =&gt; &#123;</div><div class="line">  consumer.innerHTML = message;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这个 <code>observer()</code> 函数仅仅是保存 <code>(provider, property) -&gt; handler</code> 这个映射用于之后使用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">observer</span>(<span class="params">provider, prop, handler</span>) </span>&#123;</div><div class="line">  provider._handlers[prop] = handler;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>有了这个，我们的句柄可以用于定义生产者和消费者，并且给属性的转变，注册 <code>handler()</code> 函数。这个开放的 API 在我们库里就已经准备好了，下一步就是内部的实现。</p>
+<h2 id="监听转变"><a href="#监听转变" class="headerlink" title="监听转变"></a>监听转变</h2><p>脏检查被称为脏是有一个原因的，它用周期性的检测替代了直接监听属性的转变。从现在开始，我们现在称这个检查为消化系统。消化系统迭代循环每个由 <code>observe()</code> 添加进来的 <code>(provider, property) -&gt; handler</code>，并且检测属性值是否从上一次迭代过程中发生了转变。一个简单的实现如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">digest</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  providers.forEach(digestProvider);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">digestProvider</span>(<span class="params">provider</span>) </span>&#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> prop <span class="keyword">in</span> provider._handlers) &#123;</div><div class="line">    <span class="keyword">if</span> (provider._preValues[prop] !== provider[prop]) &#123;</div><div class="line">      provider._preValues[prop] = provider[prop];</div><div class="line">      handler(provider[prop]);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个 <code>digest()</code> 函数需要一次次的运行用来确保状态的同步。</p>
+<h2 id="访问器技术"><a href="#访问器技术" class="headerlink" title="访问器技术"></a>访问器技术</h2><p>访问器技术是目前的一个趋势。它没有那么大范围的支持是因为它需要 ES5 getter/setter 函数，但是它让数据绑定的实现变得十分优雅。</p>
+<h2 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h2><p>定义生产者需要特别的语法。生产者的空对象必须传递给 <code>observable()</code> 函数，将它转变成一个可观察的对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> provider = observable(&#123;</div><div class="line">  <span class="attr">greeting</span>: <span class="string">'Hello'</span>,</div><div class="line">  <span class="attr">subject</span>: <span class="string">'World'</span>,</div><div class="line">&#125;);</div><div class="line"><span class="keyword">const</span> consumer = <span class="built_in">document</span>.createElement(<span class="string">'p'</span>);</div></pre></td></tr></table></figure>
+<p>比起通过 <code>handler()</code> 映射的语法，访问器的语法的不便要小多了。在脏检查中，我们不得不明确地定义每个需要被观察属性，如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">observe(provider, <span class="string">'greeting'</span>, greeting =&gt; &#123;</div><div class="line">  consumer.innerHTML = greeting + <span class="string">' '</span> + provider.subject;</div><div class="line">&#125;);</div><div class="line">observe(provide, <span class="string">'subject'</span>, subject =&gt; &#123;</div><div class="line">  consumer.innerHTML = provider.greeting + <span class="string">' '</span> _ subject;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这样的语法是冗余且粗糙的。访问器技术可以自动地发现属性转变，并且调用对应的 <code>handler()</code> 函数，这让我们可以写出十分简洁的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">observe(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  consumer.innerHTML = provider.greeting + <span class="string">' '</span> + provider.subject;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p><code>observe()</code> 的实现和脏检查的实现是不一样的。它仅仅执行一下传递进来的 <code>handler()</code> 函数并且标记为当前活跃状态。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> activeHandler;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">observe</span>(<span class="params">handler</span>) </span>&#123;</div><div class="line">  activeHandler = handler;</div><div class="line">  handler();</div><div class="line">  activeHandler = <span class="literal">undefined</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>需要注意的是，这里我们通过使用 <code>activeHandler</code> 变量和 JavaScript 的单线程的特性去保持执行 <code>handler()</code> 函数。</p>
+<h3 id="监听转变-1"><a href="#监听转变-1" class="headerlink" title="监听转变"></a>监听转变</h3><p>这是访问器技术的来源。生产者通过增加 <code>getter/setter</code> 在背后给了我们巨大的支持。它通过以下的方式拦截对生产者属性的 <code>get/set</code> 操作：</p>
+<ul>
+<li>get: 如果当前有个 <code>activeHandler</code> 正在运行，保存 <code>(provider, property) -&gt; activeHandler</code> 映射在之后使用。</li>
+<li>set: 运行所有与该属性映射的 <code>handler()</code> 函数。</li>
+</ul>
+<p><img src="http://blog-assets.risingstack.com/2016/Sep/The_accessor_data_binding_technique-1473151244710.svg" alt=""></p>
+<p>下面的代码示范了对生产者的一个属性的简单实践：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">observableProp</span>(<span class="params">provider, prop</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> value = provider[prop];</div><div class="line">  <span class="built_in">Object</span>.defineProperty(provider, prop, &#123;</div><div class="line">    get() &#123;</div><div class="line">      <span class="keyword">if</span> (activeHandler) &#123;</div><div class="line">        provider._handlers[prop] = activeHandler;</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">return</span> value;</div><div class="line">    &#125;,</div><div class="line">    set(newValue) &#123;</div><div class="line">      value = newValue;</div><div class="line">      <span class="keyword">const</span> handler = obj._handlers[prop];</div><div class="line">      <span class="keyword">if</span> (handler) &#123;</div><div class="line">        activeHandler = handler;</div><div class="line">        handler();</div><div class="line">        activeHandler = <span class="literal">undefined</span>;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在上一节中提到的 <code>observable()</code> 函数以递归方式遍历生产者的属性，并将其全部转换成被观察的通过上面提及的 <code>observableProp</code> 函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">observable</span>(<span class="params">provider</span>) </span>&#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> prop <span class="keyword">in</span> provider) &#123;</div><div class="line">    observableProp(provider, prop);</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> provider[prop] === <span class="string">'object'</span>) &#123;</div><div class="line">      observable(provider[prop]);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这是一个十分简单的实现，但是用于比较两种技术是已经足够了的。</p>
+<h2 id="两种技术的比较"><a href="#两种技术的比较" class="headerlink" title="两种技术的比较"></a>两种技术的比较</h2><p>在这个章节中，我会简明地指出脏检查和访问器技术之间的优劣。</p>
+<h3 id="语法-2"><a href="#语法-2" class="headerlink" title="语法"></a>语法</h3><p>脏检查无需特别的语法来定义生产者和消费者，但是在映射 <code>(provider, property) -&gt; handler()</code> 时候是繁冗和笨重的。</p>
+<p>访问器技术需要生产者被 <code>observable()</code> 包裹，但是会自动将 <code>handler()</code> 完成映射。对于大型项目的数据绑定，这是一个必须要有的特性。</p>
+<h3 id="表现"><a href="#表现" class="headerlink" title="表现"></a>表现</h3><p>脏检查的性能是总所周知的差劲。在每次的消化循环中它必须多次检查每个 <code>(provider, property) -&gt; handler</code>。除此之外，即使当前的 App 是处于空闲状态，它也必须保持工作，因为它无法知道何时属性会发生转变。</p>
+<p>在性能上访问器技术则更快，但是对于大型的可观察的对象，性能会有所下降。将生产者的每个属性都转换，通常来说是一种过度使用。一种解决办法是在需要时动态地构建 <code>getter/setter</code>，而不是一次性全部构建完成。除此之外，还有一种办法实在不需要处理的属性上再包裹一层 <code>noObserve()</code> 函数用于告诉 <code>observable()</code> 远离这个属性，这将额外引入一些新的语法进来。</p>
+<h3 id="灵活性"><a href="#灵活性" class="headerlink" title="灵活性"></a>灵活性</h3><p>脏检查自然地就会为动态添加的自定义属性以及访问器上的属性工作。</p>
+<p>访问器技术在这一方面则不如人意，自定义属性并不能被支持，因为它们不在 <code>getter/setter</code> 树上。比如数组上就会发生这种问题，但是它可以通过再添加新属性之后手动执行 <code>observableProp()</code> 来修复。<code>Getter/Setter</code> 属性也不被支持，因为访问器不能再被访问器包裹。一种常用的变通方法是用 <code>computed()</code> 函数取代 <code>getter</code>。这也会引入更多的自定义语法。</p>
+<h3 id="选择的时机"><a href="#选择的时机" class="headerlink" title="选择的时机"></a>选择的时机</h3><p>脏检查在这方面并没有给我们太多的自由，由于我们实际上无法知道属性发生转变的时机。<code>handler()</code> 函数只能异步执行，通过一次又一次循环运行 <code>digest()</code>。</p>
+<p>通过访问器技术添加的 <code>Getters/Setters</code> 是同步触发的，因此我们有选择的自由。我们还可以选择是立即执行 <code>handler()</code> 或者保存在异步操作之后的批处理中。前者让我们有可预测的优势，后者让我们减少重复的操作以提升性能。</p>
+<h2 id="关于下一篇文章"><a href="#关于下一篇文章" class="headerlink" title="关于下一篇文章"></a>关于下一篇文章</h2><p>在下一篇文中，我将会介绍 <a href="https://github.com/RisingStack/nx-observe" target="_blank" rel="external">nx-observe</a> 数据绑定的库并且解释如何用 ES6 Proxies 取代 ES5 getters/setters 以清除更多的访问器技术的缺陷。</p>
+<blockquote>
+<p>翻译自 <a href="https://blog.risingstack.com/writing-a-javascript-framework-data-binding-dirty-checking/" target="_blank" rel="external">Writing a JavaScript Framework - Introduction to Data Binding, beyond Dirty Checking</a></p>
+</blockquote>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>Listen</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="http://swarosky44.github.io">http://swarosky44.github.io</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/">http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可
+    </p>
+  </div>
+
+
+
+      
+      
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/JavaScript/">JavaScript</a>
+            
+              <a href="/tags/翻译/">翻译</a>
+            
+              <a href="/tags/架构/">架构</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/11/03/天猫双11潮流盛典虚拟试衣活动总结/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">天猫双11潮流盛典虚拟试衣活动总结</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/">
+        <span class="next-text nav-default">写一个 JavaScript 框架（三）</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:your@email.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+      
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
+  </span>
+  
+  <span class="theme-info">
+    Theme - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Listen</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/';
+        this.page.identifier = '2017/09/15/翻译 - 写一个 JavaScript 框架（四）/';
+        this.page.title = '写一个 JavaScript 框架（四）';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//swarosky44.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
+
+    
+  </body>
+</html>
