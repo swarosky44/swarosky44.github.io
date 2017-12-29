@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/07/Canvas - 3D 旋转/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="最近两天撸了两个 canvas，3D 旋转 &amp;amp; ribbon。   3D 旋转我是从这里学来的，因为原博主写的比较简单，所以重新实现了一下。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://sfault-image.b0.upaiyun.com/362/072/3620720564-57de449b83024_articlex">
 <meta property="og:updated_time" content="2017-07-07T05:49:11.000Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础知识"><span class="toc-text">基础知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本原理"><span class="toc-text">基本原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#参数准备"><span class="toc-text">参数准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生成小球"><span class="toc-text">生成小球</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#旋转角度计算"><span class="toc-text">旋转角度计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#运动量计算"><span class="toc-text">运动量计算</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -228,11 +229,11 @@
         <p>最近两天撸了两个 canvas，3D 旋转 &amp; ribbon。</p>
 <iframe width="100%" height="300" src="//jsfiddle.net/eLnpwuye/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
 
-<p>3D 旋转我是从<a href="http://supperjet.github.io/2016/09/29/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%943D%E6%97%8B%E8%BD%AC%E4%B8%8E%E7%A2%B0%E6%92%9E/" target="_blank" rel="external">这里</a>学来的，因为原博主写的比较简单，所以重新实现了一下。</p>
+<p>3D 旋转我是从<a href="http://supperjet.github.io/2016/09/29/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%943D%E6%97%8B%E8%BD%AC%E4%B8%8E%E7%A2%B0%E6%92%9E/" target="_blank" rel="noopener">这里</a>学来的，因为原博主写的比较简单，所以重新实现了一下。</p>
 <a id="more"></a>
 <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><ul>
-<li><a href="http://supperjet.github.io/2016/08/17/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%943%E7%BB%B4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_blank" rel="external">3维模型构建</a> &amp; <a href="http://swarosky44.github.io/2017/06/27/Canvas%20-%203D%20%E7%B2%92%E5%AD%90%E6%95%88%E6%9E%9C/#more">3D粒子效果</a></li>
-<li><a href="http://supperjet.github.io/2016/07/06/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%94%E5%9D%90%E6%A0%87%E6%97%8B%E8%BD%AC/" target="_blank" rel="external">圆周运动</a></li>
+<li><a href="http://supperjet.github.io/2016/08/17/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%943%E7%BB%B4%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" target="_blank" rel="noopener">3维模型构建</a> &amp; <a href="http://swarosky44.github.io/2017/06/27/Canvas%20-%203D%20%E7%B2%92%E5%AD%90%E6%95%88%E6%9E%9C/#more">3D粒子效果</a></li>
+<li><a href="http://supperjet.github.io/2016/07/06/%E3%80%8A%E6%AF%8F%E5%91%A8%E4%B8%80%E7%82%B9canvas%E5%8A%A8%E7%94%BB%E3%80%8B%E2%80%94%E2%80%94%E5%9D%90%E6%A0%87%E6%97%8B%E8%BD%AC/" target="_blank" rel="noopener">圆周运动</a></li>
 </ul>
 <h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>基本了解了圆周运动的坐标计算公式 &amp; 3D模型之后，简单总结一下就是，如果想模拟一个物体的 3D 旋转，就必须扩展一下圆周运动的坐标计算公式。<br>盗用一下一只会飞的鱼的图：<br><img src="https://sfault-image.b0.upaiyun.com/362/072/3620720564-57de449b83024_articlex" alt=""></p>
 <p>由此可以得到公式<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 绕Z轴</span></div><div class="line">newX = x * cos(angleZ) - y * sin(angleZ);</div><div class="line">newY = y * cos(angleZ) + x * sin(angleZ);</div><div class="line"></div><div class="line"><span class="comment">// 绕X轴</span></div><div class="line">newY = y * cos(angleX) - z * sin(angleX);</div><div class="line">newZ = z * cos(angleX) - y * sin(angleX);</div><div class="line"></div><div class="line"><span class="comment">// 绕Y轴</span></div><div class="line">newX = x * cos(angleY) - z * sin(angleY);</div><div class="line">newZ = z * cos(angleY) + x * sin(angleY);</div></pre></td></tr></table></figure></p>
@@ -306,13 +307,13 @@
       <a class="prev" href="/2017/07/07/Canvas - ribbon/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Canvas - ribbon</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/01/Vue - 观察者 Watcher 构造过程/">
         <span class="next-text nav-default">Vue - 观察者 Watcher 构造过程</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -381,11 +382,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

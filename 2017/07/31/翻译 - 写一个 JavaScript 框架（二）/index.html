@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="这是写一个 JavaScript 框架系列的第二篇。在这个章节中，我将会阐明多种在浏览器中执行异步代码的方式。你们将会了解到事件轮询，各种调度技巧的区别，比如 setTimeout 和 Promises。 这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览NX 主页。 这个系列包括以下几个章节：  项目结构">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_lopp_with_tasks-1470127590983.svg">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_task_queues-1470127624172.svg">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_event_loop_with_microtask_queue-1470127679393.svg">
@@ -158,7 +159,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -167,7 +168,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -176,7 +177,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -185,7 +186,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -220,9 +221,9 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#事件轮询"><span class="toc-text">事件轮询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#任务队列"><span class="toc-text">任务队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微任务队列"><span class="toc-text">微任务队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#渲染"><span class="toc-text">渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用事件轮询"><span class="toc-text">使用事件轮询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤一"><span class="toc-text">步骤一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤二"><span class="toc-text">步骤二</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤三"><span class="toc-text">步骤三</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤四"><span class="toc-text">步骤四</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#需要牢记于心的事情"><span class="toc-text">需要牢记于心的事情</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#规则-1-amp-2"><span class="toc-text">规则 1 & 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rule-3-amp-4"><span class="toc-text">Rule 3 & 4</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-text">结论</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#事件轮询"><span class="toc-text">事件轮询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#任务队列"><span class="toc-text">任务队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#微任务队列"><span class="toc-text">微任务队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#渲染"><span class="toc-text">渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用事件轮询"><span class="toc-text">使用事件轮询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤一"><span class="toc-text">步骤一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤二"><span class="toc-text">步骤二</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤三"><span class="toc-text">步骤三</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#步骤四"><span class="toc-text">步骤四</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#需要牢记于心的事情"><span class="toc-text">需要牢记于心的事情</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#规则-1-amp-2"><span class="toc-text">规则 1 &amp; 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rule-3-amp-4"><span class="toc-text">Rule 3 &amp; 4</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结论"><span class="toc-text">结论</span></a></li></ol>
     </div>
   </div>
 
@@ -230,7 +231,7 @@
     <div class="post-content">
       
         <p>这是写一个 JavaScript 框架系列的第二篇。在这个章节中，我将会阐明多种在浏览器中执行异步代码的方式。你们将会了解到事件轮询，各种调度技巧的区别，比如 <code>setTimeout</code> 和 <code>Promises</code>。</p>
-<p>这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览<a href="http://nx-framework.com/" target="_blank" rel="external">NX 主页</a>。</p>
+<p>这个系列是关于一个叫 NX 的开源客户端框架。在这个系列中，主要是阐明在开发框架过程中遇见的一些我已克服的难题。如果你对 NX 感兴趣，请阅览<a href="http://nx-framework.com/" target="_blank" rel="noopener">NX 主页</a>。</p>
 <p>这个系列包括以下几个章节：</p>
 <ol>
 <li><a href="http://swarosky44.github.io/2017/07/26/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6%EF%BC%88%E4%B8%80%EF%BC%89/#more">项目结构</a></li>
@@ -285,7 +286,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Promise</span>.resolve().then().then(microtask1)</div><div class="line"><span class="built_in">Promise</span>.resolve().then(microtask2)</div></pre></td></tr></table></figure>
 <p><img src="http://blog-assets.risingstack.com/2016/Aug/Execution_timing_microtask_registration_method-1470127727609.svg" alt=""></p>
 <h3 id="Rule-3-amp-4"><a href="#Rule-3-amp-4" class="headerlink" title="Rule 3 &amp; 4"></a>Rule 3 &amp; 4</h3><p>区分开发者的任务代码和系统内部操作是非常重要的。将这两个行为混淆在一起可能会导致一些意料之外的行为，而且它还可能会导致开发者不得不去了解框架内部的工作机制。我相信许多前端开发人员已经有过类似的体验了。</p>
-<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>如果你对 NX 框架感兴趣，可以参阅<a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="external">主页</a>。热衷于探索的读者可以在<a href="https://github.com/RisingStack/nx-framework" target="_blank" rel="external">GitHub Repo</a>参阅源码。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>如果你对 NX 框架感兴趣，可以参阅<a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="noopener">主页</a>。热衷于探索的读者可以在<a href="https://github.com/RisingStack/nx-framework" target="_blank" rel="noopener">GitHub Repo</a>参阅源码。</p>
 <p>我希望你能认为这一篇好的文章，下次将会讨论沙箱求值。</p>
 
       
@@ -341,13 +342,13 @@
       <a class="prev" href="/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（三）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/">
         <span class="next-text nav-default">ES6 + Mocha 前端自动化测试 & 持续集成</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -416,11 +417,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

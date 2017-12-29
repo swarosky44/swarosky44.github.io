@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/13/Vue - 实例方法构建过程/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="有段时间没写关于 Vue 源码的东西了，最近都在折腾 python 的 flask &amp;amp; vue-ssr。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-07-14T06:24:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue - 实例事件构造过程">
@@ -152,7 +153,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -161,7 +162,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -170,7 +171,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -179,7 +180,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -214,7 +215,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础知识"><span class="toc-text">基础知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#on"><span class="toc-text">$on</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#off"><span class="toc-text">$off</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#once"><span class="toc-text">$once</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#emit"><span class="toc-text">$emit</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -227,7 +228,7 @@
 <a id="more"></a>
 <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><p>相比之前 vue 的观察者模式的构建过程，这里的实例事件就要显得简单多了。不需要了解什么特别的设计模式啊或者其他balbala的知识点。熟悉一下官方的 API 就好了。</p>
 <ul>
-<li><a href="https://cn.vuejs.org/v2/api/#实例方法-事件" target="_blank" rel="external">vue 实例方法/事件</a></li>
+<li><a href="https://cn.vuejs.org/v2/api/#实例方法-事件" target="_blank" rel="noopener">vue 实例方法/事件</a></li>
 </ul>
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>整个事件的体系构造是在 eventsMixin 里面完成的。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">eventsMixin</span> (<span class="params">Vue: Class&lt;Component&gt;</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> hookRE = <span class="regexp">/^hook:/</span></div><div class="line">  Vue.prototype.$on = <span class="function"><span class="keyword">function</span> (<span class="params">event: string | Array&lt;string&gt;, fn: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Vue.prototype.$once = <span class="function"><span class="keyword">function</span> (<span class="params">event: string, fn: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Vue.prototype.$off = <span class="function"><span class="keyword">function</span> (<span class="params">event?: string | Array&lt;string&gt;, fn?: Function</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  Vue.prototype.$emit = <span class="function"><span class="keyword">function</span> (<span class="params">event: string</span>): <span class="title">Component</span> </span>&#123;</div><div class="line">    <span class="comment">// TODO</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -316,13 +317,13 @@
       <a class="prev" href="/2017/07/14/Vue - 模板计算过程/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Vue - 模板计算过程</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/07/Canvas - ribbon/">
         <span class="next-text nav-default">Canvas - ribbon</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -391,11 +392,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

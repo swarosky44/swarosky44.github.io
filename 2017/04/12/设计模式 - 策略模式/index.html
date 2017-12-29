@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/04/12/设计模式 - 策略模式/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="说出来可能不信，我以前写的文章全都搞丢了 😭。 hexo 生成的项目没有好好保存，电脑 recovery 之后就丢失了之前项目以及 post 的 md 文件 … 现在的 blog 好空啊 … 趁空闲写一篇设计模式 - 策略模式的文章充充数吧">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/strategy-uml.png">
 <meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/strategy-time.png">
 <meta property="og:updated_time" content="2017-09-15T05:52:51.000Z">
@@ -155,7 +156,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -164,7 +165,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -173,7 +174,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -182,7 +183,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -217,7 +218,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#模式动机"><span class="toc-text">模式动机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模式定义"><span class="toc-text">模式定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#具体实现"><span class="toc-text">具体实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#案例"><span class="toc-text">案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-实现："><span class="toc-text">Java 实现：</span></a></li></ol>
     </div>
@@ -236,7 +237,7 @@
 <p>对于上例中，调用者的出发点是获得一个 <code>Input</code> 输入框输入值，系统给用户输出的是输入值的回馈，在这个过程中有许多方法可以用于验证用户输入的值。而这些方法在不经过设计的情况下，就是一大段一大段的 <code>if...else</code> 混杂着业务逻辑充斥着我们的代码，于是策略模式正是基于这样的场景下诞生的。</p>
 <h2 id="模式定义"><a href="#模式定义" class="headerlink" title="模式定义"></a>模式定义</h2><p>定义一系列算法，将每一个算法包装起来，并让它们可以互相替换。</p>
 <p>属于行为型模式。</p>
-<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>关于策略模式的 UML 图和时序图，可以参考下面两图，来自于 <a href="https://design-patterns.readthedocs.io/zh_CN/latest/index.html" target="_blank" rel="external">Graphic Design Patterns</a> :</p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>关于策略模式的 UML 图和时序图，可以参考下面两图，来自于 <a href="https://design-patterns.readthedocs.io/zh_CN/latest/index.html" target="_blank" rel="noopener">Graphic Design Patterns</a> :</p>
 <p><img src="http://oe3rjg2g6.bkt.clouddn.com/strategy-uml.png" alt=""></p>
 <p>从 UML 图我们可以看到我们需要构建的的类结构</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 策略抽象类</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Strategy</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;&#125;</div><div class="line">  excute () &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 策略 A</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConcreteStrategyA</span> <span class="keyword">extends</span> <span class="title">Strategy</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line">  excute () &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 策略 B</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConcreteStrategyB</span> <span class="keyword">extends</span> <span class="title">Strategy</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">super</span>()</div><div class="line">  &#125;</div><div class="line">  excute () &#123;</div><div class="line">    ...</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 执行类</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Context</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span> () &#123;</div><div class="line">    <span class="keyword">this</span>.strategies = []</div><div class="line">  &#125;</div><div class="line">  excute () &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> strategy <span class="keyword">of</span> strategies) &#123;</div><div class="line">      strategy.excute()</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  setStrategy (strategy) &#123;</div><div class="line">    <span class="keyword">if</span> (strategy <span class="keyword">instanceof</span> Strategy) &#123;</div><div class="line">      <span class="keyword">this</span>.strategies.push(strategy)</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="built_in">console</span>.error(<span class="string">'非策略对象！'</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -259,7 +260,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> com.context.Context;</div><div class="line"><span class="keyword">import</span> com.strategy.JudgyNullValue;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Context context = <span class="keyword">new</span> Context();</div><div class="line">        JudgyNullValue judgyNullValue = <span class="keyword">new</span> JudgyNullValue(<span class="string">""</span>, <span class="string">"字符串不能为空"</span>);</div><div class="line">        context.addStrategy(judgyNullValue);</div><div class="line">        String result = context.excuteStrategies();</div><div class="line">        <span class="keyword">if</span> (result != <span class="string">""</span>) &#123;</div><div class="line">            System.out.println(result);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            System.out.println(<span class="string">"There is no error"</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <hr>
 <blockquote>
-<p><a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/strategy.html" target="_blank" rel="external">图解策略模式</a></p>
+<p><a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/strategy.html" target="_blank" rel="noopener">图解策略模式</a></p>
 </blockquote>
 
       
@@ -310,16 +311,16 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2017/04/12/数据结构 - Array/">
+      <a class="prev" href="/2017/04/18/设计模式 - 代理模式/">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">数据结构 - Array</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-default">设计模式 - 代理模式</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
-      <a class="next" href="/2017/04/10/CSS Secrets a week (2)/">
-        <span class="next-text nav-default">CSS Secrets a week</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+      <a class="next" href="/2017/04/12/数据结构 - Array/">
+        <span class="next-text nav-default">数据结构 - Array</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -388,11 +389,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/26/翻译 - 写一个 JavaScript 框架（一）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="最近看到一个非常棒的系列文章，作者是 NX 框架的作者，主要是讲在开发 NX 的过程中的一些关键问题的解决方法。加上最近读 Vue 的模板计算十分痛苦，于是我愉快的决定 ~ 不看了。先把这个系列的文章看完 🙃 这是系列的第一篇 – 项目结构。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Jul/javascript_framework_in_2016_the_nx_project_structure-1467708098586.svg">
 <meta property="og:updated_time" content="2017-09-15T06:01:18.000Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#项目结构"><span class="toc-text">项目结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NX-框架梗概"><span class="toc-text">NX 框架梗概</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现可扩展性"><span class="toc-text">实现可扩展性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用中间件实现依赖注入（DI）"><span class="toc-text">用中间件实现依赖注入（DI）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#处理私有变量"><span class="toc-text">处理私有变量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-公共变量"><span class="toc-text">1. 公共变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-私有变量"><span class="toc-text">2. 私有变量</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-半私密变量"><span class="toc-text">3.半私密变量</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -228,7 +229,7 @@
         <p>最近看到一个非常棒的系列文章，作者是 NX 框架的作者，主要是讲在开发 NX 的过程中的一些关键问题的解决方法。加上最近读 Vue 的模板计算十分痛苦，于是我愉快的决定 ~ 不看了。先把这个系列的文章看完 🙃</p>
 <p>这是系列的第一篇 – 项目结构。</p>
 <a id="more"></a>
-<p>就职于 RisingStack 的 JavaScript 工程师 Bertalan Miklos 在过去的几个月里写了一个下一代客户端框架，叫作 <a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="external">NX</a>。在写一个 JavaScript 框架的系列文章里，Bertalan 分享了在开发过程中他的一些心得：</p>
+<p>就职于 RisingStack 的 JavaScript 工程师 Bertalan Miklos 在过去的几个月里写了一个下一代客户端框架，叫作 <a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="noopener">NX</a>。在写一个 JavaScript 框架的系列文章里，Bertalan 分享了在开发过程中他的一些心得：</p>
 <p>在这个章节中，我会说明 NX 是如何架构的以及我是如何解决可扩展性、依赖注入以及私有变量这些方面的难题。</p>
 <p>这个系列文章还有以下章节：</p>
 <ol>
@@ -240,7 +241,7 @@
 <li>自定义元素</li>
 <li>客户端路由</li>
 </ol>
-<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>尽管世界上并不存在能够适用于所有项目的结构，但是仍然存在一些通用的准则。对于这些感兴趣的的同学可以参阅 <a href="https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/" target="_blank" rel="external">Nodejs 项目结构指南</a> 系列文章。</p>
+<h2 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h2><p>尽管世界上并不存在能够适用于所有项目的结构，但是仍然存在一些通用的准则。对于这些感兴趣的的同学可以参阅 <a href="https://blog.risingstack.com/node-hero-node-js-project-structure-tutorial/" target="_blank" rel="noopener">Nodejs 项目结构指南</a> 系列文章。</p>
 <h3 id="NX-框架梗概"><a href="#NX-框架梗概" class="headerlink" title="NX 框架梗概"></a>NX 框架梗概</h3><p>NX 目标是成为一个开源社区驱动的项目，这样方便推广和扩展。</p>
 <ul>
 <li>它有现代框架的全部特性。</li>
@@ -262,7 +263,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">component(config).register(<span class="string">'comp-name'</span>);</div></pre></td></tr></table></figure>
 <p>这个被注册的空白元素<code>comp-name</code>能够在 DOM 中被实例化。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">comp-name</span>&gt;</span><span class="tag">&lt;/<span class="name">comp-name</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>下一步是确保元素能够实现其他的一些新特性，同时保持自身的简洁以及可扩展性，依赖注入就擅长于让这些新特性不会影响到核心函数。</p>
-<h3 id="用中间件实现依赖注入（DI）"><a href="#用中间件实现依赖注入（DI）" class="headerlink" title="用中间件实现依赖注入（DI）"></a>用中间件实现依赖注入（DI）</h3><p>如果你不是很熟悉DI，我推荐你先阅读一下<a href="https://blog.risingstack.com/dependency-injection-in-node-js" target="_blank" rel="external">Nodejs 中的依赖注入</a>。</p>
+<h3 id="用中间件实现依赖注入（DI）"><a href="#用中间件实现依赖注入（DI）" class="headerlink" title="用中间件实现依赖注入（DI）"></a>用中间件实现依赖注入（DI）</h3><p>如果你不是很熟悉DI，我推荐你先阅读一下<a href="https://blog.risingstack.com/dependency-injection-in-node-js" target="_blank" rel="noopener">Nodejs 中的依赖注入</a>。</p>
 <blockquote>
 <p>DI是一种用于实现将一个或多个依赖（或服务）通过引用或者传递的方式注入到依赖对象的设计模式。</p>
 </blockquote>
@@ -292,12 +293,12 @@
 <h4 id="3-半私密变量"><a href="#3-半私密变量" class="headerlink" title="3.半私密变量"></a>3.半私密变量</h4><p>底层的 API 应该有 Symbol 类型的键，并且注册到公开的注册对象中。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">exports.private = &#123;</div><div class="line">  <span class="attr">text</span>: <span class="built_in">Symbol</span>(<span class="string">'private text'</span>),</div><div class="line">&#125;;</div><div class="line">exports.public = &#123;</div><div class="line">  <span class="attr">text</span>: <span class="built_in">Symbol</span>(<span class="string">'exposed text'</span>),</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
 <p>当有需求访问变量时</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> exposed = <span class="built_in">require</span>(<span class="string">'symbols'</span>).public;</div><div class="line"><span class="function"><span class="keyword">function</span>(<span class="params">elem, state, next</span>) </span>&#123;</div><div class="line">  elem[exposed.text] = <span class="string">'Hello World!'</span>;</div><div class="line">  next();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果你对 NX 框架感兴趣，可以参阅<a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="external">主页</a>。热衷于探索的读者可以在<a href="https://github.com/RisingStack/nx-framework" target="_blank" rel="external">GitHub Repo</a>参阅源码。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果你对 NX 框架感兴趣，可以参阅<a href="http://nx-nxframework.rhcloud.com" target="_blank" rel="noopener">主页</a>。热衷于探索的读者可以在<a href="https://github.com/RisingStack/nx-framework" target="_blank" rel="noopener">GitHub Repo</a>参阅源码。</p>
 <p>我希望你能认为这一篇好的文章，下次将会讨论调度执行。</p>
 <p>BTW：这里读私有属性的一块读得晕晕乎乎的，感觉不论怎么写，都不符合私有属性的认知。在 Java 中定义一个私有属性通过修饰符 <code>private</code> 实现，仅有自身类的作用域可以访问，如果需要向外暴露，只能通过提供 getter 和 setter。这里使用 Symbol 确实可以有效避免命名冲突，但是避免误用方面，给我的感觉是多加了几层阻挠，让开发者想清楚当前正在访问什么级别的变量而已。</p>
 <p>AnyWay, 他说可以就可以 ~ 🤔</p>
 <blockquote>
-<p><a href="https://blog.risingstack.com/writing-a-javascript-framework-project-structuring/" target="_blank" rel="external">原文</a></p>
+<p><a href="https://blog.risingstack.com/writing-a-javascript-framework-project-structuring/" target="_blank" rel="noopener">原文</a></p>
 </blockquote>
 
       
@@ -353,13 +354,13 @@
       <a class="prev" href="/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">ES6 + Mocha 前端自动化测试 & 持续集成</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/14/Vue - 模板计算过程/">
         <span class="next-text nav-default">Vue - 模板计算过程</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -428,11 +429,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

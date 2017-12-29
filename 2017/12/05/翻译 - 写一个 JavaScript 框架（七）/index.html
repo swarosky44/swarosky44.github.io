@@ -41,12 +41,13 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/12/05/翻译 - 写一个 JavaScript 框架（七）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="这是写一个 JavaScript 框架系列文章的最后一章节。在这个章节中，我将会讨论 JavaScript 的客户端路由和服务端路由有什么差异及其原因。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由（当前章节）">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-path-routing-diagram.svg">
 <meta property="og:image" content="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-path-routing-example.gif">
 <meta property="og:image" content="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-param_routing.gif">
 <meta property="og:image" content="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-parameter_routing-diagram.svg">
 <meta property="og:image" content="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-example-app-2.gif">
-<meta property="og:updated_time" content="2017-12-11T10:34:47.542Z">
+<meta property="og:updated_time" content="2017-12-11T10:34:47.543Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="写一个 JavaScript 框架（七）">
 <meta name="twitter:description" content="这是写一个 JavaScript 框架系列文章的最后一章节。在这个章节中，我将会讨论 JavaScript 的客户端路由和服务端路由有什么差异及其原因。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由（当前章节）">
@@ -158,7 +159,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -167,7 +168,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -176,7 +177,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -185,7 +186,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -220,7 +221,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#web-上的路由"><span class="toc-text">web 上的路由</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#启蒙于后端的路由"><span class="toc-text">启蒙于后端的路由</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#处理动态参数"><span class="toc-text">处理动态参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#App-Shell"><span class="toc-text">App Shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Data-Shell"><span class="toc-text">Data Shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#结合起来"><span class="toc-text">结合起来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Demo"><span class="toc-text">Demo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -246,7 +247,7 @@
 <p>通过预先取出整个应用然后选择适合的页面，客户端框架解决了上述问题。前端路由实践起来和后端十分相似。唯一的不同是它从客户端获取资源而不是服务端。在本文，我将会解释为什么他们二者还是需要做一些差异处理。</p>
 <h3 id="启蒙于后端的路由"><a href="#启蒙于后端的路由" class="headerlink" title="启蒙于后端的路由"></a>启蒙于后端的路由</h3><p>大部分的前端路由库都是从服务端获得的启发。</p>
 <p>当 URL 改变时，它们都会选择合适的路由处理器来决定和输出所需的组件。它们的架构和后端的十分相似，唯一的差异是处理器函数所做的事情。</p>
-<p>要想证明它们的相似性，我们可以发现服务端框架 <a href="https://expressjs.com/en/guide/routing.html" target="_blank" rel="external">Express</a>、客户端框架 <a href="https://visionmedia.github.io/page.js/" target="_blank" rel="external">page.js</a> 以及 <a href="https://github.com/ReactTraining/react-router" target="_blank" rel="external">React</a> 在路由上的语法十分相似。</p>
+<p>要想证明它们的相似性，我们可以发现服务端框架 <a href="https://expressjs.com/en/guide/routing.html" target="_blank" rel="noopener">Express</a>、客户端框架 <a href="https://visionmedia.github.io/page.js/" target="_blank" rel="noopener">page.js</a> 以及 <a href="https://github.com/ReactTraining/react-router" target="_blank" rel="noopener">React</a> 在路由上的语法十分相似。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Express</span></div><div class="line">app.get(<span class="string">'/login'</span>, sendLoginPage)</div><div class="line">app.get(<span class="string">'/app/:user/:account'</span>, sendApp)</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// page.js</span></div><div class="line">page(<span class="string">'/login'</span>, renderLoginPage)</div><div class="line">page(<span class="string">'/app/:user/:account'</span>, renderApp)</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;!-- React --&gt;</div><div class="line">&lt;Router&gt;</div><div class="line">  &lt;Route path="/login" component=&#123;Login&#125;/&gt;</div><div class="line">  &lt;Route path="/app/:user/:account" component=&#123;App&#125;/&gt;</div><div class="line">&lt;/Router&gt;</div></pre></td></tr></table></figure>
@@ -256,7 +257,7 @@
 <h3 id="处理动态参数"><a href="#处理动态参数" class="headerlink" title="处理动态参数"></a>处理动态参数</h3><p>我想避免的是当 URL 参数改变时就重新输出整个页面。为了解决这个问题，我首先将动态参数从路由中剥离了出去。</p>
 <p>在 NX 中，路由决定了当前哪个组件或者视图用于展现，进入哪个 URL 的路径下。动态参数控制当前页面所需要展示的数据，并且它们始终是在问号后面的参数里。</p>
 <p>这意味着 <code>/app/:user/:account</code> 将会变形成 <code>/app?user=userId&amp;account=accountId</code>。这样有一点冗余不过还是很整洁的，并且这样允许我将客户端路由分割成页面路由和参数路由。前者导航 <code>App Shell</code>，后者导航 <code>Data Shell</code>。</p>
-<h3 id="App-Shell"><a href="#App-Shell" class="headerlink" title="App Shell"></a>App Shell</h3><p>你可能已经熟悉了 <a href="https://developers.google.com/web/fundamentals/architecture/app-shell" target="_blank" rel="external">App Shell 模型</a>，它由于 Google 推出的 PWA 而流行起来。</p>
+<h3 id="App-Shell"><a href="#App-Shell" class="headerlink" title="App Shell"></a>App Shell</h3><p>你可能已经熟悉了 <a href="https://developers.google.com/web/fundamentals/architecture/app-shell" target="_blank" rel="noopener">App Shell 模型</a>，它由于 Google 推出的 PWA 而流行起来。</p>
 <blockquote>
 <p>App Shell 是支持用户界面所需的最小的 HTML、CSS 和 JavaScript。</p>
 </blockquote>
@@ -270,12 +271,12 @@
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;a iref="home"&gt;Home&lt;/a&gt;</div><div class="line">&lt;a iref="settings"&gt;Settings&lt;/a&gt;</div><div class="line">&lt;router-comp&gt;</div><div class="line">  &lt;h2 route="home" default-route&gt;Home page&lt;/h2&gt;</div><div class="line">  &lt;div route="settings"&gt;</div><div class="line">    &lt;h2&gt;Settings page&lt;/h2&gt;</div><div class="line">    &lt;a iref="./profile"&gt;Profile&lt;/a&gt;</div><div class="line">    &lt;a iref="./privacy"&gt;Privacy&lt;/a&gt;</div><div class="line">    &lt;router-comp&gt;</div><div class="line">      &lt;h3 route="profile" default-route&gt;Profile settings&lt;/h3&gt;</div><div class="line">      &lt;h3 route="privacy"&gt;Privacy settings&lt;/h3&gt;</div><div class="line">    &lt;/router-comp&gt;</div><div class="line">  &lt;/div&gt;</div><div class="line">&lt;/router-comp&gt;</div></pre></td></tr></table></figure>
 <p>这个例子向我们展示了一个具有默认路由以及相对路由的嵌套路由结构。如你所见，它简单到只需要配置 HTML 并且它就可以像大部分的文件系统一样工作起来。你可以用绝对路径（<code>home</code>）或者相对路径（<code>./privacy</code>）的链接实现导航。路由代码表现如下：</p>
 <p><img src="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-path-routing-example.gif" alt=""></p>
-<p>这个简单的结构同样可以用来创造更加强大的路由。多个路由树同时工作时的平行路由就是例子之一。<a href="https://nx-framework.com/docs/start" target="_blank" rel="external">NX docs page</a>的侧边栏菜单和主页内容就是以这种方式在工作。它有两个并行的嵌套路由，可以同步改变侧边栏菜单以及主页内容。</p>
+<p>这个简单的结构同样可以用来创造更加强大的路由。多个路由树同时工作时的平行路由就是例子之一。<a href="https://nx-framework.com/docs/start" target="_blank" rel="noopener">NX docs page</a>的侧边栏菜单和主页内容就是以这种方式在工作。它有两个并行的嵌套路由，可以同步改变侧边栏菜单以及主页内容。</p>
 <h3 id="Data-Shell"><a href="#Data-Shell" class="headerlink" title="Data Shell"></a>Data Shell</h3><p>和 App Shell 不一样，Data Shell 是个还没有宣传过的理念。实际上，它也只是我一个人在用。Data Shell 是指驱动数据流动的动态参数数据池。他不会切换当前页面，仅仅只是改变页面的数据。改变当前页面通常也会改变数据池，但是改变数据池内的数据并不会造成页面的重新渲染。</p>
 <p>通常情况下，Data Shell 是由当前页面的初始值组成的集合，代表了当前页面的状态。因此它可以用来保存、加载或者分享状态。为了实现这点，它必须能够映射 URL、本地数据库或者浏览器历史记录等能够让它全局化的数据。</p>
 <p>NX 的 <code>control</code> 组件以及其他组件可以利用钩子函数向数据池子中注入一个已经声明了的配置对象，这个对象决定了参数如何与组件状态、URL、历史记录以及网页数据库进行交互。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">nx.components.control(&#123;</div><div class="line">  <span class="attr">template</span>: <span class="built_in">require</span>(<span class="string">'./view.html'</span>),</div><div class="line">  <span class="attr">params</span>: &#123;</div><div class="line">    <span class="attr">name</span>: &#123; <span class="attr">history</span>: <span class="literal">true</span>, <span class="attr">url</span>: <span class="literal">true</span>, <span class="attr">default</span>: <span class="string">'World'</span> &#125;</div><div class="line">  &#125;</div><div class="line">&#125;).register(<span class="string">'greeting-comp'</span>)</div></pre></td></tr></table></figure>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;p&gt;Name: &lt;input type="text" name="name" bind/&gt;&lt;/p&gt;</div><div class="line">&lt;p&gt;Hello @&#123;name&#125;&lt;<span class="regexp">/p&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;p&gt;Name: <span class="xml"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"name"</span> <span class="attr">bind</span>/&gt;</span></span><span class="xml"><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></div><div class="line">&lt;p&gt;Hello @&#123;name&#125;&lt;<span class="regexp">/p&gt;</span></div></pre></td></tr></table></figure>
 <p>上例创建了一个组件，并且让 <code>name</code> 属性和 URL 、浏览器历史记录同步起来。具体表现如下：</p>
 <p><img src="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-param_routing.gif" alt=""></p>
 <p>要感谢 [ES6 Proxy 的透明反应性]，它让同步能够时刻保持连续性。你可以写一些简单的 JavaScript 代码试下，两者会在后台互相同步起来。下面的示意图给出了一个宏观的示意：</p>
@@ -295,12 +296,12 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">iref</span>=<span class="string">"newPage"</span> $<span class="attr">iref-params</span>=<span class="string">"&#123; newParam: 'value' &#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">comp.$route(&#123;</div><div class="line">  <span class="attr">to</span>: <span class="string">'newPage'</span>,</div><div class="line">  <span class="attr">params</span>: &#123; <span class="attr">newParam</span>: <span class="string">'value'</span> &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 <p>在上例中，NX 会自动添加 <code>active</code> 的 CSS 类名到链接上，你可以通过 <code>options</code> 配置对象来配置所有链接的普通属性，列如继承过来的属性以及链接事件。</p>
-<p>查阅 <a href="https://www.nx-framework.com/docs/middlewares/route" target="_blank" rel="external">routing 文档</a> 可以了解更多特性。</p>
+<p>查阅 <a href="https://www.nx-framework.com/docs/middlewares/route" target="_blank" rel="noopener">routing 文档</a> 可以了解更多特性。</p>
 <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>下例展示了路由参数与响应式数据系统的结合。在 NX 应用里它完全可以正常运作。复制代码然后粘贴到一份空的 HTML 文件中，在现代浏览器中打开文件，体验一下吧。</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;script src="https://www.nx-framework.com/downloads/nx-beta.2.0.0.js"&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">&lt;script&gt;</div><div class="line">nx.components.app(&#123;</div><div class="line">  params: &#123;</div><div class="line">    title: &#123; history: true, url: true, default: 'Gladiator' &#125;</div><div class="line">  &#125;</div><div class="line">&#125;).use(setup).register('movie-plotter')</div><div class="line"></div><div class="line">function setup (comp, state) &#123;</div><div class="line">  comp.$observe(() =&gt; &#123;</div><div class="line">    fetch('http://www.omdbapi.com/?r=json&amp;t=' + state.title)</div><div class="line">      .then(response =&gt; response.json())</div><div class="line">      .then(data =&gt; state.plot = data.Plot || 'No plot found')</div><div class="line">  &#125;)</div><div class="line">&#125;</div><div class="line">&lt;/script&gt;</div><div class="line"></div><div class="line">&lt;movie-plotter&gt;</div><div class="line">  &lt;h2&gt;Movie plotter&lt;/h2&gt;</div><div class="line">  &lt;p&gt;Title: &lt;input type="text" name="title" bind /&gt;&lt;/p&gt;</div><div class="line">  &lt;p&gt;Plot: @&#123;plot&#125;&lt;/p&gt;</div><div class="line">&lt;/movie-plotter&gt;</div></pre></td></tr></table></figure>
 <p>title 属性自动同步到了 URL 和 浏览器历史记录中。这个功能通过 <code>comp.$observe</code> 的订阅，当 title 属性改变时，可以自动的获取电影的相关介绍。这个例子创建了一个强大的数据响应系统，并且在浏览器中能够完美运行。</p>
 <p><img src="https://blog-assets.risingstack.com/2017/03/client-side-routing-javascript-example-app-2.gif" alt=""></p>
-<p>这个应用并没有展示路径路由。查阅<a href="https://github.com/nx-js/intro-example" target="_blank" rel="external">intro app</a>、<a href="https://github.com/nx-js/hackernews-example" target="_blank" rel="external">NX Hacker News clone</a> 或者 <a href="https://www.nx-framework.com/docs/middlewares/route" target="_blank" rel="external">路径路由</a> 和 <a href="https://www.nx-framework.com/docs/middlewares/params" target="_blank" rel="external">参数路由</a> 的文档可以了解更多复杂的案例。</p>
+<p>这个应用并没有展示路径路由。查阅<a href="https://github.com/nx-js/intro-example" target="_blank" rel="noopener">intro app</a>、<a href="https://github.com/nx-js/hackernews-example" target="_blank" rel="noopener">NX Hacker News clone</a> 或者 <a href="https://www.nx-framework.com/docs/middlewares/route" target="_blank" rel="noopener">路径路由</a> 和 <a href="https://www.nx-framework.com/docs/middlewares/params" target="_blank" rel="noopener">参数路由</a> 的文档可以了解更多复杂的案例。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这一段不是翻译，写一个 JavaScript 框架的系列文章翻译到这一步就没了。全篇翻译下来，相当吃力，可以很确信的说这些翻译中存在大量语义不通顺或者不明确的问题，之后会花费一定时间多次修改，好好打磨一下。英语果然是限制大部分国内程序员技术水平的天然障碍啊 🙃 。</p>
 <p>在此之后，还会多多联系翻译能力，不仅仅局限于 Web 前端，Android、IOS 文章都会多多涉猎。最近也一直有在玩 Android, 会尝试写几篇文章记录一下学习历程以及心得。仅此。</p>
 
@@ -354,10 +355,16 @@
         
   <nav class="post-nav">
     
+      <a class="prev" href="/2017/12/25/小程序的生态环境预研/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">小程序的生态环境预研</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
     
       <a class="next" href="/2017/11/22/翻译 - 写一个 JavaScript 框架（六）/">
         <span class="next-text nav-default">写一个 JavaScript 框架（六）</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -426,11 +433,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="这是写一个 JavaScript 框架系列文章的第三篇，这次我会阐明几种在浏览器中求值的方式以及它们将引起的一些问题。我还会介绍一个依赖于一些新的鲜为人知的 JavaScript 特性的方法。 这个系列包括以下几个章节：  项目结构 调度执行 沙箱求值（当前章节） 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_simple_with_statement-1470403007416.svg">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_with_statement_and_proxies-1470403030877.svg">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_security_issue-1470403047129.svg">
@@ -157,7 +158,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -166,7 +167,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -175,7 +176,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -184,7 +185,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -219,7 +220,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#恶魔般的-eval"><span class="toc-text">恶魔般的 eval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用方案"><span class="toc-text">常用方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#替代方案"><span class="toc-text">替代方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#new-Function"><span class="toc-text">new Function()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#With-关键字"><span class="toc-text">With 关键字</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES6-Proxy"><span class="toc-text">ES6 Proxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Symbol-unscopables"><span class="toc-text">Symbol.unscopables</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#用于缓存的-WeakMap"><span class="toc-text">用于缓存的 WeakMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#最后的提醒"><span class="toc-text">最后的提醒</span></a></li></ol>
     </div>
@@ -245,7 +246,7 @@
 </blockquote>
 <p>一个常见的执行代码的方案是使用 eval() 函数。通过 eval() 执行的代码能够访问到全局和闭包的作用域，但这会引起代码注入的安全问题，这也是让它成为 JavaScript 特性中最臭名昭著的一个的原因。<br>尽管 eval() 让人很厌恶，但是在某些场景下不得不说它十分有用。绝大多数的现代前端框架都需要它的功能，但是由于上述提及的问题而不敢使用它。结果就是，许多在沙箱中求值而不是全局作用域下的替代方案如雨后春笋般涌现。沙箱可以阻止代码访问我们的安全数据，通常它只是一个普通的 JavaScript 对象取代了原来的全局对象，用来运行代码。</p>
 <h2 id="常用方案"><a href="#常用方案" class="headerlink" title="常用方案"></a>常用方案</h2><p>最常用的 eval() 的替代方案是用一个分步过程完全重写，它由两个步骤组成 - 分析和编译传递过来的字符串。首先解析器会创建一个抽象的语法树，然后由编译器遍历这个树，在沙箱中编译成正常的代码。<br>这是一个广泛应用了的方案，但是被认为对于如此简单的一件事而言，它过于庞大和复杂了。比起修复 <code>eval()</code>，重写所有代码本身就有可能导致大量的 bug，并且还需要频繁更新代码以遵循编程语言的更新。</p>
-<h2 id="替代方案"><a href="#替代方案" class="headerlink" title="替代方案"></a>替代方案</h2><p><a href="http://nx-framework.com/" target="_blank" rel="external">NX</a> 避免重写所有原生代码。通过一个迷你的库执行代码，这个库使用了一些新的并且鲜为人知的 JavaScript 特性。<br>这一部分将会逐步介绍一些 JavaScript 特性，并且使用它们来剖析<a href="https://github.com/RisingStack/nx-compile" target="_blank" rel="external">nx-compile</a>这个执行代码的库。这个库有一个叫 <code>compileCode()</code> 函数，工作方式如下：</p>
+<h2 id="替代方案"><a href="#替代方案" class="headerlink" title="替代方案"></a>替代方案</h2><p><a href="http://nx-framework.com/" target="_blank" rel="noopener">NX</a> 避免重写所有原生代码。通过一个迷你的库执行代码，这个库使用了一些新的并且鲜为人知的 JavaScript 特性。<br>这一部分将会逐步介绍一些 JavaScript 特性，并且使用它们来剖析<a href="https://github.com/RisingStack/nx-compile" target="_blank" rel="noopener">nx-compile</a>这个执行代码的库。这个库有一个叫 <code>compileCode()</code> 函数，工作方式如下：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> code = compileCode(<span class="string">'return num1 + num2'</span>)</div><div class="line"><span class="built_in">console</span>.log(code(&#123; <span class="attr">num1</span>: <span class="number">10</span>, <span class="attr">num2</span>: <span class="number">7</span> &#125;))</div><div class="line"><span class="comment">// 输出17</span></div><div class="line"><span class="keyword">const</span> globalNum = <span class="number">12</span></div><div class="line"><span class="keyword">const</span> otherCode = compileCode(<span class="string">'return globalNum'</span>)</div><div class="line"><span class="built_in">console</span>.log(otherCode(&#123; <span class="attr">num1</span>: <span class="number">2</span>, num2; <span class="number">3</span> &#125;))</div><div class="line"><span class="comment">// 全局作用域是被保护的</span></div><div class="line"><span class="comment">// 输出 undefined</span></div></pre></td></tr></table></figure>
 <p>在文章的最后，我们将会用少于20行代码实现<code>compileCode()</code>函数。</p>
 <h2 id="new-Function"><a href="#new-Function" class="headerlink" title="new Function()"></a>new Function()</h2><blockquote>
@@ -279,7 +280,7 @@
 <blockquote>
 <p>Symbol.unscopables 指用于指定对象值，其对象自身和继承的从关联对象的 with 环境绑定中排除的属性名称。</p>
 </blockquote>
-<p><code>Symbol.unscopable</code> 用于定义一个对象的不可访问属性。在 <code>with</code> 块级作用域中是不能访问到 sandbox 内的不可能访问属性的，但是闭包作用域和全局作用域是可以直接访问的。<code>Symbol.unscopable</code> 是一种十分少用的特性。可以读这篇<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/unscopables" target="_blank" rel="external">文章</a>了解原因。</p>
+<p><code>Symbol.unscopable</code> 用于定义一个对象的不可访问属性。在 <code>with</code> 块级作用域中是不能访问到 sandbox 内的不可能访问属性的，但是闭包作用域和全局作用域是可以直接访问的。<code>Symbol.unscopable</code> 是一种十分少用的特性。可以读这篇<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/unscopables" target="_blank" rel="noopener">文章</a>了解原因。</p>
 <p><img src="http://blog-assets.risingstack.com/2016/Aug/Sandboxed_code_evaluation_security_issue-1470403047129.svg" alt=""></p>
 <p>我们可以修复这个问题，通过定义一个 <code>get</code> 代理函数到 sandbox 的 <code>Proxy</code> 上，它拦截 <code>Symbol.unscopables</code> 的检索，并且总是返回 <code>undefined</code>。这可以糊弄 <code>with</code> 块级作用域认为我们的 sandbox 对象上没有这个属性。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span>(<span class="params">src</span>) </span>&#123;</div><div class="line">  src = <span class="string">'with (sandbox) &#123;'</span> + src + <span class="string">'&#125;'</span></div><div class="line">  <span class="keyword">const</span> code = <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">'sandbox'</span>, src)</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params">sandbox</span>) </span>&#123;</div><div class="line">    <span class="keyword">const</span> sandProxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>(sandbox, &#123; has, get &#125;)</div><div class="line">    <span class="keyword">return</span> code(sandbox)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">has</span>(<span class="params">target, key</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params">target, key</span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (key === <span class="built_in">Symbol</span>.unscopables) <span class="keyword">return</span> <span class="literal">undefined</span></div><div class="line">  <span class="keyword">return</span> target[key]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -292,10 +293,10 @@
 <p>WeakMap 可以不需要扩展属性就把一份数据放到一个对象上。我们可以用 <code>WeakMap</code> 直接把沙箱对象放到 <code>Proxies</code> 缓存里面去。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> sandboxProxies = <span class="keyword">new</span> <span class="built_in">WeakMap</span>()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">compileCode</span> (<span class="params">src</span>) </span>&#123;  </div><div class="line">  src = <span class="string">'with (sandbox) &#123;'</span> + src + <span class="string">'&#125;'</span></div><div class="line">  <span class="keyword">const</span> code = <span class="keyword">new</span> <span class="built_in">Function</span>(<span class="string">'sandbox'</span>, src)</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">sandbox</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!sandboxProxies.has(sandbox)) &#123;</div><div class="line">      <span class="keyword">const</span> sandboxProxy = <span class="keyword">new</span> <span class="built_in">Proxy</span>(sandbox, &#123;has, get&#125;)</div><div class="line">      sandboxProxies.set(sandbox, sandboxProxy)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> code(sandboxProxies.get(sandbox))</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">has</span> (<span class="params">target, key</span>) </span>&#123;  </div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span> (<span class="params">target, key</span>) </span>&#123;  </div><div class="line">  <span class="keyword">if</span> (key === <span class="built_in">Symbol</span>.unscopables) <span class="keyword">return</span> <span class="literal">undefined</span></div><div class="line">  <span class="keyword">return</span> target[key]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这样每个沙箱对象就只会创建一次 <code>Proxy</code>。</p>
-<h2 id="最后的提醒"><a href="#最后的提醒" class="headerlink" title="最后的提醒"></a>最后的提醒</h2><p>上述的 <code>compileCode()</code> 案例是一个可用沙箱求值代码，仅仅只用了 19 行代码。如果你想看完整的 nx-compile 库，可以在<a href="https://github.com/RisingStack/nx-compile" target="_blank" rel="external">这里</a>找到。</p>
+<h2 id="最后的提醒"><a href="#最后的提醒" class="headerlink" title="最后的提醒"></a>最后的提醒</h2><p>上述的 <code>compileCode()</code> 案例是一个可用沙箱求值代码，仅仅只用了 19 行代码。如果你想看完整的 nx-compile 库，可以在<a href="https://github.com/RisingStack/nx-compile" target="_blank" rel="noopener">这里</a>找到。</p>
 <p>抛开代码执行的解释，这一章节的目标是展示 ES6 的新属性是如何修复一些已存在的问题，而不是重写他们。我试着通过这个案例证明 <code>Proxy</code> 和 <code>Symbol</code> 的能力有多大。</p>
 <blockquote>
-<p><a href="https://blog.risingstack.com/writing-a-javascript-framework-sandboxed-code-evaluation/" target="_blank" rel="external">原文</a></p>
+<p><a href="https://blog.risingstack.com/writing-a-javascript-framework-sandboxed-code-evaluation/" target="_blank" rel="noopener">原文</a></p>
 </blockquote>
 
       
@@ -351,13 +352,13 @@
       <a class="prev" href="/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（四）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/">
         <span class="next-text nav-default">写一个 JavaScript 框架（二）</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -426,11 +427,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

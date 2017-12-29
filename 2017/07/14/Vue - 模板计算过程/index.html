@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/14/Vue - 模板计算过程/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="Vue 的模板计算过程应该是 Vue 源码中最大头的东西，也是响应式数据外另一个核心。其实自己也没读完，或者弄得非常明白，所以打算边写边读，加深理解。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/vue%20patch%20%E6%A8%A1%E6%9D%BF%E8%AE%A1%E7%AE%97%E6%B5%81%E7%A8%8B%E5%9B%BE.png">
 <meta property="og:updated_time" content="2017-07-26T02:41:03.000Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#渲染前的调用过程"><span class="toc-text">渲染前的调用过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#new-Vue"><span class="toc-text">new Vue()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#init"><span class="toc-text">init</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mount"><span class="toc-text">$mount</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mountComponent"><span class="toc-text">mountComponent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#update"><span class="toc-text">update</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#patch"><span class="toc-text">patch</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#两个工具"><span class="toc-text">两个工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nodeOps"><span class="toc-text">nodeOps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#modules"><span class="toc-text">modules</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -327,13 +328,13 @@
       <a class="prev" href="/2017/07/26/翻译 - 写一个 JavaScript 框架（一）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（一）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/13/Vue - 实例方法构建过程/">
         <span class="next-text nav-default">Vue - 实例事件构造过程</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -402,11 +403,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

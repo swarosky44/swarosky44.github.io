@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/01/Vue - 观察者 Watcher 构造过程/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="写过上一次的 Vue 响应式数据构造过程 的文章后，感觉确实能帮助理解不少。所以再接再厉，撸完之前避开没有谈及的 Watcher（观察者）构造的过程。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-07-03T06:53:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Vue - 观察者 Watcher 构造过程">
@@ -152,7 +153,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -161,7 +162,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -170,7 +171,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -179,7 +180,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -214,7 +215,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#预备知识"><span class="toc-text">预备知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch"><span class="toc-text">$watch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Class-Watcher"><span class="toc-text">Class Watcher</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#constructor-NaN"><span class="toc-text">constructor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get"><span class="toc-text">get</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#traverse"><span class="toc-text">traverse</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addDep"><span class="toc-text">addDep</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cleanupDeps"><span class="toc-text">cleanupDeps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#update"><span class="toc-text">update</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#evaluate"><span class="toc-text">evaluate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#depend"><span class="toc-text">depend</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#teardown"><span class="toc-text">teardown</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -227,7 +228,7 @@
 <a id="more"></a>
 <h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>同样先给出一些预备的知识点，尤其是响应式数据构造的知识，因为 watcher 的实现中会有发生交集的地方。</p>
 <ul>
-<li>观察者模式：<a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="external">图说设计模式</a> &amp; <a href="http://swarosky44.github.io/2017/05/02/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/#more">我的文章</a></li>
+<li>观察者模式：<a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="noopener">图说设计模式</a> &amp; <a href="http://swarosky44.github.io/2017/05/02/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/#more">我的文章</a></li>
 <li>发布者构造：<a href="http://swarosky44.github.io/2017/06/30/Vue%20-%20%E5%93%8D%E5%BA%94%E5%BC%8F%E6%95%B0%E6%8D%AE%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B/#more">Vue 响应式数据构造过程</a></li>
 </ul>
 <h2 id="watch"><a href="#watch" class="headerlink" title="$watch"></a>$watch</h2><p>我是从 Vue.prototype.$watch 这个 API 切入的。实际上 .vue 文件中的 watch 选项也是通过遍历对象属性，然后依次调用 $watch 实现的。</p>
@@ -349,13 +350,13 @@
       <a class="prev" href="/2017/07/07/Canvas - 3D 旋转/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Canvas - 3D 旋转</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/06/30/Vue - 响应式数据构造过程/">
         <span class="next-text nav-default">Vue - 响应式数据构造过程</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -424,11 +425,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

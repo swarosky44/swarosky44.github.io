@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/11/03/天猫双11潮流盛典虚拟试衣活动总结/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="RT，忙乎双 11 潮流盛典的预热活动差不多近一个月了。由于公司是 Ali 在虚拟试衣技术上的技术提供商，所以有幸参加了这么一场盛宴，特地来总结一下这次活动开发过程中的一些经验和感受。下文所涉及 Tida 版本均为 3.2.115。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-11-03T10:17:51.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="天猫双11潮流盛典虚拟试衣活动总结">
@@ -152,7 +153,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -161,7 +162,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -170,7 +171,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -179,7 +180,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -214,7 +215,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#准备"><span class="toc-text">准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#开发过程"><span class="toc-text">开发过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#页面激活状态监听"><span class="toc-text">页面激活状态监听</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#权益接口调用"><span class="toc-text">权益接口调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分享接口调用"><span class="toc-text">分享接口调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拍照、相册接口调用"><span class="toc-text">拍照、相册接口调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#长按图片保存"><span class="toc-text">长按图片保存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#优化"><span class="toc-text">优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#懒加载"><span class="toc-text">懒加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#图片优化"><span class="toc-text">图片优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JS-文件优化"><span class="toc-text">JS 文件优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#webview-加载优化"><span class="toc-text">webview 加载优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其他优化"><span class="toc-text">其他优化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -229,7 +230,7 @@
 <p>为了准备这次活动，我们以原主项目的为 origin，重新建了一个新项目，删除不必要的代码和静态资源。<br>主要是为了避免原主项目中过多的冗余代码，造成 app.js 过大。</p>
 <p>配置好 charles 代理，开发过程中遇见过许多不明所以的坑，这个过程中 charles 代理后查看页面请求以及资源请求起到了非常大的作用，帮助定位了许多问题。</p>
 <h2 id="开发过程"><a href="#开发过程" class="headerlink" title="开发过程"></a>开发过程</h2><p>其实活动开发还是相对简单的，逻辑并不复杂。主要都是在 Ali 环境下和 Tida 进行交互，诸如权益接口调用、页面激活状态监听、分享接口调用。</p>
-<h3 id="页面激活状态监听"><a href="#页面激活状态监听" class="headerlink" title="页面激活状态监听"></a>页面激活状态监听</h3><p><a href="https://market.tmall.com/isv/doc?spm=a320u.7748724.0.0.3f385476ZyTCp9#pageVisibility" target="_blank" rel="external">Tida 页面激活状态监听文档</a></p>
+<h3 id="页面激活状态监听"><a href="#页面激活状态监听" class="headerlink" title="页面激活状态监听"></a>页面激活状态监听</h3><p><a href="https://market.tmall.com/isv/doc?spm=a320u.7748724.0.0.3f385476ZyTCp9#pageVisibility" target="_blank" rel="noopener">Tida 页面激活状态监听文档</a></p>
 <p>这里有多种方式监听页面激活状态：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> watchId = Tida.pageVisibility.watch(<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</div><div class="line">     <span class="comment">///~ visible 1为激活 0为隐藏</span></div><div class="line">     <span class="comment">///~ 移动端按Home键回到桌面js会挂起不执行，所有再次回到页面该方法会先后一起调用，注意区别该值</span></div><div class="line">     <span class="keyword">if</span>(result.visible ==<span class="number">1</span> )&#123;</div><div class="line">         <span class="comment">// 页面显示了</span></div><div class="line">     &#125;<span class="keyword">else</span>&#123;</div><div class="line">         <span class="comment">// 页面隐藏了</span></div><div class="line">     &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
 <p>这种方式是我们最早采用的, 但是出现过不稳定的情况，所以后续被抛弃（具体是哪种环境我忘了 …🙃 ）。</p>
@@ -240,7 +241,7 @@
 <p>这里是判断接口是否调用成功，在 IOS 端返回 succ 字段是 boolean 型，但是 android 端返回时 string 型。需要特别注意。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">isWin() &#123;</div><div class="line">  <span class="keyword">const</span> isWin = <span class="keyword">this</span>.rightsResult.isWin;</div><div class="line">  <span class="keyword">let</span> result = <span class="literal">false</span>;</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> isWin === <span class="string">'boolean'</span>) &#123;</div><div class="line">    result = isWin;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> isWin === <span class="string">'string'</span>) &#123;</div><div class="line">    result = isWin === <span class="string">'true'</span>;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>这里是判断接口调用成功的情况下，是否中奖。<br>同理，也需要对 string 型和 boolean 型都做处理和判断。</p>
-<h3 id="分享接口调用"><a href="#分享接口调用" class="headerlink" title="分享接口调用"></a>分享接口调用</h3><p><a href="https://market.tmall.com/isv/doc?spm=a320u.7748724.0.0.3f385476ZyTCp9#share" target="_blank" rel="external">正常分享接口</a>可以按照文档调用使用。</p>
+<h3 id="分享接口调用"><a href="#分享接口调用" class="headerlink" title="分享接口调用"></a>分享接口调用</h3><p><a href="https://market.tmall.com/isv/doc?spm=a320u.7748724.0.0.3f385476ZyTCp9#share" target="_blank" rel="noopener">正常分享接口</a>可以按照文档调用使用。</p>
 <p>但是由于需求的特殊性，这里我们和 Ali 内部沟通后，得知可以使用一个隐藏的字段 targets。<br>这个字段在手淘上表现为可以按字段指定分享渠道。ex:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> options = &#123;</div><div class="line">  <span class="attr">title</span>: <span class="string">'title'</span>,</div><div class="line">  <span class="attr">content</span>: <span class="string">'content'</span>,</div><div class="line">  <span class="attr">url</span>: <span class="string">'url'</span>,</div><div class="line">  <span class="attr">image</span>: <span class="string">'image'</span>,</div><div class="line">  <span class="attr">targets</span>: [code],</div><div class="line">&#125;;</div><div class="line">api.aliPlatformShare(options);</div></pre></td></tr></table></figure>
 <p>这里 targets 字段是数组，如果我期望我点击某个按钮只分享到微博环境下，可以传递 code 为 weibo/sinaweibo，这样可以直接唤起微博 App，分享指定文案 &amp; title &amp; 分享缩略图。</p>
@@ -326,13 +327,13 @@
       <a class="prev" href="/2017/11/17/翻译 - 写一个 JavaScript 框架（五）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（五）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/">
         <span class="next-text nav-default">写一个 JavaScript 框架（四）</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -401,11 +402,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

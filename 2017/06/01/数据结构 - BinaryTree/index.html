@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/06/01/数据结构 - BinaryTree/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="话不多说，动手撸🌲 …">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/binnaryTree.jpeg">
 <meta property="og:updated_time" content="2017-06-03T08:47:05.000Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关键词"><span class="toc-text">关键词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#实现插入功能。"><span class="toc-text">实现插入功能。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现删除功能"><span class="toc-text">实现删除功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现遍历"><span class="toc-text">实现遍历</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现查找功能"><span class="toc-text">实现查找功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现其他一些功能"><span class="toc-text">实现其他一些功能</span></a></li></ol></li></ol>
     </div>
@@ -228,7 +229,7 @@
         <p>话不多说，动手撸🌲 …</p>
 <a id="more"></a>
 <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>二叉查找树（Binnary Tree）是每个节点不能拥有超过两个子节点的树结构。</p>
-<p>树结构的定义可以在 <a href="https://zh.wikipedia.org/wiki/%E6%A8%B9%E7%8B%80%E7%B5%90%E6%A7%8B" target="_blank" rel="external">维基百科</a> 了解一下。</p>
+<p>树结构的定义可以在 <a href="https://zh.wikipedia.org/wiki/%E6%A8%B9%E7%8B%80%E7%B5%90%E6%A7%8B" target="_blank" rel="noopener">维基百科</a> 了解一下。</p>
 <h2 id="关键词"><a href="#关键词" class="headerlink" title="关键词"></a>关键词</h2><p>根节点：树最上面的节点；<br>父节点：如果一个节点下有其他分支节点，那么该节点就称为父节点；<br>子节点：父节点下面直接连接的节点；<br>叶子节点：如果一个节点下面没有其他分支节点，那么该节点就称为叶子节点；<br>边：父节点与子节点链接的线；<br>深度：树的层数；</p>
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>接下来我们以 <code>[50, 40, 60, 30, 45, 47, 5, 21, 2, 94, 83, 25, 32, 43, 99, 100, 34]</code> 这组值，构建一个二叉树。</p>
 <p>首先我们要需要先构建一个类用来当作树的节点。</p>
@@ -315,13 +316,13 @@
       <a class="prev" href="/2017/06/02/数据结构 - AVL Tree/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">数据结构 - AVL Tree</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/05/14/设计模式 - 命令模式/">
         <span class="next-text nav-default">设计模式 - 命令模式</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -390,11 +391,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

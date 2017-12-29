@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/11/22/翻译 - 写一个 JavaScript 框架（六）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="这是教你写一个 JavaScript 框架系列文章的第六篇。在这个章节中，我们将讨论强大的自定义元素以及它在现代前端框架中所扮演的角色。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介 用 ES6 Proxy 实现数据绑定 自定义元素（当前章节） 客户端路由">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-11-23T08:14:00.158Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="写一个 JavaScript 框架（六）">
@@ -152,7 +153,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -161,7 +162,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -170,7 +171,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -179,7 +180,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -214,7 +215,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#组件时代"><span class="toc-text">组件时代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义元素"><span class="toc-text">自定义元素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义元素-API"><span class="toc-text">自定义元素 API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#生命周期钩子"><span class="toc-text">生命周期钩子</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义元素-VS-MutationObservers"><span class="toc-text">自定义元素 VS MutationObservers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结合自定义元素与-MutationObservers"><span class="toc-text">结合自定义元素与 MutationObservers</span></a></li></ol>
     </div>
@@ -241,13 +242,13 @@
 <li>他们都提供生命周期的钩子函数，用于建立组件内部的逻辑，根据状态同步视图。</li>
 </ul>
 <p>上述的特性都错过了一个简易的原生 API，直到最近，随着自定义元素的规范最终确定下来，这一情况也将有所改变。自定义元素可以取代上述的特性，但是它也不总是最完美的选择，我们来一起探究下原因。</p>
-<h2 id="自定义元素"><a href="#自定义元素" class="headerlink" title="自定义元素"></a>自定义元素</h2><p>自定义元素是<a href="https://www.w3.org/standards/techs/components#w3c_all" target="_blank" rel="external">Web 组件标准</a>的一部分，2011 年时自定义元素就已经出现，在最终确定下来之前，它一直都有两份不同的规范。最终确定下来的版本更像是一个简单的基于组件构建的框架，而不是框架作者手中的一个工具。它提供了一个高层次的 API 用于定义组件，但是它缺少了许多无法替补的新特性。</p>
-<p>如果你对自定义元素不够了解，请在开始之前先阅览一下这篇<a href="https://developers.google.com/web/fundamentals/getting-started/primers/customelements" target="_blank" rel="external">文章</a>。</p>
+<h2 id="自定义元素"><a href="#自定义元素" class="headerlink" title="自定义元素"></a>自定义元素</h2><p>自定义元素是<a href="https://www.w3.org/standards/techs/components#w3c_all" target="_blank" rel="noopener">Web 组件标准</a>的一部分，2011 年时自定义元素就已经出现，在最终确定下来之前，它一直都有两份不同的规范。最终确定下来的版本更像是一个简单的基于组件构建的框架，而不是框架作者手中的一个工具。它提供了一个高层次的 API 用于定义组件，但是它缺少了许多无法替补的新特性。</p>
+<p>如果你对自定义元素不够了解，请在开始之前先阅览一下这篇<a href="https://developers.google.com/web/fundamentals/getting-started/primers/customelements" target="_blank" rel="noopener">文章</a>。</p>
 <h3 id="自定义元素-API"><a href="#自定义元素-API" class="headerlink" title="自定义元素 API"></a>自定义元素 API</h3><p>自定义元素 API 是基于 ES6 的类。元素可以继承自原生的 HTML 元素或者其他自定义元素，并且它们可以扩展新的属性和方法。它们也可以重写在规范中定义的一系列方法，作为钩子函数连接到元素的生命周期中。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyElement</span> <span class="keyword">extends</span> <span class="title">HTMLElement</span> </span>&#123;</div><div class="line">  <span class="comment">// these are standard hooks, called on certain events</span></div><div class="line">  <span class="keyword">constructor</span>() &#123; ... &#125;</div><div class="line">  connectedCallback () &#123; ... &#125;</div><div class="line">  disconnectedCallback () &#123; ... &#125;</div><div class="line">  adoptedCallback () &#123; ... &#125;</div><div class="line">  attributeChangedCallback (attrName, oldVal, newVal) &#123; ... &#125;</div><div class="line"></div><div class="line">  <span class="comment">// these are custom methods and properties</span></div><div class="line">  get myProp () &#123; ... &#125;</div><div class="line">  set myProp () &#123; ... &#125;</div><div class="line">  myMethod () &#123; ... &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// this registers the Custom Element</span></div><div class="line">customElements.define(<span class="string">'my-element'</span>, MyElement)</div></pre></td></tr></table></figure>
 <p>定义之后，元素能够以具体名称在 HTML 或 JS 代码中实例化。</p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">my-element</span>&gt;</span><span class="tag">&lt;/<span class="name">my-element</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>基于类的 API 是十分简洁的，但是在我的观点中，它缺乏灵活性。作为一个框架作者，我更加倾向于已经废弃的 V0 版本 <a href="https://www.html5rocks.com/en/tutorials/webcomponents/customelements/" target="_blank" rel="external">API</a>，它是基于老式的原型链语法。</p>
+<p>基于类的 API 是十分简洁的，但是在我的观点中，它缺乏灵活性。作为一个框架作者，我更加倾向于已经废弃的 V0 版本 <a href="https://www.html5rocks.com/en/tutorials/webcomponents/customelements/" target="_blank" rel="noopener">API</a>，它是基于老式的原型链语法。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> MyElementProto = <span class="built_in">Object</span>.create(HTMLElement.prototype)</div><div class="line"></div><div class="line"><span class="comment">// native hooks</span></div><div class="line">MyElementProto.attachedCallback = ...</div><div class="line">MyElementProto.detachedCallback = ...</div><div class="line"></div><div class="line"><span class="comment">// custom properties and methods</span></div><div class="line">MyElementProto.myMethod = ...</div><div class="line"></div><div class="line">document.registerElement(<span class="string">'my-element'</span>, &#123; <span class="attr">prototype</span>: MyElementProto &#125;)</div></pre></td></tr></table></figure>
 <p>虽然它没有那么优雅，但是它可以再 ES6 以及 ES6 之前的代码完美兼容。在另一方面，将 ES6 类的语法和一些 ES6 之前的语法混合在一起，会让代码变得非常复杂。</p>
 <p>举个例子，我需要能够控制组件从 HTML 接口继承的能力。ES6 的类使用关键字 <code>extends</code> 实现继承，并且需要开发人员键入 <code>MyClass extends ChosenHTMLInterface</code>。</p>
@@ -270,14 +271,14 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">nx.component()</div><div class="line">  .use(<span class="function">(<span class="params">elem, state</span>) =&gt;</span> state.name = <span class="string">'World'</span>)</div><div class="line">  .register(<span class="string">'my-element'</span>)</div></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;my-component&gt;</div><div class="line">  <span class="xml"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello: $&#123;name&#125;!<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></div><div class="line">&lt;<span class="regexp">/my-component&gt;</span></div></pre></td></tr></table></figure>
 <p>这是一个很简单的模板，它将 <code>name</code> 属性注入到视图中。如果用户想要用其他什么元素来取代这个 <code>p</code> 元素，框架就必须去提示一下这个变化。它必须清除之前的 <code>p</code> 元素并且将新元素注入。<code>childrenChanged</code> 可能并不会作为一个开发者接口暴露出来，但是对于一个框架，了解一个组件内容的变化是非常有必要的。</p>
-<p>就像我提到的，自定义元素缺少 <code>childrenChanged</code> 的回调，但是它可以通过以前的 <a href="https://developer.mozilla.org/en/docs/Web/API/MutationObserver" target="_blank" rel="external">MutationObserver API</a> 来实现。 MutationObservers 也可以提供可供选择的 <code>connectedCallback</code>、<code>disconnectedCallback</code> 以及 <code>attributeChangedCallback</code> 钩子函数给老版的浏览器。</p>
+<p>就像我提到的，自定义元素缺少 <code>childrenChanged</code> 的回调，但是它可以通过以前的 <a href="https://developer.mozilla.org/en/docs/Web/API/MutationObserver" target="_blank" rel="noopener">MutationObserver API</a> 来实现。 MutationObservers 也可以提供可供选择的 <code>connectedCallback</code>、<code>disconnectedCallback</code> 以及 <code>attributeChangedCallback</code> 钩子函数给老版的浏览器。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// create an observer instance</span></div><div class="line"><span class="keyword">const</span> observer = <span class="keyword">new</span> MutationObserver(onMutations)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">onMutations</span> (<span class="params">mutations</span>) </span>&#123;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> mutation <span class="keyword">of</span> mutations) &#123;</div><div class="line">    <span class="comment">// handle mutation.addedNodes, mutation.removedNodes, mutation.attributeName and mutation.oldValue here</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// listen for attribute and child mutations on `MyComponentInstance` and all of its ancestors</span></div><div class="line">observer.observe(MyComponentInstance, &#123;</div><div class="line">  <span class="attr">attributes</span>: <span class="literal">true</span>,</div><div class="line">  <span class="attr">childList</span>: <span class="literal">true</span>,</div><div class="line">  <span class="attr">subtree</span>: <span class="literal">true</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 <p>如果抛开自定义元素的简易 API 不谈，上例可能会让人对自定义元素是否真的有必要存在疑问。<br>在下一小节中，我将会支出 <code>MutationObservers</code> 和 自定义元素之间的差异，并讨论什么时候选择使用哪个。</p>
 <h2 id="自定义元素-VS-MutationObservers"><a href="#自定义元素-VS-MutationObservers" class="headerlink" title="自定义元素 VS MutationObservers"></a>自定义元素 VS MutationObservers</h2><p>自定义元素的回调函数是在 DOM 发生转变时同步调用的，而 <code>MutationObservers</code> 收集转变并分批的异步地调用回调函数。在创建逻辑上这并不会有什么问题，但是在清除实例的时候会引起一些意想不到的 bug。当数据已经处理过后仍然会存在一小段时间是非常危险的行为。</p>
-<p>另一个很重要的差异是，<code>MutationObservers</code> 不会捕获影子 DOM。监听影子 DOM 内部的转变需要自定义元素或者添加一个 <code>MutationObservers</code> 到影子 DOM 的根组件上。如果你从未了解过影子 DOM，可以看<a href="https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom" target="_blank" rel="external">这里</a>获得更多的了解。</p>
+<p>另一个很重要的差异是，<code>MutationObservers</code> 不会捕获影子 DOM。监听影子 DOM 内部的转变需要自定义元素或者添加一个 <code>MutationObservers</code> 到影子 DOM 的根组件上。如果你从未了解过影子 DOM，可以看<a href="https://developers.google.com/web/fundamentals/getting-started/primers/shadowdom" target="_blank" rel="noopener">这里</a>获得更多的了解。</p>
 <p>最后，在钩子函数上他们也有一点差异，自定义元素有 <code>adoptedCallback</code> 钩子函数，而 <code>MutationObservers</code> 可以在任意深度上去监听文本或者子元素的转变。</p>
 <p>考虑到以上，将两者的精华之处结合起来会是一个很不错的做法。</p>
-<h2 id="结合自定义元素与-MutationObservers"><a href="#结合自定义元素与-MutationObservers" class="headerlink" title="结合自定义元素与 MutationObservers"></a>结合自定义元素与 MutationObservers</h2><p>因为自定义元素<a href="http://caniuse.com/#search=custom%20elements" target="_blank" rel="external">尚未被广泛支持</a>，<code>MutationObservers</code> 必须用来观察 DOM 的转变。这里有两个观点用于使用它们。</p>
+<h2 id="结合自定义元素与-MutationObservers"><a href="#结合自定义元素与-MutationObservers" class="headerlink" title="结合自定义元素与 MutationObservers"></a>结合自定义元素与 MutationObservers</h2><p>因为自定义元素<a href="http://caniuse.com/#search=custom%20elements" target="_blank" rel="noopener">尚未被广泛支持</a>，<code>MutationObservers</code> 必须用来观察 DOM 的转变。这里有两个观点用于使用它们。</p>
 <ul>
 <li>在顶层 API 上使用自定义元素，并且用 <code>MutationObservers</code> 实现替代方案。</li>
 <li>建立 <code>MutationObservers</code> 的 API 并且当自定义元素可用时使用自定义元素以获得一些提升。</li>
@@ -341,13 +342,13 @@
       <a class="prev" href="/2017/12/05/翻译 - 写一个 JavaScript 框架（七）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（七）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/11/17/翻译 - 写一个 JavaScript 框架（五）/">
         <span class="next-text nav-default">写一个 JavaScript 框架（五）</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -416,11 +417,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

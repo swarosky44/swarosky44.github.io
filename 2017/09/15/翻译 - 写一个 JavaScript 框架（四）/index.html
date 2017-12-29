@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/09/15/翻译 - 写一个 JavaScript 框架（四）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="这是教你写一个 JavaScript 框架系列文章的第四篇。在这个章节中，我将会讲解脏检查、访问器中的数据绑定技术以及它们各自的优劣。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介（当前章节） 用 ES6 Proxy 实现数据绑定 自定义元素 客户端路由">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://blog-assets.risingstack.com/2016/Sep/The_accessor_data_binding_technique-1473151244710.svg">
 <meta property="og:updated_time" content="2017-09-18T06:29:58.000Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#数据绑定简介"><span class="toc-text">数据绑定简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#脏检查"><span class="toc-text">脏检查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#语法"><span class="toc-text">语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#监听转变"><span class="toc-text">监听转变</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#访问器技术"><span class="toc-text">访问器技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#语法-1"><span class="toc-text">语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#监听转变-1"><span class="toc-text">监听转变</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#两种技术的比较"><span class="toc-text">两种技术的比较</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#语法-2"><span class="toc-text">语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#表现"><span class="toc-text">表现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#灵活性"><span class="toc-text">灵活性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#选择的时机"><span class="toc-text">选择的时机</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于下一篇文章"><span class="toc-text">关于下一篇文章</span></a></li></ol>
     </div>
@@ -289,9 +290,9 @@
 <p>访问器技术在这一方面则不如人意，自定义属性并不能被支持，因为它们不在 <code>getter/setter</code> 树上。比如数组上就会发生这种问题，但是它可以通过再添加新属性之后手动执行 <code>observableProp()</code> 来修复。<code>Getter/Setter</code> 属性也不被支持，因为访问器不能再被访问器包裹。一种常用的变通方法是用 <code>computed()</code> 函数取代 <code>getter</code>。这也会引入更多的自定义语法。</p>
 <h3 id="选择的时机"><a href="#选择的时机" class="headerlink" title="选择的时机"></a>选择的时机</h3><p>脏检查在这方面并没有给我们太多的自由，由于我们实际上无法知道属性发生转变的时机。<code>handler()</code> 函数只能异步执行，通过一次又一次循环运行 <code>digest()</code>。</p>
 <p>通过访问器技术添加的 <code>Getters/Setters</code> 是同步触发的，因此我们有选择的自由。我们还可以选择是立即执行 <code>handler()</code> 或者保存在异步操作之后的批处理中。前者让我们有可预测的优势，后者让我们减少重复的操作以提升性能。</p>
-<h2 id="关于下一篇文章"><a href="#关于下一篇文章" class="headerlink" title="关于下一篇文章"></a>关于下一篇文章</h2><p>在下一篇文中，我将会介绍 <a href="https://github.com/RisingStack/nx-observe" target="_blank" rel="external">nx-observe</a> 数据绑定的库并且解释如何用 ES6 Proxies 取代 ES5 getters/setters 以清除更多的访问器技术的缺陷。</p>
+<h2 id="关于下一篇文章"><a href="#关于下一篇文章" class="headerlink" title="关于下一篇文章"></a>关于下一篇文章</h2><p>在下一篇文中，我将会介绍 <a href="https://github.com/RisingStack/nx-observe" target="_blank" rel="noopener">nx-observe</a> 数据绑定的库并且解释如何用 ES6 Proxies 取代 ES5 getters/setters 以清除更多的访问器技术的缺陷。</p>
 <blockquote>
-<p>翻译自 <a href="https://blog.risingstack.com/writing-a-javascript-framework-data-binding-dirty-checking/" target="_blank" rel="external">Writing a JavaScript Framework - Introduction to Data Binding, beyond Dirty Checking</a></p>
+<p>翻译自 <a href="https://blog.risingstack.com/writing-a-javascript-framework-data-binding-dirty-checking/" target="_blank" rel="noopener">Writing a JavaScript Framework - Introduction to Data Binding, beyond Dirty Checking</a></p>
 </blockquote>
 
       
@@ -347,13 +348,13 @@
       <a class="prev" href="/2017/11/03/天猫双11潮流盛典虚拟试衣活动总结/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">天猫双11潮流盛典虚拟试衣活动总结</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/08/02/翻译 - 写一个 JavaScript 框架（三）/">
         <span class="next-text nav-default">写一个 JavaScript 框架（三）</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -422,11 +423,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

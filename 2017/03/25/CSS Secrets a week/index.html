@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/03/25/CSS Secrets a week/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="很久没有写文章了，忙乎了大半年的项目 4 月 1 号就要上线了。相对之前个人时间也充裕了起来，继续写一篇关于 CSS Secrets 的二刷笔记吧 😎 在日常开发中我们会遇见需要用 CSS 绘制一个圆的需求，通常来说我们需要元素等高等宽，然后将 border-radius 设置为大于等于高度（宽度）的一半的值。但是我们是否真的理解了 border-radius 属性的真实含义？">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/border-radius.jpeg">
 <meta property="og:image" content="http://oe3rjg2g6.bkt.clouddn.com/border-radius2.png">
 <meta property="og:updated_time" content="2017-04-12T01:38:00.000Z">
@@ -155,7 +156,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -164,7 +165,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -173,7 +174,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -182,7 +183,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -217,9 +218,9 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#难题：自适应的椭圆"><span class="toc-text">难题：自适应的椭圆</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#border-radius-其实是有两个方向上的值可以设置-水平方向-amp-垂直方向"><span class="toc-text">border-radius 其实是有两个方向上的值可以设置 - 水平方向 & 垂直方向</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#border-radius-其实是一个缩写属性"><span class="toc-text">border-radius 其实是一个缩写属性</span></a></li></ol></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#难题：自适应的椭圆"><span class="toc-text">难题：自适应的椭圆</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#border-radius-其实是有两个方向上的值可以设置-水平方向-amp-垂直方向"><span class="toc-text">border-radius 其实是有两个方向上的值可以设置 - 水平方向 &amp; 垂直方向</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#border-radius-其实是一个缩写属性"><span class="toc-text">border-radius 其实是一个缩写属性</span></a></li></ol></li></ol></li></ol>
     </div>
   </div>
 
@@ -233,7 +234,7 @@
 <figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="selector-class">.circle</span> &#123;</div><div class="line">  <span class="attribute">width</span>: <span class="number">200px</span>;</div><div class="line">  <span class="attribute">height</span>: <span class="number">200px</span>;</div><div class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid red;</div><div class="line">  <span class="attribute">border-radius</span>: <span class="number">100px</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>如果元素并非等高等宽，则将绘制出一个椭圆。</p>
 <p>这里就需要我们对 <code>border-radius</code> 属性深入了解一下，我们可以利用 <code>border-radius</code> 来实现一些怎样形状的元素。</p>
-<p>在 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-radius" target="_blank" rel="external">MDN</a> 中描述了 <code>border-radius</code> 这个属性的值得具体描述：</p>
+<p>在 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-radius" target="_blank" rel="noopener">MDN</a> 中描述了 <code>border-radius</code> 这个属性的值得具体描述：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">border-radius: &lt;length-percentage&gt;&#123;1, 4&#125; [/ &lt;length-percentage&#123;1, 4&#125;&gt;]</div></pre></td></tr></table></figure>
 <p><code>length-percentage</code>  - 可以为百分比或者具体的像素值（px），指代圆角在一个方向上的值，百分比的值是依据        元素的最终宽高值计算得到。</p>
 <p><code>{1, 4}</code> - 必须制定至少一个最多四个角的圆角值；</p>
@@ -260,7 +261,7 @@
 <p>彻底理解了这两个属性之后我们可以做很多有趣的形状，比如半圆、半椭圆、四分之椭圆之类。</p>
 <hr>
 <blockquote>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-radius" target="_blank" rel="external">border-radius 属性详解</a></p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/border-radius" target="_blank" rel="noopener">border-radius 属性详解</a></p>
 </blockquote>
 
       
@@ -312,7 +313,7 @@
       <a class="prev" href="/2017/04/10/CSS Secrets a week (2)/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">CSS Secrets a week</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
@@ -381,11 +382,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/07/28/ES6 + Mocha 前端自动化测试 & 持续集成/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="就目前两年左右的工作经验来说，任职过的公司很少有强制的单元测试要求，大多数时间都是被需求和业务追着屁股跑 🙃不过写单元测试还是蛮爽的，见下图：怎么样，是不是看着很爽 🤓">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/tdd.jpeg">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis.jpeg">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/travis1.jpeg">
@@ -159,7 +160,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -168,7 +169,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -177,7 +178,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -186,7 +187,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -221,7 +222,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置流程"><span class="toc-text">配置流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#业务代码"><span class="toc-text">业务代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置-webpack"><span class="toc-text">配置 webpack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#配置-Karma"><span class="toc-text">配置 Karma</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#测试代码"><span class="toc-text">测试代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Travis-集成"><span class="toc-text">Travis 集成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#coveralls集成"><span class="toc-text">coveralls集成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol>
     </div>
@@ -246,7 +247,7 @@
 <h3 id="配置-webpack"><a href="#配置-webpack" class="headerlink" title="配置 webpack"></a>配置 webpack</h3><p>首先装好依赖<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i <span class="_">-s</span> webpack babel-core babel-loader babel-preset-es2015 istanbul-instrumenter-loader</div></pre></td></tr></table></figure></p>
 <p>然后写好 <code>webpack.config.js</code> 的配置文件</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</div><div class="line"><span class="built_in">module</span>.exports = &#123;</div><div class="line">  <span class="attr">devtool</span>: <span class="string">'inline-source-map'</span>,</div><div class="line">  <span class="attr">module</span>: &#123;</div><div class="line">    <span class="attr">rules</span>: [</div><div class="line">      &#123;</div><div class="line">        <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</div><div class="line">        <span class="attr">exclude</span>: <span class="regexp">/node_modules/</span>,</div><div class="line">        <span class="attr">use</span>: [<span class="string">'babel-loader'</span>],</div><div class="line">      &#125;,</div><div class="line">      &#123;</div><div class="line">        <span class="attr">test</span>: <span class="regexp">/\.js$/</span>,</div><div class="line">        <span class="attr">exclude</span>: <span class="regexp">/node_modules|\.spec\.js$/</span>,</div><div class="line">        <span class="attr">use</span>: &#123;</div><div class="line">          <span class="attr">loader</span>: <span class="string">'istanbul-instrumenter-loader'</span>,</div><div class="line">          <span class="attr">options</span>: &#123;</div><div class="line">            <span class="attr">esModules</span>: <span class="literal">true</span>,</div><div class="line">          &#125;,</div><div class="line">        &#125;,</div><div class="line">        <span class="attr">enforce</span>: <span class="string">'pre'</span>,</div><div class="line">      &#125;,</div><div class="line">    ],</div><div class="line">  &#125;,</div><div class="line">  <span class="attr">resolve</span>: &#123;</div><div class="line">    <span class="attr">extensions</span>: [<span class="string">'.js'</span>],</div><div class="line">    <span class="attr">alias</span>: &#123;</div><div class="line">      <span class="string">'src'</span>: path.resolve(__dirname, <span class="string">'./src'</span>),</div><div class="line">    &#125;,</div><div class="line">  &#125;,</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>现在都是 webpack2 的配置了，相关语法不熟悉的话，最好是去看一下<a href="https://doc.webpack-china.org/configuration/" target="_blank" rel="external">webpack2 文档</a><br><code>rules</code> 就是以前的 loaders：</p>
+<p>现在都是 webpack2 的配置了，相关语法不熟悉的话，最好是去看一下<a href="https://doc.webpack-china.org/configuration/" target="_blank" rel="noopener">webpack2 文档</a><br><code>rules</code> 就是以前的 loaders：</p>
 <ul>
 <li>test：文件检测规则；</li>
 <li>exclude：排除在外的文件目录；</li>
@@ -278,9 +279,9 @@
 </ul>
 <p>从 webpack 的配置中开始，就可以看到一些 istanbul 字样的配置信息，这些用于打点的工具，主要服务于测试覆盖率。如果不需要用 webpack + ES6 的话，测试覆盖率可以直接用 <code>karma-coverage</code> 工具。<br>由于 webpack 会将代码打包，并且加入大量的 polyfills，导致源码的体量增大，所以覆盖率会测试不准。<br>这里用 <code>istanbul-instrumenter-loader</code> 可以在打包之前就完成打点的工作。<br>理论上，到这一步如果配置完成了，并且依赖都成功安装了。就可以开始单元测试了。</p>
 <h3 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> LinkedList <span class="keyword">from</span> <span class="string">'src/linkedList'</span>;</div><div class="line"><span class="keyword">import</span> &#123; expect &#125; <span class="keyword">from</span> <span class="string">'chai'</span>;</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList append function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'length should be 1'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.length).to.be.equal(<span class="number">2</span>);</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  it(<span class="string">'the value of the head should be 1'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.head.value).to.be.equal(<span class="number">1</span>);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList valueOf function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'the result should equal [1, 2]'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.valueOf()).to.deep.equal([<span class="number">1</span>, <span class="number">2</span>]);</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList insert function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line">  ll.insert(<span class="number">1</span>, <span class="number">3</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'the result should equal [1, 3, 2]'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.valueOf()).to.deep.equal([<span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>]);</div><div class="line">  &#125;);</div><div class="line">&#125;)</div><div class="line"></div><div class="line">describe(<span class="string">'Test LinkedList removeAt function =&gt;'</span>, () =&gt; &#123;</div><div class="line">  <span class="keyword">const</span> ll = <span class="keyword">new</span> LinkedList();</div><div class="line">  ll.append(<span class="number">1</span>);</div><div class="line">  ll.append(<span class="number">2</span>);</div><div class="line">  ll.append(<span class="number">3</span>);</div><div class="line">  ll.removeAt(<span class="number">1</span>);</div><div class="line"></div><div class="line">  it(<span class="string">'the result should equal [1, 3]'</span>, () =&gt; &#123;</div><div class="line">    expect(ll.valueOf()).to.deep.equal([<span class="number">1</span>, <span class="number">3</span>]);</div><div class="line">  &#125;);</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>具体的 <a href="https://mochajs.org/" target="_blank" rel="external">Mocha</a> + <a href="http://chaijs.com/" target="_blank" rel="external">Chai</a> 的语法可以自己去官网学习一下，非常简单的。</p>
+<p>具体的 <a href="https://mochajs.org/" target="_blank" rel="noopener">Mocha</a> + <a href="http://chaijs.com/" target="_blank" rel="noopener">Chai</a> 的语法可以自己去官网学习一下，非常简单的。</p>
 <h3 id="Travis-集成"><a href="#Travis-集成" class="headerlink" title="Travis 集成"></a>Travis 集成</h3><p>Travis 是一个持续集成的工具，当我们成功配置好之后，可以让我们一提交代码到 github 仓库之后，就立即执行我们的单元测试。<br>然后我们还可以简单配置一下 github 项目的 Readme.md，获得一个小 badage。</p>
-<p>首先去 <a href="https://travis-ci.org/" target="_blank" rel="external">travis-ci</a> 的官网上完成注册（用 github 账号登录）。然后在项目列表：<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis.jpeg" alt=""><br>选中自己要开启持续集成功能的项目，并在该项目里面添加一个 .travis.yml 文件。</p>
+<p>首先去 <a href="https://travis-ci.org/" target="_blank" rel="noopener">travis-ci</a> 的官网上完成注册（用 github 账号登录）。然后在项目列表：<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis.jpeg" alt=""><br>选中自己要开启持续集成功能的项目，并在该项目里面添加一个 .travis.yml 文件。</p>
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="attr">language:</span> <span class="string">node_js</span></div><div class="line"><span class="attr">sudo:</span> <span class="literal">true</span></div><div class="line"><span class="attr">node_js:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">stable</span></div><div class="line"><span class="attr">cache:</span></div><div class="line"><span class="attr">  directories:</span></div><div class="line"><span class="bullet">    -</span> <span class="string">node_modules</span></div><div class="line"><span class="attr">before_install:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">i</span></div><div class="line"><span class="attr">script:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">test</span></div><div class="line"><span class="attr">after_success:</span></div><div class="line"><span class="bullet">  -</span> <span class="string">npm</span> <span class="string">run</span> <span class="string">coverage</span></div></pre></td></tr></table></figure>
 <p>这份配置的各项参数：</p>
 <ul>
@@ -295,7 +296,7 @@
 <p>然后 push github，可以到 travis 上面看到如下：<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis1.jpeg" alt=""><br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis2.jpeg" alt=""></p>
 <p>点击小猫咪头像边上的 badage，然后选择 markdown 格式，复制下面的代码，添加到 readme.md 文件中，就可以获得一次装逼的机会。🤓<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis3.jpeg" alt=""></p>
 <p>BTW：这里注意要将 <code>karma.conf.js</code> 文件中的配置 - <code>authoWatch： false</code> &amp; <code>singleRun: true</code>。否则会一直卡住 travis 服务器。</p>
-<h3 id="coveralls集成"><a href="#coveralls集成" class="headerlink" title="coveralls集成"></a>coveralls集成</h3><p>这个是用于集成测试覆盖率的，也比较简单。先去<a href="https://coveralls.io/" target="_blank" rel="external">coveralls</a>完成注册（github 账号登录），同样去列表选中自己要开通的项目。然后安装一个依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i -s coveralls</div></pre></td></tr></table></figure></p>
+<h3 id="coveralls集成"><a href="#coveralls集成" class="headerlink" title="coveralls集成"></a>coveralls集成</h3><p>这个是用于集成测试覆盖率的，也比较简单。先去<a href="https://coveralls.io/" target="_blank" rel="noopener">coveralls</a>完成注册（github 账号登录），同样去列表选中自己要开通的项目。然后安装一个依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm i -s coveralls</div></pre></td></tr></table></figure></p>
 <p>这是用于向 coveralls 上传单元测试完成后的 lcov.info 文件的。<br>在项目里添加一个文件 .coveralls.yml</p>
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">service_name:</span> <span class="string">travis-ci</span></div><div class="line"><span class="attr">repo_token:</span> <span class="string">xxx</span></div></pre></td></tr></table></figure>
 <p>service_name 是写死的，不需要理会。<br>repo_token：是开启项目之后，detail 页面给你的 repo_token，作为账户的唯一识别。</p>
@@ -312,7 +313,7 @@
 <p>具体我也不清楚要怎么解决，貌似 coveralls issue 蛮多的，网上也搜了很多，但是都没用。<br>最后我关闭了项目（列表勾选那里），然后重新开启，更换了 repo_token 就行了。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整个过程不算复杂，就是很繁琐。耐心点跟着配置就好了，遇见问题多 google 总能解决的。<br><img src="http://7xro5v.com1.z0.glb.clouddn.com/travis4.jpeg" alt=""></p>
 <blockquote>
-<p>参阅的文章太多啦~ 文档也蛮多的~<br><a href="https://github.com/swarosky44/Unit-Test-CI" target="_blank" rel="external">项目地址</a></p>
+<p>参阅的文章太多啦~ 文档也蛮多的~<br><a href="https://github.com/swarosky44/Unit-Test-CI" target="_blank" rel="noopener">项目地址</a></p>
 </blockquote>
 
       
@@ -366,13 +367,13 @@
       <a class="prev" href="/2017/07/31/翻译 - 写一个 JavaScript 框架（二）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（二）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/07/26/翻译 - 写一个 JavaScript 框架（一）/">
         <span class="next-text nav-default">写一个 JavaScript 框架（一）</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -441,11 +442,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/06/30/Vue - 响应式数据构造过程/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="其实关于 Vue 如何构造响应式数据以及指令、模板解析过程等等分析的文章已经很多了。这里自己写一次是因为，我TM源码读了几次了，每次过一两个星期就忘得一干二净了 🙄">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://7xro5v.com1.z0.glb.clouddn.com/Vue_Observer1.png">
 <meta property="og:updated_time" content="2017-07-03T07:04:04.000Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#预备知识"><span class="toc-text">预备知识</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#脑图"><span class="toc-text">脑图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#defineReactive"><span class="toc-text">defineReactive</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#observe"><span class="toc-text">observe</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Observer"><span class="toc-text">Observer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></li></ol></li></ol>
     </div>
@@ -229,9 +230,9 @@
 <a id="more"></a>
 <h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p>个人感受，最好先准备一下相关知识点，能轻松一点。 直接干撸源码，会有种人生终极三问的迷茫感 …（当然水平高的话就不一定了。）</p>
 <ul>
-<li>MVVM 的简单实现：<a href="https://zhuanlan.zhihu.com/p/24475845" target="_blank" rel="external">240行实现一个简单的框架</a></li>
-<li>观察者模式：<a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="external">图说设计模式</a> &amp; <a href="http://swarosky44.github.io/2017/05/02/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/#more">我的文章</a></li>
-<li>Object 各种元属性操作：<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object" target="_blank" rel="external">MDN</a></li>
+<li>MVVM 的简单实现：<a href="https://zhuanlan.zhihu.com/p/24475845" target="_blank" rel="noopener">240行实现一个简单的框架</a></li>
+<li>观察者模式：<a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="noopener">图说设计模式</a> &amp; <a href="http://swarosky44.github.io/2017/05/02/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/#more">我的文章</a></li>
+<li>Object 各种元属性操作：<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object" target="_blank" rel="noopener">MDN</a></li>
 </ul>
 <h1 id="脑图"><a href="#脑图" class="headerlink" title="脑图"></a>脑图</h1><p><img src="http://7xro5v.com1.z0.glb.clouddn.com/Vue_Observer1.png" alt=""></p>
 <p>脑图是用来帮助理解的，整个响应式对象的构造过程简单说来就三点：</p>
@@ -282,7 +283,7 @@
 <p>如果 value 不是数组，那么就是正常的对象，我们同样需要遍历 value 上的每个属性，并对每个属性值进行 defineReactive 的操作，同样将它们全部改造为被观察者。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果数据结构复杂的话，会不断经历 observe =&gt; Observer =&gt; defineReactive =&gt; observe … 这样类似的过程，直至这个对象的所有属性值都完成被改造，能够在 getter 的时候收集依赖，在 setter 的通知观察者的更新行为。</p>
 <blockquote>
-<p><a href="https://cn.vuejs.org/v2/guide/" target="_blank" rel="external">Vue</a><br><a href="https://github.com/Ma63d/vue-analysis/issues/1" target="_blank" rel="external">Vue源码详细解析(一)–数据的响应化</a></p>
+<p><a href="https://cn.vuejs.org/v2/guide/" target="_blank" rel="noopener">Vue</a><br><a href="https://github.com/Ma63d/vue-analysis/issues/1" target="_blank" rel="noopener">Vue源码详细解析(一)–数据的响应化</a></p>
 </blockquote>
 
       
@@ -336,13 +337,13 @@
       <a class="prev" href="/2017/07/01/Vue - 观察者 Watcher 构造过程/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Vue - 观察者 Watcher 构造过程</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/06/27/Canvas - 3D 粒子效果/">
         <span class="next-text nav-default">Canvas - 3D 粒子效果</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -411,11 +412,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

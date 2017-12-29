@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/05/14/设计模式 - 命令模式/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="废话不多说，记录一下命令模式的使用与定义。">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://design-patterns.readthedocs.io/zh_CN/latest/_images/Command.jpg">
 <meta property="og:image" content="https://design-patterns.readthedocs.io/zh_CN/latest/_images/seq_Command.jpg">
 <meta property="og:updated_time" content="2017-09-13T07:22:25.000Z">
@@ -155,7 +156,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -164,7 +165,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -173,7 +174,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -182,7 +183,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -217,7 +218,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#定义"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#结构"><span class="toc-text">结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#UML图"><span class="toc-text">UML图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#时序图"><span class="toc-text">时序图</span></a></li></ol></li></ol>
     </div>
@@ -236,7 +237,7 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>() &#123;&#125;</div><div class="line"></div><div class="line">  action1() &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'我是客户要求的动作1 !'</span>);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  action2() &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'我是客户要求的动作2 !'</span>);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Command</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>() &#123;&#125;</div><div class="line"></div><div class="line">  execute() &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'必须重写该方法 !'</span>);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConcreteCommand</span> <span class="keyword">extends</span> <span class="title">Command</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>(receiver, action='') &#123;</div><div class="line">    <span class="keyword">super</span>();</div><div class="line">    <span class="keyword">this</span>.receiver = receiver;</div><div class="line">    <span class="keyword">this</span>.action = action;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  execute() &#123;</div><div class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.receiver) &#123;</div><div class="line">      <span class="keyword">return</span> <span class="built_in">console</span>.error(<span class="string">'接受对象不能为空'</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.receiver[<span class="keyword">this</span>.action] !== <span class="string">'function'</span>) &#123;</div><div class="line">      <span class="keyword">return</span> <span class="built_in">console</span>.error(<span class="string">'接收对象不存在该指令'</span>)</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.receiver[<span class="keyword">this</span>.action]();</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Invoke</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>() &#123;</div><div class="line">    <span class="keyword">this</span>.commandList = [];</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  add(command) &#123;</div><div class="line">    <span class="keyword">if</span> (command <span class="keyword">instanceof</span> Command) &#123;</div><div class="line">      <span class="keyword">this</span>.commandList.push(command);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  execute() &#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> command <span class="keyword">of</span> <span class="keyword">this</span>.commandList) &#123;</div><div class="line">      command.execute();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">const</span> receiver = <span class="keyword">new</span> Receiver();</div><div class="line"><span class="keyword">const</span> invoke = <span class="keyword">new</span> Invoke();</div><div class="line"><span class="keyword">const</span> command1 = <span class="keyword">new</span> ConcreteCommand(receiver, <span class="string">'action1'</span>);</div><div class="line"><span class="keyword">const</span> command2 = <span class="keyword">new</span> ConcreteCommand(receiver, <span class="string">'action2'</span>);</div><div class="line">invoke.add(command1);</div><div class="line">invoke.add(command2);</div><div class="line">invoke.execute();</div><div class="line"><span class="comment">// 我是客户要求的动作1 ！</span></div><div class="line"><span class="comment">// 我是客户要求的动作2 ！</span></div></pre></td></tr></table></figure>
 <p>以上就是命令模式的一个简单实现。<br>对于调用者而言，他可以不用关心命令具体实现过程，只需要发送命令即可。<br>对于接受者而言，他不用在乎是谁发出了命令，只需要对于命令执行实践即可。<br>所以命令模式能够有效降低系统的耦合度。</p>
 <blockquote>
-<p><a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="external">图解设计模式</a></p>
+<p><a href="https://design-patterns.readthedocs.io/zh_CN/latest/behavioral_patterns/observer.html" target="_blank" rel="noopener">图解设计模式</a></p>
 </blockquote>
 
       
@@ -290,13 +291,13 @@
       <a class="prev" href="/2017/06/01/数据结构 - BinaryTree/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">数据结构 - Binnary Tree</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/05/02/设计模式 - 观察者模式/">
         <span class="next-text nav-default">设计模式 - 观察者模式</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -365,11 +366,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 

@@ -41,6 +41,7 @@
 <meta property="og:url" content="http://swarosky44.github.io/2017/11/17/翻译 - 写一个 JavaScript 框架（五）/index.html">
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="这是教你写一个 JavaScript 框架系列文章的第五篇。在这个章节中，我将会讲解如何使用 ES6 的 Proxies 来实现一个简洁高效的数据绑定库。 这个系列包括以下章节：  项目结构 调度执行 沙箱求值 数据绑定简介 用 ES6 Proxy 实现数据绑定（当前章节） 自定义元素 客户端路由">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://blog-assets.risingstack.com/2016/11/writing-a-javascript-framework-data-binding-with-es6-proxy-observables-code.png">
 <meta property="og:updated_time" content="2017-11-21T10:39:32.816Z">
 <meta name="twitter:card" content="summary">
@@ -154,7 +155,7 @@
           <a class="menu-item-link" href="/">
             
             
-              首页
+              Home
             
           </a>
         </li>
@@ -163,7 +164,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              归档
+              Archives
             
           </a>
         </li>
@@ -172,7 +173,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              标签
+              Tags
             
           </a>
         </li>
@@ -181,7 +182,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              分类
+              Categories
             
           </a>
         </li>
@@ -216,7 +217,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">文章目录</h2>
+    <h2 class="post-toc-title">Contents</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#预备知识"><span class="toc-text">预备知识</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#nx-observe-库"><span class="toc-text">nx-observe 库</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实现一个简单的被观察者"><span class="toc-text">实现一个简单的被观察者</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#注册变化"><span class="toc-text">注册变化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#观察者的运作"><span class="toc-text">观察者的运作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建一个动态的被观察者树"><span class="toc-text">创建一个动态的被观察者树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#和-ES5-的技术对比"><span class="toc-text">和 ES5 的技术对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义属性"><span class="toc-text">自定义属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Getters-和-Setters"><span class="toc-text">Getters 和 Setters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#劣势"><span class="toc-text">劣势</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一点建议"><span class="toc-text">一点建议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#清理"><span class="toc-text">清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#多次代理"><span class="toc-text">多次代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#继承"><span class="toc-text">继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#内部属性"><span class="toc-text">内部属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#异步"><span class="toc-text">异步</span></a></li></ol></li></ol>
     </div>
@@ -237,13 +238,13 @@
 <li>客户端路由</li>
 </ol>
 <a id="more"></a>
-<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>尽管 ES6 使 JavaScript 变得十分优雅，但是大部分的新语法都只是语法糖。Proxies 是少有的非补充性的新增语法之一。如果你还不熟悉这个语法，请在此之前简单速读一下 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy" target="_blank" rel="external">MDN Proxy docs</a>。</p>
+<h2 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h2><p>尽管 ES6 使 JavaScript 变得十分优雅，但是大部分的新语法都只是语法糖。Proxies 是少有的非补充性的新增语法之一。如果你还不熟悉这个语法，请在此之前简单速读一下 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy" target="_blank" rel="noopener">MDN Proxy docs</a>。</p>
 <p>对 ES6 的 Reflect API 以及 Set、Map、WeakMap 对象有简单的了解也有一定的帮助。</p>
-<h2 id="nx-observe-库"><a href="#nx-observe-库" class="headerlink" title="nx-observe 库"></a>nx-observe 库</h2><p><a href="https://github.com/RisingStack/nx-observe" target="_blank" rel="external">nx-observe</a> 是一个代码量少于 140 行的数据绑定解决方案。它暴露出 <code>observeable(obj)</code> 和 <code>observe(fn)</code> 两个函数，它们用于创建被观察者和观察函数。当被观察者对象的属性发生改变的时候，观察函数会自动执行。例子如下：</p>
+<h2 id="nx-observe-库"><a href="#nx-observe-库" class="headerlink" title="nx-observe 库"></a>nx-observe 库</h2><p><a href="https://github.com/RisingStack/nx-observe" target="_blank" rel="noopener">nx-observe</a> 是一个代码量少于 140 行的数据绑定解决方案。它暴露出 <code>observeable(obj)</code> 和 <code>observe(fn)</code> 两个函数，它们用于创建被观察者和观察函数。当被观察者对象的属性发生改变的时候，观察函数会自动执行。例子如下：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// this is an observable object</span></div><div class="line"><span class="keyword">const</span> person = observable(&#123;<span class="attr">name</span>: <span class="string">'John'</span>, <span class="attr">age</span>: <span class="number">20</span>&#125;)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">print</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;person.name&#125;</span>, <span class="subst">$&#123;person.age&#125;</span>`</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// this creates an observer function</span></div><div class="line"><span class="comment">// outputs 'John, 20' to the console</span></div><div class="line">observe(print)</div><div class="line"></div><div class="line"><span class="comment">// outputs 'Dave, 20' to the console</span></div><div class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> person.name = <span class="string">'Dave'</span>, <span class="number">100</span>)</div><div class="line"></div><div class="line"><span class="comment">// outputs 'Dave, 22' to the console</span></div><div class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> person.age = <span class="number">22</span>, <span class="number">200</span>)</div></pre></td></tr></table></figure>
-<p><code>print</code> 函数作为参数传递进 <code>observe()</code> 里面，每当 <code>person.name</code> 或者 <code>person.age</code> 发生改变时就会执行。<code>print</code> 就被称为一个观察函数。<br>如果你想看更多的案例，请翻阅 <a href="https://github.com/RisingStack/nx-observe#example" target="_blank" rel="external">GitHub readme</a> 或者 <a href="http://nx-framework.com/docs/spa/observer" target="_blank" rel="external">NX home page</a>，那里有更多的案例。</p>
+<p><code>print</code> 函数作为参数传递进 <code>observe()</code> 里面，每当 <code>person.name</code> 或者 <code>person.age</code> 发生改变时就会执行。<code>print</code> 就被称为一个观察函数。<br>如果你想看更多的案例，请翻阅 <a href="https://github.com/RisingStack/nx-observe#example" target="_blank" rel="noopener">GitHub readme</a> 或者 <a href="http://nx-framework.com/docs/spa/observer" target="_blank" rel="noopener">NX home page</a>，那里有更多的案例。</p>
 <h2 id="实现一个简单的被观察者"><a href="#实现一个简单的被观察者" class="headerlink" title="实现一个简单的被观察者"></a>实现一个简单的被观察者</h2><p>在这个小节里，我将会解释在 <code>nx-observe</code> 内部的逻辑。首先，我会展示观察者是如何发现被观察者的属性发生改变的。然后我会解释这些改变是如何触发的观察函数。</p>
-<h3 id="注册变化"><a href="#注册变化" class="headerlink" title="注册变化"></a>注册变化</h3><p>变化是通过使用 ES6 Proxies 包裹被观察者完成注册的。在 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect" target="_blank" rel="external">Reflection API</a> 的帮助下 proxies 可以无缝地拦截所有 <code>get</code> 和 <code>set</code> 操作。</p>
+<h3 id="注册变化"><a href="#注册变化" class="headerlink" title="注册变化"></a>注册变化</h3><p>变化是通过使用 ES6 Proxies 包裹被观察者完成注册的。在 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect" target="_blank" rel="noopener">Reflection API</a> 的帮助下 proxies 可以无缝地拦截所有 <code>get</code> 和 <code>set</code> 操作。</p>
 <p>下面代码中用到的变量 <code>currentObserver</code> 和 <code>queueObserver</code>, 将会在下一小节中解释清楚。现在只需要明白 <code>currentObserver</code> 总是会指向当前正在执行的观察函数，<code>queueObserver</code> 是一个使观察函数按照队列顺序执行的函数。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* maps observable properties to a Set of</span></div><div class="line">observer functions, which use the property */</div><div class="line"><span class="keyword">const</span> observers = <span class="keyword">new</span> <span class="built_in">WeakMap</span>()</div><div class="line"></div><div class="line"><span class="comment">/* points to the currently running</span></div><div class="line">observer function, can be undefined */</div><div class="line"><span class="keyword">let</span> currentObserver</div><div class="line"></div><div class="line"><span class="comment">/* transforms an object into an observable</span></div><div class="line">by wrapping it into a proxy, it also adds a blank</div><div class="line">Map for property-observer pairs to be saved later */</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">observable</span> (<span class="params">obj</span>) </span>&#123;</div><div class="line">  observers.set(obj, <span class="keyword">new</span> <span class="built_in">Map</span>())</div><div class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Proxy</span>(obj, &#123;get, set&#125;)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* this trap intercepts get operations,</span></div><div class="line">it does nothing if no observer is executing</div><div class="line">at the moment */</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span> (<span class="params">target, key, receiver</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> result = <span class="built_in">Reflect</span>.get(target, key, receiver)</div><div class="line">   <span class="keyword">if</span> (currentObserver) &#123;</div><div class="line">     registerObserver(target, key, currentObserver)</div><div class="line">   &#125;</div><div class="line">  <span class="keyword">return</span> result</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* if an observer function is running currently,</span></div><div class="line">this function pairs the observer function</div><div class="line">with the currently fetched observable property</div><div class="line">and saves them into the observers Map */</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">registerObserver</span> (<span class="params">target, key, observer</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> observersForKey = observers.get(target).get(key)</div><div class="line">  <span class="keyword">if</span> (!observersForKey) &#123;</div><div class="line">    observersForKey = <span class="keyword">new</span> <span class="built_in">Set</span>()</div><div class="line">    observers.get(target).set(key, observersForKey)</div><div class="line">  &#125;</div><div class="line">  observersForKey.add(observer)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/* this trap intercepts set operations,</span></div><div class="line">it queues every observer associated with the</div><div class="line">currently set property to be executed later */</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">set</span> (<span class="params">target, key, value, receiver</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> observersForKey = observers.get(target).get(key)</div><div class="line">  <span class="keyword">if</span> (observersForKey) &#123;</div><div class="line">    observersForKey.forEach(queueObserver)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> <span class="built_in">Reflect</span>.set(target, key, value, receiver)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>如果 <code>currentObserver</code> 尚未赋值 <code>get</code> 的代理将不会执行任何事情。反之，它会匹配观察者的属性与当前正在执行的观察函数，并且将他们保存到 <code>observers</code> 的映射中。观察者们会以 <code>Set</code> 集合保存在每个被观察属性中。这样可以避免发生冲突。</p>
@@ -277,7 +278,7 @@
 <p>为了让代码能够正常运作，我们必须将 <code>observable({ data: { name: &#39;John&#39; } })</code> 替换成 <code>observable({ data: observable({ name: &#39;John&#39; }) })</code>。<br>不过我们可以通过小小修改一下 <code>get</code> 的代理来解决这个麻烦。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get</span> (<span class="params">target, key, receiver</span>) </span>&#123;</div><div class="line">  <span class="keyword">const</span> result = <span class="built_in">Reflect</span>.get(target, key, receiver)</div><div class="line">  <span class="keyword">if</span> (currentObserver) &#123;</div><div class="line">    registerObserver(target, key, currentObserver)</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> result === <span class="string">'object'</span>) &#123;</div><div class="line">      <span class="keyword">const</span> observableResult = observable(result)</div><div class="line">      <span class="built_in">Reflect</span>.set(target, key, observableResult, receiver)</div><div class="line">      <span class="keyword">return</span> observableResult</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> result</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>上述代码中的 <code>get</code> 代理在先将返回值传入 <code>observable()</code> 中完成代理再返回的 - 如果返回值是对象类型。从性能的角度上来看这样是完美的，因为被观察者只有在他们真正需要被观察的时候才会创造出来。</p>
-<h2 id="和-ES5-的技术对比"><a href="#和-ES5-的技术对比" class="headerlink" title="和 ES5 的技术对比"></a>和 ES5 的技术对比</h2><p>用 ES6 的 <code>Proxies</code> 可以实现一个与用 ES5 属性访问器(getter/setter) 十分相似的数据绑定技术。许多流行库都采用这种技术，例如<a href="https://mobxjs.github.io/mobx/" target="_blank" rel="external">MobX</a>和<a href="https://vuejs.org/" target="_blank" rel="external">Vue</a>。使用代理而不是属性访问器有两个主要的优势和一个严重的劣势。</p>
+<h2 id="和-ES5-的技术对比"><a href="#和-ES5-的技术对比" class="headerlink" title="和 ES5 的技术对比"></a>和 ES5 的技术对比</h2><p>用 ES6 的 <code>Proxies</code> 可以实现一个与用 ES5 属性访问器(getter/setter) 十分相似的数据绑定技术。许多流行库都采用这种技术，例如<a href="https://mobxjs.github.io/mobx/" target="_blank" rel="noopener">MobX</a>和<a href="https://vuejs.org/" target="_blank" rel="noopener">Vue</a>。使用代理而不是属性访问器有两个主要的优势和一个严重的劣势。</p>
 <h3 id="自定义属性"><a href="#自定义属性" class="headerlink" title="自定义属性"></a>自定义属性</h3><p>自定义属性是 JavaScript 中动态添加的属性。ES5 的技术并不支持自定义属性因为访问器为了保证能够拦截每个操作，必须预先确定每个属性。这是一个技术原因，这也是为什么现在创建一个预先定义好键值的数据中心日渐流行起来的原因。</p>
 <p>另一方面，Proxy 技术是能够支持自定义属性的，因为它定义的是对象，它拦截对象每个属性的每个操作。</p>
 <p>一个典型的使用自定义属性的例子是使用数组。JavaScript 的数组如果没有添加或者删除元素的能力将会变得非常无用。ES5 的技术解决这个问题通常是提供自定义的或者重写 <code>Array</code> 方法。</p>
@@ -286,19 +287,19 @@
 <h3 id="劣势"><a href="#劣势" class="headerlink" title="劣势"></a>劣势</h3><p>使用 Proxies 的最大劣势是浏览器的支持度问题，目前仅仅是现代浏览器才会有支持，并且大部分的 Proxy API 都没有支持脚本。</p>
 <h2 id="一点建议"><a href="#一点建议" class="headerlink" title="一点建议"></a>一点建议</h2><p>虽然介绍的数据绑定库已经是一个可用的了，但是为了易于理解我是做了一些简化的。从下面的建议中你可以发现一些由于简化而遗漏的观点。</p>
 <h3 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h3><p>内存泄漏是很恶心的。因为使用了 <code>WeakMap</code> 来保存观察者，现在介绍的代码从某种意义上是避免了这个问题的。这意味着观察者是与被观察者和被观察的垃圾是联系在一起的。</p>
-<p>尽管如此，一个可用的案例是一个伴随着频繁变动的 DOM 的耐用的数据中心。在这个例子中，DOM 应该在被当做垃圾收集起来之前释放所有它注册了的观察者。这个功能在上例子中遗失了，但是你可以通过查阅<a href="https://github.com/RisingStack/nx-observe/blob/master/observer.js" target="_blank" rel="external">nx-observe code</a>看看 <code>unobserve()</code> 函数是怎么实现的。</p>
+<p>尽管如此，一个可用的案例是一个伴随着频繁变动的 DOM 的耐用的数据中心。在这个例子中，DOM 应该在被当做垃圾收集起来之前释放所有它注册了的观察者。这个功能在上例子中遗失了，但是你可以通过查阅<a href="https://github.com/RisingStack/nx-observe/blob/master/observer.js" target="_blank" rel="noopener">nx-observe code</a>看看 <code>unobserve()</code> 函数是怎么实现的。</p>
 <h3 id="多次代理"><a href="#多次代理" class="headerlink" title="多次代理"></a>多次代理</h3><p>Proxies 是透明的，意味着这里并没有原生的方法去判断一个对象是 Proxy 代理对象还是一个空对象，他们甚至可以是无限相似的。因此如果没有必要的预备措施的话，我们可能会将一个被观察者一次又一次的代理。</p>
-<p>这里有许多巧妙的办法将一个 Proxy 对象和普通对象区分开。在上例中，一个可用的方法是使用 <code>WeakSet</code> 来记录已被代理的对象，之后检查是否包含对象来判断是否已经做过代理了。如果你对 nx-observe 是如何实现 <code>isObservable()</code> 函数感兴趣的话可以查阅<a href="https://github.com/RisingStack/nx-observe/blob/master/observer.js" target="_blank" rel="external">code</a>。</p>
+<p>这里有许多巧妙的办法将一个 Proxy 对象和普通对象区分开。在上例中，一个可用的方法是使用 <code>WeakSet</code> 来记录已被代理的对象，之后检查是否包含对象来判断是否已经做过代理了。如果你对 nx-observe 是如何实现 <code>isObservable()</code> 函数感兴趣的话可以查阅<a href="https://github.com/RisingStack/nx-observe/blob/master/observer.js" target="_blank" rel="noopener">code</a>。</p>
 <h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>nx-observe 对原型链继承同样有效。下例证明了这个有什么意义：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> parent = observable(&#123;<span class="attr">greeting</span>: <span class="string">'Hello'</span>&#125;)</div><div class="line"><span class="keyword">const</span> child = observable(&#123;<span class="attr">subject</span>: <span class="string">'World!'</span>&#125;)</div><div class="line"><span class="built_in">Object</span>.setPrototypeOf(child, parent)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">print</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;child.greeting&#125;</span> <span class="subst">$&#123;child.subject&#125;</span>`</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// outputs 'Hello World!' to the console</span></div><div class="line">observe(print)</div><div class="line"></div><div class="line"><span class="comment">// outputs 'Hello There!' to the console</span></div><div class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> child.subject = <span class="string">'There!'</span>)</div><div class="line"></div><div class="line"><span class="comment">// outputs 'Hey There!' to the console</span></div><div class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> parent.greeting = <span class="string">'Hey'</span>, <span class="number">100</span>)</div><div class="line"></div><div class="line"><span class="comment">// outputs 'Look There!' to the console</span></div><div class="line">setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> child.greeting = <span class="string">'Look'</span>, <span class="number">200</span>)</div></pre></td></tr></table></figure>
 <p><code>get</code> 代理操作会涉及原型链上的每一个节点，直到找到指定属性。因为观察者被注册到了每一个它可能被需要的地方。</p>
 <p>有一些边缘情况是由一个鲜为人知的事实引起的，即 <code>set</code> 代理操作也会在原型链中运行(偷偷地)，但是这里不会涉及到这些情况。</p>
-<h3 id="内部属性"><a href="#内部属性" class="headerlink" title="内部属性"></a>内部属性</h3><p>代理还可以拦截内部属性的访问。你的代码可能会用到许多你通常意想不到的内部属性。有一些键名是一些<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank" rel="external">众所周知的符号</a>。这些属性也能被 Proxies 正确的代理，不过有一些地方是有 bug。</p>
+<h3 id="内部属性"><a href="#内部属性" class="headerlink" title="内部属性"></a>内部属性</h3><p>代理还可以拦截内部属性的访问。你的代码可能会用到许多你通常意想不到的内部属性。有一些键名是一些<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol" target="_blank" rel="noopener">众所周知的符号</a>。这些属性也能被 Proxies 正确的代理，不过有一些地方是有 bug。</p>
 <h3 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h3><p>观察者可以在 <code>set</code> 操作拦截后同步的运作。这有一些好处：比如低复杂度、可控的时间和更好的堆栈跟踪，但是在某些场景下也会造成混乱。</p>
 <p>试想在单次循环中，将 1000 个元素推入到一个被观察的数组中。数组的长度会变化 1000 次，与之关联的观察者也会快速连续执行 1000 次。这意味着运行一组 1000 个功能的相同的函数，这是件相当无用的事情。</p>
 <p>另一个有问题的场景是双向观察。下面的代码如果是同步运行则会造成无限循序：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> observable1 = observable(&#123;<span class="attr">prop</span>: <span class="string">'value1'</span>&#125;)</div><div class="line"><span class="keyword">const</span> observable2 = observable(&#123;<span class="attr">prop</span>: <span class="string">'value2'</span>&#125;)</div><div class="line"></div><div class="line">observe(<span class="function"><span class="params">()</span> =&gt;</span> observable1.prop = observable2.prop)</div><div class="line">observe(<span class="function"><span class="params">()</span> =&gt;</span> observable2.prop = observable1.prop)</div></pre></td></tr></table></figure>
-<p>基于上述原因 nx-observe 排列观察者是没有重复的，并且让它们作为微任务分批执行以避免<a href="https://en.wikipedia.org/wiki/Flash_of_unstyled_content" target="_blank" rel="external">FOUC</a>。如果你对微任务的概念不熟悉，可以查阅之前的<a href="http://swarosky44.github.io/2017/07/31/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6/#more">文章</a></p>
+<p>基于上述原因 nx-observe 排列观察者是没有重复的，并且让它们作为微任务分批执行以避免<a href="https://en.wikipedia.org/wiki/Flash_of_unstyled_content" target="_blank" rel="noopener">FOUC</a>。如果你对微任务的概念不熟悉，可以查阅之前的<a href="http://swarosky44.github.io/2017/07/31/%E7%BF%BB%E8%AF%91%20-%20%E5%86%99%E4%B8%80%E4%B8%AA%20JavaScript%20%E6%A1%86%E6%9E%B6/#more">文章</a></p>
 
       
     </div>
@@ -353,13 +354,13 @@
       <a class="prev" href="/2017/11/22/翻译 - 写一个 JavaScript 框架（六）/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">写一个 JavaScript 框架（六）</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/11/03/天猫双11潮流盛典虚拟试衣活动总结/">
         <span class="next-text nav-default">天猫双11潮流盛典虚拟试衣活动总结</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -428,11 +429,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
   </span>
   
   <span class="theme-info">
-    主题 - 
+    Theme - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
