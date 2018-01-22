@@ -42,7 +42,7 @@
 <meta property="og:site_name" content="Listen">
 <meta property="og:description" content="私下花了蛮多时间学习 Android 的，最近模仿一个开源的天气类应用，把过程中查找到的一些知识点记录下来，做下学习笔记。  模仿项目：SeeWeather">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-10T02:58:47.389Z">
+<meta property="og:updated_time" content="2018-01-22T08:16:22.519Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android - AndroidManifest.xml">
 <meta name="twitter:description" content="私下花了蛮多时间学习 Android 的，最近模仿一个开源的天气类应用，把过程中查找到的一些知识点记录下来，做下学习笔记。  模仿项目：SeeWeather">
@@ -153,7 +153,7 @@
           <a class="menu-item-link" href="/">
             
             
-              Home
+              首页
             
           </a>
         </li>
@@ -162,7 +162,7 @@
           <a class="menu-item-link" href="/archives/">
             
             
-              Archives
+              归档
             
           </a>
         </li>
@@ -171,7 +171,7 @@
           <a class="menu-item-link" href="/tags">
             
             
-              Tags
+              标签
             
           </a>
         </li>
@@ -180,7 +180,7 @@
           <a class="menu-item-link" href="/categories">
             
             
-              Categories
+              分类
             
           </a>
         </li>
@@ -215,7 +215,7 @@
     
     
   <div class="post-toc" id="post-toc">
-    <h2 class="post-toc-title">Contents</h2>
+    <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
       <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置文件内容"><span class="toc-text">配置文件内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#android-name"><span class="toc-text">android:name</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#android-hardwareAccelerated"><span class="toc-text">android:hardwareAccelerated</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#android-largeHeap"><span class="toc-text">android:largeHeap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#android-supportsRtl"><span class="toc-text">android:supportsRtl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#android-intent-action-MAIN-amp-android-intent-category-LAUNCHER"><span class="toc-text">android.intent.action.MAIN &amp; android.intent.category.LAUNCHER</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#android-launchMode"><span class="toc-text">android:launchMode</span></a></li></ol>
     </div>
@@ -230,7 +230,7 @@
 </blockquote>
 <a id="more"></a>
 <h2 id="配置文件内容"><a href="#配置文件内容" class="headerlink" title="配置文件内容"></a>配置文件内容</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></div><div class="line">    <span class="attr">package</span>=<span class="string">"com.example.lisen.seeweathercp"</span>&gt;</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_NETWORK_STATE"</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 悬浮窗 --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.SYSTEM_ALERT_WINDOW"</span> /&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">application</span></span></div><div class="line">        <span class="attr">android:name</span>=<span class="string">".base.BaseApplication"</span></div><div class="line">        <span class="attr">android:allowBackup</span>=<span class="string">"true"</span></div><div class="line">        <span class="attr">android:hardwareAccelerated</span>=<span class="string">"true"</span></div><div class="line">        <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span></div><div class="line">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span></div><div class="line">        <span class="attr">android:largeHeap</span>=<span class="string">"true"</span></div><div class="line">        <span class="attr">android:supportsRtl</span>=<span class="string">"true"</span></div><div class="line">        <span class="attr">android:theme</span>=<span class="string">"@style/AppTheme"</span>&gt;</div><div class="line"></div><div class="line">        <span class="tag">&lt;<span class="name">service</span> <span class="attr">android:name</span>=<span class="string">".modules.service.AutoUpdateService"</span>/&gt;</span></div><div class="line"></div><div class="line">        <span class="tag">&lt;<span class="name">activity</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">".modules.launch.FirstActivity"</span></div><div class="line">            <span class="attr">android:theme</span>=<span class="string">"@style/FirstTheme"</span>&gt;</div><div class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span> /&gt;</span></div><div class="line"></div><div class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span> /&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">activity</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">".modules.main.ui.MainActivity"</span></div><div class="line">            <span class="attr">android:launchMode</span>=<span class="string">"singleTask"</span></div><div class="line">            <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span></div><div class="line">            <span class="attr">android:theme</span>=<span class="string">"@style/AppTheme"</span> /&gt;</div><div class="line">        <span class="tag">&lt;<span class="name">activity</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">".modules.city.ui.ChoiceCityActivity"</span></div><div class="line">            <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span> /&gt;</div><div class="line">        <span class="tag">&lt;<span class="name">activity</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">".modules.main.ui.DetailCityActivity"</span></div><div class="line">            <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span> /&gt;</div><div class="line">        <span class="tag">&lt;<span class="name">activity</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">".modules.setting.ui.SettingActivity"</span></div><div class="line">            <span class="attr">android:screenOrientation</span>=<span class="string">"portrait"</span>/&gt;</div><div class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></div></pre></td></tr></table></figure>
-<h2 id="android-name"><a href="#android-name" class="headerlink" title="android:name"></a>android:name</h2><p>android:name=”.base.BaseApplication” 的意思是：用来设置所有 activity 所从属的 application, 默认是 android.app.Application。这里我们自定义了一个 BaseApplication，<code>.base.BaseApplication</code> 是缩写，在项目目录中实际对于 <code>com.example.lisen.seeweathercp.base.BaseApplication</code> 这个类。</p>
+<h2 id="android-name"><a href="#android-name" class="headerlink" title="android:name"></a>android:name</h2><p>android:name=”.base.BaseApplication” 的意思是：为这个应用实现的Application子类的全限定名称。当应用启动时，这个类将在应用的其他组件之前被实例化。这个子类是可选的，在项目目录中实际对于 <code>com.example.lisen.seeweathercp.base.BaseApplication</code> 这个类。</p>
 <p>所有在 AndrodiManifest.xml 里面注册的 Acitivity 都必须继承于 BaseActivity（具体的 Activity 可以是 BaseActivity 的子类的子类）。这样统一共同的父类可以全局提供方法 &amp; 变量，省去重复编码相同的事。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseActivity</span> <span class="keyword">extends</span> <span class="title">RxAppCompatActivity</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String TAG = BaseActivity.class.getSimpleName();</div><div class="line"></div><div class="line">    <span class="meta">@override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(@Nullable Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">      <span class="keyword">super</span>.onCreate(savedInstance);</div><div class="line">      setContentView(layoutId());</div><div class="line">      ButterKnife.bind(<span class="keyword">this</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">int</span> <span class="title">layoutId</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onStop();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setdayTheme</span><span class="params">(AppCompatActivity activity)</span> </span>&#123;</div><div class="line">      <span class="comment">// TODO</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setNightTheme</span><span class="params">(AppCompatActivity activity)</span> </span>&#123;</div><div class="line">      <span class="comment">// TODO</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTheme</span><span class="params">(AppCompatActivity activity)</span> </span>&#123;</div><div class="line">      <span class="comment">// TODO</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>在我的 BaseApplication 中，我定义了 TAG 这个全局变量，用于在调试代码时，区分调试信息来自于哪个类。同时在每个 Activity 的共同生命周期中完成了 <code>setContent</code> 和 <code>ButterKnife.bind(this)</code> 的操作，这样每个 Activity 只需要在自己的 <code>onCreate</code> 函数里面实现 <code>super.onCreate()</code> 就不必再去写两行代码了。<br>所以我们可以看到自定义公共父类的意思在于提供全局函数和变量，减少每个 Activity 的重复工作。</p>
@@ -269,15 +269,15 @@
 
   <div class="post-copyright">
     <p class="copyright-item">
-      <span>Author: </span>
+      <span>作者: </span>
       <span>Listen</span>
     </p>
     <p class="copyright-item">
-      <span>Origin: </span>
+      <span>来源: </span>
       <a href="http://swarosky44.github.io">http://swarosky44.github.io</a>
     </p>
     <p class="copyright-item">
-      <span>Link: </span>
+      <span>链接: </span>
       <a href="http://swarosky44.github.io/2018/01/09/Android - 写一个天气类应用（一）/">http://swarosky44.github.io/2018/01/09/Android - 写一个天气类应用（一）/</a>
     </p>
 
@@ -309,13 +309,13 @@
       <a class="prev" href="/2018/01/11/Set & Map/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Map & Set</span>
-        <span class="prev-text nav-mobile">Prev</span>
+        <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
       <a class="next" href="/2017/12/25/小程序的生态环境预研/">
         <span class="next-text nav-default">小程序的生态环境预研</span>
-        <span class="prev-text nav-mobile">Next</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -384,11 +384,11 @@
 
 <div class="copyright">
   <span class="power-by">
-    Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a>
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
   </span>
   
   <span class="theme-info">
-    Theme - 
+    主题 - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
   </span>
 
