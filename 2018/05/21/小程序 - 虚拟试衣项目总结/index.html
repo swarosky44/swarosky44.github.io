@@ -252,7 +252,7 @@
 <h3 id="webview-再次唤起的问题"><a href="#webview-再次唤起的问题" class="headerlink" title="webview 再次唤起的问题"></a>webview 再次唤起的问题</h3><p>如果当前页面的 webview 触发了路由跳转到另外一个页面，在回退回来后页面是完全被缓存了的，H5 内的数据无法被更新。也就是说当 webiview 内的 H5 页面再次进入 viewport 时，vue 的任何钩子函数都不会被执行（created、mounted）, 不仅仅是 vue 的钩子函数，wwindow 的 pageShow 的 API 也不会被执行，同理在 H5 页面进入后台时，(beforeDestroyed、destoryed) 也不会被执行，pageHide 也不会被执行。</p>
 <p>这样就很坑爹了，因为在其他页面如果用户也操纵了购物车内的数据， 那么回退到 H5 页面就发现购物车数据被还原了。</p>
 <p>这里我的解决办法是通过销毁 webview，强制页面重新创建 webview。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;template&gt;</div><div class="line">  &lt;web-view wx:if="&#123;&#123; needWebView &#125;&#125;" /&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;script&gt;</div><div class="line">  onHide () &#123;</div><div class="line">    <span class="keyword">this</span>.needWebView = <span class="literal">false</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  onShow () &#123;</div><div class="line">    <span class="keyword">this</span>.needWebView = <span class="literal">true</span></div><div class="line">  &#125;</div><div class="line">&lt;<span class="regexp">/script&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;template&gt;</div><div class="line">  <span class="xml"><span class="tag">&lt;<span class="name">web-view</span> <span class="attr">wx:if</span>=<span class="string">"&#123;&#123; needWebView &#125;&#125;"</span> /&gt;</span></span></div><div class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></div><div class="line"></div><div class="line">&lt;script&gt;</div><div class="line">  onHide () &#123;</div><div class="line">    <span class="keyword">this</span>.needWebView = <span class="literal">false</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  onShow () &#123;</div><div class="line">    <span class="keyword">this</span>.needWebView = <span class="literal">true</span></div><div class="line">  &#125;</div><div class="line">&lt;<span class="regexp">/script&gt;</span></div></pre></td></tr></table></figure>
 <p>除了销毁和重新创建 WebView 之外也可以通过修改 url 实现页面的强制刷新，比如 webview 的 url 第一次访问时 <code>www.baidu.com?step=1</code>, 那么第二次访问我们将路由改成 <code>www.baidu.com?step=2</code> 也会让页面在下次出现的时机刷新。</p>
 <p>两种方式都可行，UI渲染的开销上第一种方案会更大，第二种方案会弄脏 url。</p>
 <h2 id="分享"><a href="#分享" class="headerlink" title="分享"></a>分享</h2><p>如果项目的每个页面都需要分享功能，那么我们可以通过在基类 basePage 里面注册一个默认的分享配置，在单独需要特殊分享的面去重写父类的 onShareAppMessage。</p>
@@ -281,15 +281,15 @@
 
   <div class="post-copyright">
     <p class="copyright-item">
-      <span>作者: </span>
+      <span>Author: </span>
       <span>Listen</span>
     </p>
     <p class="copyright-item">
-      <span>来源: </span>
+      <span>Origin: </span>
       <a href="http://swarosky44.github.io">http://swarosky44.github.io</a>
     </p>
     <p class="copyright-item">
-      <span>链接: </span>
+      <span>Link: </span>
       <a href="http://swarosky44.github.io/2018/05/21/小程序 - 虚拟试衣项目总结/">http://swarosky44.github.io/2018/05/21/小程序 - 虚拟试衣项目总结/</a>
     </p>
 
@@ -319,6 +319,12 @@
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2018/05/25/Vue - 瀑布流曝光方案/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Vue - 瀑布流曝光方案</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
     
     
       <a class="next" href="/2018/02/06/Vue - 动态模板输出解决方案/">
